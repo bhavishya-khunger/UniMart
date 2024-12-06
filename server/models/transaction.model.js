@@ -6,11 +6,11 @@ const transactionSchema = new mongoose.Schema({
     },
     coinsEarned: {
       type: Number,
-      default: 0,
+      required: true,
     },
     coinsSpent: {
       type: Number,
-      default: 0,
+      required: true,
     },
     orderId: {
       type: mongoose.Schema.Types.ObjectId,

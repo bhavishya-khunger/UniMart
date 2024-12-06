@@ -11,13 +11,14 @@ const printerSchema = new mongoose.Schema({
     queue: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Order',
       },
     ],
     status: {
       type: String,
-      enum: ['Accepted', 'Queued', 'Printed'],
-      default: 'Queued',
+      enum: ['Accepted', 'Queued', 'Printed', 'Pending'],
+      default: 'Pending',
+      required: true,
     },
   }, { timestamps: true });
   
