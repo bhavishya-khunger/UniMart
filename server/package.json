@@ -17,6 +17,7 @@
     "express": "^4.21.2",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.4"
+    "mongoose": "^8.8.4",
+    "react-router-dom": "^7.0.2"
   }
 }
