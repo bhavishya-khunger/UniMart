@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  account: {
+    type: String,
+    enum: 'Active, Deactivated, Suspended',
+  },
   sid: {
     type: Number,
     minlength: 8,
