@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { log } from 'console';
 import { connectDB } from '../config/db.js';
 import userRoutes from '../routes/user.routes.js';
+import productRoutes from '../routes/product.routes.js';
 
 dotenv.config();
 connectDB();
@@ -20,6 +21,7 @@ app.use(cookieParser());
 
 // routes
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/products', productRoutes);
 
 server.listen(process.env.PORT, () => {
     log('Server has started.');

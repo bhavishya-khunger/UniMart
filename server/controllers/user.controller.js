@@ -5,11 +5,11 @@ export const registerUser = async (req, res) => {
     try {
         const { name, email, password, sid, role } = req.body;
 
+        // console.log(req.body);
         console.log(req.body);
-        
 
         // Validate input
-        if (!name || !email || !password || !role || !sid) {
+        if (!name || !email || !password || !role) {
             return res.status(400).json({ message: 'All fields are required.' });
         }
 
@@ -17,8 +17,10 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
         }
 
-        if (!/^\d{8}$/.test(sid)) {
-            return res.status(400).json({ message: 'SID must be an 8-digit number.' });
+        if (sid) {
+            if (!/^\d{8}$/.test(sid)) {
+                return res.status(400).json({ message: 'SID must be an 8-digit number.' });
+            }
         }
 
         // Check if email or SID already exists
@@ -87,8 +89,8 @@ export const loginUser = async (req, res) => {
 
         console.log(isActive);
 
-        if (isActive === 'Suspended') return res.status(400).json({message: "User's Account is Suspended."});
-        if (isActive === 'Deactivated') return res.status(400).json({message: "User's Account is Deactivated Temporarily. Kindly contact Admin to activate your account."});
+        if (isActive === 'Suspended') return res.status(400).json({ message: "User's Account is Suspended." });
+        if (isActive === 'Deactivated') return res.status(400).json({ message: "User's Account is Deactivated Temporarily. Kindly contact Admin to activate your account." });
 
         const token = await user.generateToken();
 
@@ -116,13 +118,13 @@ export const logoutUser = async (req, res) => {
 
 export const getProfile = async (req, res) => {
     try {
-        const {userId} = req.body;
+        const { userId } = req.body;
 
-        if (!userId) return res.status(400).json({message: "User Not Found"});
+        if (!userId) return res.status(400).json({ message: "User Not Found" });
 
         const user = await User.findById(userId).select('-password');
 
-        if (!user) return res.status(400).json({message: "User Not Found"});
+        if (!user) return res.status(400).json({ message: "User Not Found" });
 
         return res.status(200).json({
             user
@@ -135,13 +137,13 @@ export const getProfile = async (req, res) => {
 // TO BE UPDATED
 export const getTransactionHistory = async (req, res) => {
     try {
-        const {userId} = req.body;
+        const { userId } = req.body;
 
-        if (!userId) return res.status(400).json({message: "User Not Found"});
+        if (!userId) return res.status(400).json({ message: "User Not Found" });
 
         const user = await User.findById(userId).select('-password');
 
-        if (!user) return res.status(400).json({message: "User Not Found"});
+        if (!user) return res.status(400).json({ message: "User Not Found" });
 
         return res.status(200).json({
             transactions: user?.transactionHistory
@@ -154,13 +156,13 @@ export const getTransactionHistory = async (req, res) => {
 // To be UPDATED
 export const getOrderHistory = async (req, res) => {
     try {
-        const {userId} = req.body;
+        const { userId } = req.body;
 
-        if (!userId) return res.status(400).json({message: "User Not Found"});
+        if (!userId) return res.status(400).json({ message: "User Not Found" });
 
         const user = await User.findById(userId).select('-password');
 
-        if (!user) return res.status(400).json({message: "User Not Found"});
+        if (!user) return res.status(400).json({ message: "User Not Found" });
 
         return res.status(200).json({
             orders: user?.orderHistory
