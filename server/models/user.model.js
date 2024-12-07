@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema({
   },
   account: {
     type: String,
-    enum: 'Active, Deactivated, Suspended',
+    enum: ['Active', 'Deactivated', 'Suspended'],
+    default: 'Active',
   },
   sid: {
     type: Number,
@@ -27,15 +28,16 @@ const userSchema = new mongoose.Schema({
   },
   address: {
     type: String,
-    required: true,
   },
   password: {
     type: String,
+    minlength: 6,
     required: true,
   },
   role: {
     type: String,
     enum: ['Student', 'Shopkeeper'],
+    required: true,
   },
   coins: {
     type: Number,
@@ -45,6 +47,12 @@ const userSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Transaction',
+    },
+  ],
+  orderHistory: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order',
     },
   ],
   rating: {
