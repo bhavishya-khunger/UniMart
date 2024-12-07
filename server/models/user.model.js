@@ -26,8 +26,17 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  address: {
-    type: String,
+  address: [{
+    spot : {
+      type: String,
+    },
+    details : {
+      type: String,
+    }
+  }],
+  cart : {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cart',
   },
   password: {
     type: String,
