@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password, sid, role } = req.body;
+        const { name, email, password, sid, role, shopName } = req.body;
 
         // console.log(req.body);
         console.log(req.body);
@@ -24,7 +24,11 @@ export const registerUser = async (req, res) => {
         }
 
         // Check if email or SID already exists
-        const existingUser = await User.findOne({ $or: [{ email }, { sid }] });
+        const existingUser = await User.findOne({ 
+            $or: [{ email }, { sid: sid || '99999999' }]
+        });
+
+        console.log(existingUser);
         if (existingUser) {
             return res.status(400).json({ message: 'Email or SID already in use.' });
         }
@@ -38,7 +42,8 @@ export const registerUser = async (req, res) => {
             sid,
             password: hashedPass,
             email,
-            role
+            role,
+            shopName
         });
 
         // Save the user to the database

@@ -22,9 +22,9 @@ export const getProductsForShopkeeper = async (req, res) => {
 
 export const addProduct = async (req, res) => {
     try {
-        const {userId, productName, price, stock, shopName} = req.body;
+        const {userId, productName, price, stock, productImg} = req.body;
 
-        if (!productName || !price || !stock) {
+        if (!productName || !price || !stock || !productImg) {
             return res.status(400).json({
                 message: "Every field is required."
             })
@@ -35,13 +35,15 @@ export const addProduct = async (req, res) => {
         const newProduct = new Product({
             shopkeeperId: userId, 
             productName, price, stock, 
-            shopName: shopOwner.shopName
+            shopName: shopOwner.shopName,
+            productImg
         });
 
         await newProduct.save()
 
         res.status(201).json({
-            message: "Product added successfully!"
+            message: "Product added successfully!",
+            newProduct
         })
     } catch (error) {
         log(error);

@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
       return this.role === 'Student';
     },
     unique: true,
+    sparse: true,
   },
   email: {
     type: String,
