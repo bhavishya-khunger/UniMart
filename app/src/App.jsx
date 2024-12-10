@@ -1,11 +1,12 @@
-import React from 'react'
-import Register from './pages/Register'
+import React from 'react';
+import Register from './pages/Register';
+import { Route, Routes } from 'react-router-dom'
 
 const App = () => {
   return (
-    <div>
-      <Register/>
-    </div>
+    <Routes> 
+      <Route path='/register' element={<Register/>} />
+    </Routes>
   )
 }
 

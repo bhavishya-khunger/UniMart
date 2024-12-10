@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import InputVal from "../components/InputVal";
 
 const Register = () => {
+  
   return (
     <>
       <div className="flex flex-col items-center justify-center">
