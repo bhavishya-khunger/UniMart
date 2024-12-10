@@ -1,5 +1,8 @@
 import User from '../models/user.model.js';
+import Cart from '../models/cart.model.js';
+import Product from '../models/product.model.js';
 import bcrypt from 'bcrypt';
+import { log } from 'console';
 
 export const registerUser = async (req, res) => {
     try {
@@ -24,7 +27,7 @@ export const registerUser = async (req, res) => {
         }
 
         // Check if email or SID already exists
-        const existingUser = await User.findOne({ 
+        const existingUser = await User.findOne({
             $or: [{ email }, { sid: sid || '99999999' }]
         });
 

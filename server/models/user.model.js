@@ -75,6 +75,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  coupons: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Coupon"
+  }]
 });
 
 // to compare hashed passwords
