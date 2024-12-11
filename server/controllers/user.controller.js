@@ -31,10 +31,12 @@ export const registerUser = async (req, res) => {
             $or: [{ email }, { sid: sid || '99999999' }]
         });
 
-        console.log(existingUser);
         if (existingUser) {
             return res.status(400).json({ message: 'Email or SID already in use.' });
         }
+
+        // Generate OTP
+        const code = 1000 + Math.floor(8999*Math.random());
 
         // Hash the password
         const hashedPass = await bcrypt.hash(password, 10);
@@ -60,6 +62,7 @@ export const registerUser = async (req, res) => {
             message: "User registered successfully.",
             token,
             user,
+            code
         });
     } catch (err) {
         console.error(err);

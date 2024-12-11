@@ -50,6 +50,10 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     required: true,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   role: {
     type: String,
     enum: ['Student', 'Shopkeeper'],
