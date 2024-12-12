@@ -50,6 +50,10 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     required: true,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   role: {
     type: String,
     enum: ['Student', 'Shopkeeper'],
@@ -75,6 +79,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  coupons: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Coupon"
+  }]
 });
 
 // to compare hashed passwords
