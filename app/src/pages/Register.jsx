@@ -1,8 +1,16 @@
 import React, { useState } from "react";
 import InputVal from "../components/InputVal";
+import { Link } from "react-router-dom";
 
 const Register = () => {
-  
+  // State to manage shopkeeper checkbox and input visibility
+  const [isShopkeeper, setIsShopkeeper] = useState(false);
+
+  // Function to handle checkbox change
+  const handleCheckboxChange = () => {
+    setIsShopkeeper((prev) => !prev);
+  };
+
   return (
     <>
       <div className="flex flex-col items-center justify-center">
@@ -21,7 +29,15 @@ const Register = () => {
         </header>
         <main>
           <InputVal fieldVal={"Name"} type={"text"} />
-          <InputVal fieldVal={"SID"} type={"text"} />
+          {isShopkeeper ? (
+            <>
+              <InputVal fieldVal={"Shop Name"} type={"text"} />
+              <InputVal fieldVal={"Registration Number"} type={"number"} />
+            </>
+          ) : (
+            // Default SID field for regular users
+            <InputVal fieldVal={"SID"} type={"text"} />
+          )}
           <InputVal fieldVal={"E-mail"} type={"email"} />
           <InputVal fieldVal={"Password"} type={"password"} />
         </main>
@@ -29,15 +45,21 @@ const Register = () => {
           <button className="bg-[#FF4539] text-white text-xl px-6 py-3 font-bold rounded-full w-[80vw] mb-4">
             Sign in
           </button>
-          {/* <button className="bg-white text-[#FF4539] border-[#FF4539] border-2 text-xl px-6 py-3 font-bold rounded-full w-[80vw] mb-4 flex"><img className="h-6 mr-4" src="https://imgs.search.brave.com/PdE0_txzUdHcbHT5AhV0yUQJQp1HsegZYHyXHuGZ3vs/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy9j/L2MxL0dvb2dsZV8l/MjJHJTIyX2xvZ28u/c3Zn" alt="google" />Sign in with google</button> */}
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="shopkeeper"
+              className="mr-2"
+              checked={isShopkeeper}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor="shopkeeper" className="text-gray-700">
+              Register as a shopkeeper
+            </label>
+          </div>
           <p>
-            Already registerd? Click{" "}
-            <a
-              href="abc"
-              className="text-center text-[#FF4539] cursor-pointer font-bold"
-            >
-              here
-            </a>{" "}
+            Already registered? Click
+            <Link to="/login" className="text-center text-[#FF4539] cursor-pointer font-bold ml-1">here </Link>
             to log in
           </p>
         </footer>

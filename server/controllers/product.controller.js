@@ -1,7 +1,6 @@
 import { log } from 'console';
 import Product from '../models/product.model.js';
 import User from '../models/user.model.js';
-import Coupon from '../models/coupon.model.js';
 
 export const getProductsForShopkeeper = async (req, res) => {
     try {
@@ -45,40 +44,6 @@ export const addProduct = async (req, res) => {
         res.status(201).json({
             message: "Product added successfully!",
             newProduct
-        })
-    } catch (error) {
-        log(error);
-    }
-}
-
-export const createCoupon = async (req, res) => {
-    try {
-        const {code, discountPercentage, usage, maxDiscount, userId, requirement} = req.body;
-        if (!code || !discountPercentage || !userId || !requirement || !usage) {
-            return res.status(400).json({
-                message: "All fields are required."
-            })
-        }
-        const owner = await User.findById(userId);
-        if (!owner) {
-            return res.status(400).json({
-                message: "Shop not found."
-            })
-        }
-        const preexistingCode = await Coupon.findOne({code});
-        if (preexistingCode) {
-            return res.status(400).json({ message: "Coupon Code NOT available." });
-        }
-        const coupon = new Coupon({
-            code, discountPercentage, maxDiscount, 
-            shopOwner: userId, 
-            requirement,
-            usage
-        });
-        await coupon.save();
-        owner.coupons.push(coupon);
-        return res.status(201).json({
-            message: "Coupon Created!"
         })
     } catch (error) {
         log(error);
