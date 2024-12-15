@@ -24,7 +24,7 @@ export const registerUser = async (req, res) => {
         }
 
         // Check if email or SID already exists
-        const existingUser = await User.findOne({ 
+        const existingUser = await User.findOne({
             $or: [{ email }, { sid: sid || '99999999' }]
         });
 
@@ -74,10 +74,12 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({ message: "All fields are required." });
         }
 
-        let user = await User.findOne({ email: credential });
-
-        if (typeof credential === 'number') {
-            user = await User.findOne({ sid: credential }) || null;
+        // Determine if the credential is an email or sid
+        let user;
+        if (credential.includes("@")) {
+            user = await User.findOne({ email: credential });
+        } else {
+            user = await User.findOne({ sid: credential });
         }
 
         if (!user) {
@@ -94,8 +96,14 @@ export const loginUser = async (req, res) => {
 
         console.log(isActive);
 
-        if (isActive === 'Suspended') return res.status(400).json({ message: "User's Account is Suspended." });
-        if (isActive === 'Deactivated') return res.status(400).json({ message: "User's Account is Deactivated Temporarily. Kindly contact Admin to activate your account." });
+        if (isActive === 'Suspended') {
+            return res.status(400).json({ message: "User's Account is Suspended." });
+        }
+        if (isActive === 'Deactivated') {
+            return res.status(400).json({
+                message: "User's Account is Deactivated Temporarily. Kindly contact Admin to activate your account."
+            });
+        }
 
         const token = await user.generateToken();
 

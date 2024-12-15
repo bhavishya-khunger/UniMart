@@ -9,15 +9,21 @@ import userRoutes from '../routes/user.routes.js';
 import productRoutes from '../routes/product.routes.js';
 
 dotenv.config();
-connectDB();
 
 const app = express();
 const server = http.createServer(app);
+const corsOptions = {
+    origin: "http://localhost:5173",
+    credentials: true,
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(cookieParser());
+
+// Database Connection
+connectDB();
 
 // routes
 app.use('/api/v1/users', userRoutes);

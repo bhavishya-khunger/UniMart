@@ -15,10 +15,9 @@ import HomePage from "./pages/HomePage.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      < Route path="/" element={<Login />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/home" element={<HomePage />} />
     </>
   )
 );
