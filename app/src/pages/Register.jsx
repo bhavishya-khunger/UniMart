@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import InputVal from "../components/InputVal";
+import { Link } from "react-router-dom";
 
 const Register = () => {
   // State to manage shopkeeper checkbox and input visibility
@@ -58,12 +59,7 @@ const Register = () => {
           </div>
           <p>
             Already registered? Click
-            <a
-              href="abc"
-              className="text-center text-[#FF4539] cursor-pointer font-bold ml-1"
-            >
-              here
-            </a>
+            <Link to="/login" className="text-center text-[#FF4539] cursor-pointer font-bold ml-1">here </Link>
             to log in
           </p>
         </footer>

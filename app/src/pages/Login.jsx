@@ -1,5 +1,6 @@
 import React from "react";
 import InputVal from "../components/InputVal";
+import { Link } from "react-router-dom";
 
 function Login() {
   return (
@@ -27,7 +28,7 @@ function Login() {
             Sign in
           </button>
           <div className="flex items-center mb-4"></div>
-          <p>Already registered? Click<a href="abc"className="text-center text-[#FF4539] cursor-pointer font-bold ml-1"> here</a> to log in</p>
+          <p>Not registered yet, Click <Link to="/register" className="text-center text-[#FF4539] cursor-pointer font-bold ml-1">here</Link> to register</p>
         </footer>
       </div>
     </>
