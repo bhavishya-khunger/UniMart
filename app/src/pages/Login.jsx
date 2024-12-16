@@ -79,7 +79,7 @@ const Login = () => {
           <Link
             to="/register"
             className="text-center text-[#FF4539] cursor-pointer font-bold ml-1">
-            here 
+            here
           </Link>
         </p>
       </footer>

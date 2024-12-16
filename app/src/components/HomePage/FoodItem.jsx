@@ -2,9 +2,9 @@ import React from "react";
 
 function FoodItem({foodImage, foodName}) {
   return (
-    <div className="item bg-gray-200 w-24 flex-shrink-0 hover:bg-orange-600 rounded-3xl">
+    <div className="bg-gray-100 w-24 flex-shrink-0 hover:bg-gray-200 rounded-3xl flex flex-col items-center py-2">
       <img src={foodImage} alt="burger" className="h-20" />
-      <p className="text-center">{foodName}</p>
+      <p className="text-center text-sm">{foodName}</p>
     </div>
   );
 }

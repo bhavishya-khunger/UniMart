@@ -1,69 +1,102 @@
-import { useState } from "react";
-import { FaBell } from "react-icons/fa";
-import { FaSearch } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaBell, FaSearch } from "react-icons/fa";
 import { BsToggles2 } from "react-icons/bs";
-// import FoodItem from "../components/HomePage/FoodItem";
+import { AiFillHome, AiOutlineUser, AiOutlineWallet } from "react-icons/ai";
+import FoodItem from "../components/HomePage/FoodItem";
 import Restaurant from "../components/HomePage/Restaurant";
-
+import burgerImage from "../Images/HomePage/burger.png";
+import axios from 'axios'
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
     <>
-      <div className="mainContainer">
-        <header className="flex b justify-between items-center mb-6">
+      <div className="px-4 py-10 h-screen">
+        {/* Header Section */}
+        <header className="flex justify-between items-center mb-8">
           <div className="heading">
-            <h1 className="text-2xl font-bold pl-2">Order your favourite</h1>
-            <h1 className="text-2xl font-bold pl-2">Fast Food!</h1>
+            <h1 className="text-2xl font-bold pl-2">Explore Your Meals</h1>
+            <h1 className="text-2xl font-bold pl-2">With UniMart!</h1>
           </div>
-          <div className="icon flex justify-center items-center w-12 h-12 rounded-full border-2 border-gray-700 bg-gray-200 mr-4">
-            <FaBell className="text-orange-500 text-2xl" />
+          <div className="text-2xl font-semibold flex justify-center items-center w-12 h-12 rounded-full border-2 ml-2 text-blue-600 border-black bg-blue-200">
+            B
           </div>
         </header>
 
-        <div className="flex items-center justify-center mb-6">
-          <section className="searchBar flex w-[90vw] justify-between items-center bg-gray-200 py-3 rounded-full px-4">
-            <FaSearch className="text-2xl" />
-            <input type="text" name="" id="" className="bg-gray-200 h-[100%]" />
-            <BsToggles2 />
+        {/* Search Bar Section */}
+        {/* <div className="flex items-center justify-center mb-8">
+          <section className="searchBar flex w-full max-w-xl justify-between items-center bg-gray-200 py-3 rounded-full px-4">
+            <FaSearch className="text-xl text-gray-600" />
+            <input
+              type="text"
+              className="bg-gray-200 w-full h-full outline-none text-gray-700 pl-2"
+              placeholder="Search for meals or restaurants..."
+            />
+            <BsToggles2 className="text-xl text-gray-600" />
           </section>
-        </div>
+        </div> */}
 
-        <section className="coverImageContainer flex justify-center items-center relative mb-6">
+        {/* Cover Image Section */}
+        <section className="coverImageContainer flex justify-center items-center relative mb-8">
           <img
-            src="https://plus.unsplash.com/premium_photo-1683619761468-b06992704398?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YnVyZ2VyfGVufDB8fDB8fHww"
+            src="https://img.pikbest.com/templates/20240602/food-burger-restaurant-offer-web-banner-design_10587345.jpg!sw800"
             alt="burger"
-            className="h-44 w-[90vw] rounded-3xl"
+            className="h-56 w-full max-w-xl rounded-3xl"
           />
-          <button className="absolute bottom-4 left-8 bg-gray-2000 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
-            Order now
-          </button>
         </section>
 
-        <section className="itemSlider flex gap-4 overflow-x-auto whitespace-nowrap scroll-smooth mb-6">
-          {/* <FoodItem foodName="Burger" foodImage={burgerImage}/>
-          <FoodItem foodName="Burger" foodImage={burgerImage}/>
-          <FoodItem foodName="Burger" foodImage={burgerImage}/>
-          <FoodItem foodName="Burger" foodImage={burgerImage}/>
-          <FoodItem foodName="Burger" foodImage={burgerImage}/>
-          <FoodItem foodName="Burger" foodImage={burgerImage}/>
-          <FoodItem foodName="Burger" foodImage={burgerImage}/> */}
+        {/* Food Items Slider */}
+        {/* <section className="itemSlider flex gap-4 overflow-x-auto whitespace-nowrap scroll-smooth mb-8">
+          <FoodItem foodName="Burger" foodImage={burgerImage} />
+          <FoodItem foodName="Pizza" foodImage={burgerImage} />
+        </section> */}
+
+        {/* Recommended Section */}
+        <section className="flex justify-between items-center mb-6 py-2 rounded-lg">
+          <h2 className="text-xl font-semibold">Recommended For You</h2>
         </section>
 
-        <section className="restaurantHeading bg-gray-200 flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold ml-3">Recommended for you</h2>
-          <p>
-            <a href="" className="mr-3">See all</a>
-          </p>
+        {/* Restaurants List */}
+        <section className="restaurantList flex flex-col items-center justify-center gap-6">
+          <Restaurant
+            restaurantImage="https://www.foodandwine.com/thmb/zaL9eyOyTgCjX99DFOhB3iG7YEk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/The-Worst-Time-to-Visit-McDonalds-FT-BLOG0823-711a27313d1a448baf4db4817310ff5d.jpg"
+            restaurantName="FnK Cafe - Didi Ki Dukan"
+            rating={4.4}
+          />
+          <Restaurant
+            restaurantImage="https://www.foodandwine.com/thmb/zaL9eyOyTgCjX99DFOhB3iG7YEk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/The-Worst-Time-to-Visit-McDonalds-FT-BLOG0823-711a27313d1a448baf4db4817310ff5d.jpg"
+            restaurantName="Gyoza's Cafe"
+            rating={4.4}
+          />
+          <Restaurant
+            restaurantImage="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf4_-u7PcXjcV0ep9LnMjS9fbpZ0ahFbW1Jx0kHHX5LHw7Ktmx1CL6AfLsvvagMjQXiDM&usqp=CAU"
+            restaurantName="Gyoza's Kitchen"
+            rating={4.4}
+          />
+          <Restaurant
+            restaurantImage="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf4_-u7PcXjcV0ep9LnMjS9fbpZ0ahFbW1Jx0kHHX5LHw7Ktmx1CL6AfLsvvagMjQXiDM&usqp=CAU"
+            restaurantName="Deshraj Sweets"
+            rating={4.4}
+          />
         </section>
-
-        <section className="restaurantList flex flex-col items-center justify-center">
-        <Restaurant restaurantImage={"https://imgs.search.brave.com/AFxK2_4jpgXh9mwsjV_1phV7KBh-a_zW_eToLmcwDio/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/Z3JpZC5mb3Rvc2Vh/cmNoLmNvbS9JR1Mv/SUdTMDk4L2J1cmdl/ci1zdG9jay1pbWFn/ZV9faXMwOWE2ZnUz/LmpwZw"} restaurantName="Billu"/>
-        <Restaurant restaurantImage={"https://imgs.search.brave.com/AFxK2_4jpgXh9mwsjV_1phV7KBh-a_zW_eToLmcwDio/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/Z3JpZC5mb3Rvc2Vh/cmNoLmNvbS9JR1Mv/SUdTMDk4L2J1cmdl/ci1zdG9jay1pbWFn/ZV9faXMwOWE2ZnUz/LmpwZw"} restaurantName="Billu"/>
-        <Restaurant restaurantImage={"https://imgs.search.brave.com/AFxK2_4jpgXh9mwsjV_1phV7KBh-a_zW_eToLmcwDio/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4t/Z3JpZC5mb3Rvc2Vh/cmNoLmNvbS9JR1Mv/SUdTMDk4L2J1cmdl/ci1zdG9jay1pbWFn/ZV9faXMwOWE2ZnUz/LmpwZw"} restaurantName="Billu"/>
-        </section>
+        <div className="w-full h-20">
+        </div>
       </div>
+      {/* Bottom Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 w-full bg-white py-3 shadow-md flex justify-around items-center">
+        <button className="flex flex-col items-center text-gray-600 hover:text-orange-500">
+          <AiOutlineWallet className="text-2xl" />
+          <span className="text-sm">Wallet</span>
+        </button>
+        <button className="flex flex-col items-center text-gray-600 hover:text-orange-500">
+          <AiFillHome className="text-2xl" />
+          <span className="text-sm">Home</span>
+        </button>
+        <button className="flex flex-col items-center text-gray-600 hover:text-orange-500">
+          <AiOutlineUser className="text-2xl" />
+          <span className="text-sm">Profile</span>
+        </button>
+      </nav>
     </>
   );
 }
