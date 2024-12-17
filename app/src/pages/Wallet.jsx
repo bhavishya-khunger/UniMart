@@ -25,6 +25,7 @@ const Wallet = () => {
                 <div className="mt-5 shadow rounded-xl bg-white h-fit w-full px-3 py-4 flex flex-col items-center">
                     <p>#Referral System Goes Here#</p>
                     <button className="mt-2 self-center py-2 w-full rounded-xl text-white bg-red-600">
+                    {/* #FF4539 - use this when u change */}
                         Share Invite Code
                     </button>
                 </div>

@@ -61,21 +61,25 @@ function App() {
         {/* Restaurants List */}
         <section className="restaurantList flex flex-col items-center justify-center gap-6">
           <Restaurant
+            restaurantId='4'
             restaurantImage="https://www.foodandwine.com/thmb/zaL9eyOyTgCjX99DFOhB3iG7YEk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/The-Worst-Time-to-Visit-McDonalds-FT-BLOG0823-711a27313d1a448baf4db4817310ff5d.jpg"
             restaurantName="FnK Cafe - Didi Ki Dukan"
             rating={4.4}
           />
           <Restaurant
+            restaurantId='3'
             restaurantImage="https://www.foodandwine.com/thmb/zaL9eyOyTgCjX99DFOhB3iG7YEk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/The-Worst-Time-to-Visit-McDonalds-FT-BLOG0823-711a27313d1a448baf4db4817310ff5d.jpg"
             restaurantName="Gyoza's Cafe"
             rating={4.4}
           />
           <Restaurant
+            restaurantId='2'
             restaurantImage="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf4_-u7PcXjcV0ep9LnMjS9fbpZ0ahFbW1Jx0kHHX5LHw7Ktmx1CL6AfLsvvagMjQXiDM&usqp=CAU"
             restaurantName="Gyoza's Kitchen"
             rating={4.4}
           />
           <Restaurant
+            restaurantId='1'
             restaurantImage="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf4_-u7PcXjcV0ep9LnMjS9fbpZ0ahFbW1Jx0kHHX5LHw7Ktmx1CL6AfLsvvagMjQXiDM&usqp=CAU"
             restaurantName="Deshraj Sweets"
             rating={4.4}
@@ -84,7 +88,7 @@ function App() {
         <div className="w-full h-20">
         </div>
       </div>
-      <BottomNav /> 
+      <BottomNav />
     </>
   );
 }

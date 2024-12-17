@@ -12,6 +12,8 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import Wallet from "./pages/Wallet.jsx";
+import CartPage from "./pages/CartPage.jsx";
+import Restaurant from "./pages/Restaurant.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,6 +22,8 @@ const router = createBrowserRouter(
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/wallet" element={<Wallet />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/:id" element={<Restaurant />} />
     </>
   )
 );
