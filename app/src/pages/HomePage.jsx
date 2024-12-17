@@ -6,12 +6,14 @@ import FoodItem from "../components/HomePage/FoodItem";
 import Restaurant from "../components/HomePage/Restaurant";
 import burgerImage from "../Images/HomePage/burger.png";
 import axios from 'axios'
+import { Link } from "react-router-dom";
+import BottomNav from "../components/General/BottomNav";
 
 function App() {
 
   return (
     <>
-      <div className="px-4 py-10 h-screen">
+      <div className="px-4 py-5 h-full">
         {/* Header Section */}
         <header className="flex justify-between items-center mb-8">
           <div className="heading">
@@ -82,21 +84,7 @@ function App() {
         <div className="w-full h-20">
         </div>
       </div>
-      {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 w-full bg-white py-3 shadow-md flex justify-around items-center">
-        <button className="flex flex-col items-center text-gray-600 hover:text-orange-500">
-          <AiOutlineWallet className="text-2xl" />
-          <span className="text-sm">Wallet</span>
-        </button>
-        <button className="flex flex-col items-center text-gray-600 hover:text-orange-500">
-          <AiFillHome className="text-2xl" />
-          <span className="text-sm">Home</span>
-        </button>
-        <button className="flex flex-col items-center text-gray-600 hover:text-orange-500">
-          <AiOutlineUser className="text-2xl" />
-          <span className="text-sm">Profile</span>
-        </button>
-      </nav>
+      <BottomNav /> 
     </>
   );
 }

@@ -28,7 +28,7 @@ const Login = () => {
       const endpoint = `${import.meta.env.VITE_USER_BASE_URL}/login`;
       const res = await axios.post(endpoint, { credential, password });
       // Handle success (e.g., save token, redirect)
-      navigate("/");
+      if (res.status === 200) return navigate("/");
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred during login.");
     } finally {
@@ -37,7 +37,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-full flex-col items-center justify-center">
+    <div className="flex h-screen flex-col items-center justify-center">
       <header className="flex flex-col items-center justify-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 40 40">
           <path fill="#F06225" d="M20 0c11.046 0 20 8.954 20 20v14a6 6 0 0 1-6 6H21v-8.774c0-2.002.122-4.076 1.172-5.78a10 10 0 0 1 6.904-4.627l.383-.062a.8.8 0 0 0 0-1.514l-.383-.062a10 10 0 0 1-8.257-8.257l-.062-.383a.8.8 0 0 0-1.514 0l-.062.383a9.999 9.999 0 0 1-4.627 6.904C12.85 18.878 10.776 19 8.774 19H.024C.547 8.419 9.29 0 20 0Z"></path>
