@@ -1,6 +1,7 @@
 import { log } from 'console';
 import Product from '../models/product.model.js';
 import User from '../models/user.model.js';
+import Shop from '../models/shop.model.js';
 
 export const getProductsForShopkeeper = async (req, res) => {
     try {

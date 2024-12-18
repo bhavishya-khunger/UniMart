@@ -4,7 +4,7 @@
     margin-top: 20px;
     height:25px;
     width:22px;
-    background-image: url("images.png");
+    background-image: url("https://static.vecteezy.com/system/resources/previews/006/991/685/non_2x/arrow-back-icon-which-is-suitable-for-commercial-work-and-easily-modify-or-edit-it-vector.jpg");
     background-size: contain;
 }
 #name{
@@ -51,7 +51,7 @@
     left:5px;
     height:25px;
     width:25px;
-    background-image: url("veg1-png.png");
+    background-image: url("https://i.pinimg.com/736x/e4/1f/f3/e41ff3b10a26b097602560180fb91a62.jpg");
     background-size: contain; 
 }
 #burger{
@@ -62,7 +62,7 @@
     right:10px;
     height:180px;
     width:190px;
-    background-image: url("tandooriburger.jpg");
+    background-image: url("https://assets.epicurious.com/photos/5c745a108918ee7ab68daf79/master/pass/Smashburger-recipe-120219.jpg");
     background-size: cover;
 }
 #para1{

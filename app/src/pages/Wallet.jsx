@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BottomNav from '../components/General/BottomNav';
 import { BsWallet2 } from 'react-icons/bs';
 import Transaction from '../components/Wallet/Transaction';
+import axios from 'axios';
 
 const Wallet = () => {
+    const [user, setUser] = useState({});
+    useEffect(() => {
+        const getUserDetails = async () => {
+            const res = await axios.get(`${import.meta.env.VITE_USER_BASE_URL}/profile`);
+            setUser(res.data.user);
+            console.log(res.data.user);
+        }
+        getUserDetails();
+    })
     return (
         <>
             <div className="px-3 py-4 w-screen h-full select-none bg-gray-100">
@@ -17,7 +27,7 @@ const Wallet = () => {
                         <h1 className="text-4xl text-yellow-300 font-semibold">40pts</h1>
                     </div>
                     <div className="text-red-50 pt-4 pb-2 border-t border-dashed border-red-50 mt-5 flex flex-col">
-                        <span>ABC</span>
+                        <span>{user?.name}</span>
                         <span>SID: XXXXXXXX</span>
                         <span className="text-xs">abc@gmail.com</span>
                     </div>

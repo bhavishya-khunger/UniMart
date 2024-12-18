@@ -7,6 +7,7 @@ import { log } from 'console';
 import { connectDB } from '../config/db.js';
 import userRoutes from '../routes/user.routes.js';
 import productRoutes from '../routes/product.routes.js';
+import shopRoutes from '../routes/shop.routes.js';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ connectDB();
 // routes
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/shops', shopRoutes);
 
 server.listen(process.env.PORT, () => {
     log('Server has started.');
