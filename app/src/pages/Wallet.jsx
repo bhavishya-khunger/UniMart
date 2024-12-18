@@ -13,7 +13,9 @@ const Wallet = () => {
             console.log(res.data.user);
         }
         getUserDetails();
-    })
+    });
+    const currUser = JSON.parse(localStorage.getItem('user'));
+
     return (
         <>
             <div className="px-3 py-4 w-screen h-full select-none bg-gray-100">
@@ -24,12 +26,12 @@ const Wallet = () => {
                     </div>
                     <div className="mt-3 flex gap-2 items-center">
                         <BsWallet2 size={30} color="#fde047" />
-                        <h1 className="text-4xl text-yellow-300 font-semibold">40pts</h1>
+                        <h1 className="text-4xl text-yellow-300 font-semibold">{currUser?.coins}pts</h1>
                     </div>
                     <div className="text-red-50 pt-4 pb-2 border-t border-dashed border-red-50 mt-5 flex flex-col">
-                        <span>{user?.name}</span>
-                        <span>SID: XXXXXXXX</span>
-                        <span className="text-xs">abc@gmail.com</span>
+                        <span>{currUser?.name}</span>
+                        <span>SID: {currUser?.sid}</span>
+                        <span className="text-xs">{currUser?.email}</span>
                     </div>
                 </div>
                 <div className="mt-5 shadow rounded-xl bg-white h-fit w-full px-3 py-4 flex flex-col items-center">

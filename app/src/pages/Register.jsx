@@ -62,6 +62,10 @@ const Register = () => {
       const endpoint = `${import.meta.env.VITE_USER_BASE_URL}/register`;
       const res = await axios.post(endpoint, userPayload);
       console.log(res);
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', res.data.user);
+      const time = new Date().getTime() + 1000 * 20 * 60; //20min
+      localStorage.setItem('expiryTime', time);
 
       // Redirect on success
       navigate("/");
@@ -100,7 +104,7 @@ const Register = () => {
         <button
           onClick={registerHandler}
           className="bg-[#FF4539] text-white text-xl px-6 py-3 font-semibold rounded-full w-[80vw] mb-4 active:scale-95">
-          Sign in
+          Sign Up
         </button>
         <div className="flex self-center items-center mb-4">
           <input

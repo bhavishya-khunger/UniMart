@@ -19,7 +19,8 @@ function App() {
       setRestaurants(response.data.shops);
     }
     getShops();
-  }, [])
+  }, []);
+  const user = JSON.parse(localStorage.getItem('user'));
 
 
   return (
@@ -32,7 +33,7 @@ function App() {
             <h1 className="text-2xl font-bold pl-2">With UniMart!</h1>
           </div>
           <div className="text-2xl font-semibold flex justify-center items-center w-12 h-12 rounded-full border-2 ml-2 text-blue-600 border-black bg-blue-200">
-            B
+            {user?.name[0]}
           </div>
         </header>
 

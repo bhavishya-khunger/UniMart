@@ -28,7 +28,14 @@ const Login = () => {
       const endpoint = `${import.meta.env.VITE_USER_BASE_URL}/login`;
       const res = await axios.post(endpoint, { credential, password });
       // Handle success (e.g., save token, redirect)
-      if (res.status === 200) return navigate("/");
+      if (res.status === 200) {
+        console.log(res);
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.user)); // change this with context
+        const time = new Date().getTime() + 1000 * 20 * 60; //20min
+        localStorage.setItem('expiryTime', time);
+        return navigate("/")
+      };
     } catch (error) {
       setError(error.response?.data?.message || "An error occurred during login.");
     } finally {
