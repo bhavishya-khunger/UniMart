@@ -8,6 +8,7 @@ import burgerImage from "../Images/HomePage/burger.png";
 import axios from 'axios'
 import { Link } from "react-router-dom";
 import BottomNav from "../components/General/BottomNav";
+import ErrorPop, {} from "../components/General/ErrorPop"
 
 function App() {
   const [restaurants, setRestaurants] = useState([]);
@@ -15,7 +16,7 @@ function App() {
     const getShops = async () => {
       const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
       // console.log(response.data.users);
-      // setRestaurants(response.data.shops);
+      setRestaurants(response.data.shops);
     }
     getShops();
   }, [])
@@ -65,13 +66,13 @@ function App() {
 
         {/* Recommended Section */}
         <section className="flex justify-between items-center mb-6 py-2 rounded-lg">
-          <h2 className="text-xl font-semibold">Recommended For You</h2>
+          <h2 className="text-xl font-semibold">{!restaurants ? "" : "Recommended For You"}</h2>
         </section>
 
         {/* Restaurants List */}
         <section className="restaurantList flex flex-col items-center justify-center gap-6">
           {restaurants.length == 0 && (
-            <h2>No Restaurants Availbale in Your Area right Now!</h2>
+            <ErrorPop text={"No Restaurants Found in your Area!"} />
           )}
           {restaurants && restaurants.map((restaurant) => {
             return (
