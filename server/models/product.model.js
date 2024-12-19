@@ -5,14 +5,14 @@ const productSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+    desc: {
+      type: String,
+      required: true,
+    },
     productImg: {
       type: String,
       required: true, 
       default: "",
-    },
-    shopName: {
-      type: String,
-      required: true,
     },
     shopkeeperId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,7 +25,7 @@ const productSchema = new mongoose.Schema({
     },
     stock: {
       type: Number,
-      default: 0,
+      // default: 0,
     },
     ratings: [
       {
@@ -33,6 +33,10 @@ const productSchema = new mongoose.Schema({
         review: { type: String },
       },
     ],
+    isVeg: {
+      type: Boolean,
+      default: true,
+    },
   }, { timestamps: true });
   
   const Product = mongoose.model('Product', productSchema);

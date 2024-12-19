@@ -5,42 +5,60 @@ import Shop from '../models/shop.model.js';
 
 export const getProductsForShopkeeper = async (req, res) => {
     try {
-        const { userId } = req.body;
-        log(userId);
-        if (!userId) res.status(400).json({ message: "User NOT found." });
+        const { shopId } = req.params;
+        log(shopId);
 
-        const products = await Product.find({shopkeeperId: userId});
-        log(products);
-        if (!products) res.status(400).json({ message: "Products NOT found." });
+        // Check if shopId is provided
+        if (!shopId) {
+            return res.status(400).json({ message: "Shop ID not provided." });
+        }
 
-        res.status(200).json({ 
-            products
-        });
+        // Fetch shop and populate menu
+        const shop = await Shop.findById(shopId).populate('menu');
+
+        // Check if shop exists
+        if (!shop) {
+            return res.status(404).json({ message: "Shop not found." });
+        }
+
+        const products = shop.menu;
+
+        // Check if menu/products exist
+        if (!products || products.length === 0) {
+            return res.status(404).json({ message: "No products found for this shop." });
+        }
+
+        // Return products
+        res.status(200).json({ products });
     } catch (error) {
-        log(error);
+        console.error("Error fetching products for shopkeeper:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
-}
+};
+
 
 export const addProduct = async (req, res) => {
     try {
-        const {userId, productName, price, stock, productImg} = req.body;
+        const { userId, productName, price, productImg, isVeg, desc } = req.body;
 
-        if (!productName || !price || !stock || !productImg) {
+        if (!productName || !price || !productImg || isVeg === undefined || isVeg === null || !desc) {
             return res.status(400).json({
                 message: "Every field is required."
             })
         }
 
-        const shopOwner = await User.findById(userId);
-
         const newProduct = new Product({
-            shopkeeperId: userId, 
-            productName, price, stock, 
-            shopName: shopOwner.shopName,
+            shopkeeperId: userId,
+            productName, price, isVeg, desc,
             productImg
         });
 
-        await newProduct.save()
+        const shop = await Shop.findOne({ owner: userId });
+        if (!shop) res.status(400).json({ message: "Shop NOT found." });
+
+        shop.menu.push(newProduct._id);
+        await shop.save();
+        await newProduct.save();
 
         res.status(201).json({
             message: "Product added successfully!",

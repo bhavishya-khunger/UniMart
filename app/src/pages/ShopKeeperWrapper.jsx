@@ -5,7 +5,7 @@ const ShopKeeperWrapper = ({ children }) => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const isShopVerified = user?.isShopVerified;
-  const isStudent = user?.role === 'Student';
+  const isShopkeeper = user?.role === 'Shopkeeper';
 
   useEffect(() => {
     if (!user) {
@@ -13,10 +13,10 @@ const ShopKeeperWrapper = ({ children }) => {
       return;
     }
 
-    if (isStudent) {
-      navigate('/');
-    } else if (!isShopVerified) {
-      navigate('/shopdetails');
+    if (isShopkeeper) {
+      if (!isShopVerified) {
+        navigate('/shopdetails');
+      }
     }
   }, [user, navigate]);
 

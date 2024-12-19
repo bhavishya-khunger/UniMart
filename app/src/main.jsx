@@ -18,6 +18,7 @@ import ShopForm from "./pages/ShopForm.jsx";
 import UserProtectRoute from "./pages/UserProtectRoute.jsx";
 import MenuShop from "./pages/MenuShop.jsx";
 import ShopKeeperWrapper from "./pages/ShopKeeperWrapper.jsx";
+import AdminInsights from "./pages/AdminInsights.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -50,7 +51,14 @@ const router = createBrowserRouter(
           </ShopKeeperWrapper>
         </UserProtectRoute>
       } />
-      <Route path="/:id" element={
+      <Route path="/admininsights" element={
+        <UserProtectRoute>
+          <ShopKeeperWrapper>
+            <AdminInsights />
+          </ShopKeeperWrapper>
+        </UserProtectRoute>
+      } />
+      <Route path="/:shopId" element={
         <UserProtectRoute>
           <ShopKeeperWrapper>
             <Restaurant />

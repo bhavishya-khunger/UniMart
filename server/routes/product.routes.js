@@ -5,7 +5,7 @@ import { protectRoute } from '../middlewares/auth.user.js';
 
 const router = express.Router();
 
-router.get('/', getProductsForShopkeeper);
+router.get('/:shopId', getProductsForShopkeeper);
 router.post('/add', addProduct);
 router.post('/add-to-cart', addToCart);
 

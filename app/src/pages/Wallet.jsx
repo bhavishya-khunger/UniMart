@@ -21,7 +21,10 @@ const Wallet = () => {
                 <div className='bg-[url("https://static.vecteezy.com/system/resources/thumbnails/011/731/472/small/orange-abstract-background-with-geometric-shapes-concept-free-vector.jpg")] bg-cover h-fit rounded-3xl py-4 px-4'>
                     <div className="flex justify-between">
                         <h1 className="text-white font-semibold text-2xl">UniPoints</h1>
-                        <button className="text-white border px-2 rounded-full active:scale-95">+ Add</button>
+                        <button onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = 'https://forms.gle/XLwBBZ4aGMaQxNKL9';
+                        }} className="text-white border px-2 rounded-full active:scale-95">+ Add</button>
                     </div>
                     <div className="mt-3 flex gap-2 items-center">
                         <BsWallet2 size={30} color="#fde047" />
@@ -29,7 +32,7 @@ const Wallet = () => {
                     </div>
                     <div className="text-red-50 pt-4 pb-2 border-t border-dashed border-red-50 mt-5 flex flex-col">
                         <span>{currUser?.name}</span>
-                        {currUser?.role === 'Student' && <span className="text-xs">Student</span>}
+                        <span className="text-xs">{currUser?.role}</span>
                         <span className="text-xs">{currUser?.email}</span>
                     </div>
                 </div>
