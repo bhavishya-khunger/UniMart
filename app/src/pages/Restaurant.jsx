@@ -7,9 +7,11 @@ import axios from "axios";
 
 const Restaurant = () => {
   const [items, setItems] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
   const shopId = useParams().shopId;
   console.log("Shop ID:", shopId);
   const navigate = useNavigate();
+  const currUser = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -21,7 +23,16 @@ const Restaurant = () => {
         console.error("Error getting products:", error.message);
       }
     };
-
+    const fetchCart = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/getcart/${currUser._id}`);
+        console.log("Cart fetched:", response.data);
+        setCartItems(response.data.items);
+      } catch (error) {
+        console.error("Error getting cart:", error.message);
+      }
+    }
+    fetchCart();
     if (shopId) fetchProducts();
   }, [shopId]);
 
@@ -49,7 +60,7 @@ const Restaurant = () => {
       </main>
 
       <footer className="fixed bottom-0 rounded-t-2xl w-full bg-white shadow-2xl shadow-black py-4 px-6 flex items-center justify-between">
-        <p className="font-semibold text-lg">{`${items.length} items added`}</p>
+        <p className="font-semibold text-lg">{`${cartItems?.length} items added`}</p>
         <button
           id="menu"
           className="px-3 py-2 text-lg text-white bg-black rounded-lg flex items-center gap-2"

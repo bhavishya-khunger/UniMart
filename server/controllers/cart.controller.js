@@ -100,6 +100,27 @@ export const removeItemFromCart = async (req, res) => {
     }
 };
 
+export const getCart = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required." });
+        }
+
+        const cart = await Cart.findOne({ userId }).populate({path: 'items.productId', model: 'Product'});
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found." });
+        }
+
+        res.status(200).json(cart);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
 // In progress - to be completed soon
 export const applyCoupon = async (req, res) => {
     try {
