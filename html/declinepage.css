@@ -1,0 +1,48 @@
+#heading{
+    position:absolute;
+    top:20px;
+    left:125px;
+    font-size: 35px;
+    font-family: Arial, Helvetica, sans-serif;
+    color:rgb(32, 32, 32);
+}
+#error{
+    border-radius: 5px;
+    position:absolute;
+    font-family: Arial, Helvetica, sans-serif;
+    top:90px;
+    left:0px;
+    font-size: 20px;
+    padding:10px;
+    height:115px;
+    line-height:30px;
+    background-color: orangered;
+    color:white;
+}
+#link{
+    color:white;
+    background-color: orangered;
+}
+#dog{
+    position: absolute;
+    top:250px;
+    left: 80px;
+    height:255px;
+    width: 245px;
+    background-image: url("dog_image.jpg");
+    background-size: contain;
+}
+#try{
+    position: absolute;
+    font-size: 24px;
+    top:550px;
+    padding-left: 45px;
+    padding-top: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    left:2px;
+    height:45px;
+    width:337px;
+    background-color: rgb(90, 201, 245);
+    color:white;
+    border-radius: 5px;
+}
