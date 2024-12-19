@@ -63,7 +63,7 @@ const Register = () => {
       const res = await axios.post(endpoint, userPayload);
       console.log(res);
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', res.data.user);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
       const time = new Date().getTime() + 1000 * 20 * 60; //20min
       localStorage.setItem('expiryTime', time);
 

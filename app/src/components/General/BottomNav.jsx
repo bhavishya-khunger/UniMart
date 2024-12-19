@@ -1,8 +1,10 @@
 import React from 'react'
 import { AiFillHome, AiOutlineUser, AiOutlineWallet } from 'react-icons/ai'
 import { Link } from 'react-router-dom'
+import { BiFoodMenu } from "react-icons/bi";
 
 const BottomNav = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
     return (
         <nav className="fixed shadow-2xl shadow-gray-600 bottom-0 left-0 w-full bg-white py-3 flex justify-around items-center">
             <Link to={'/wallet'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
@@ -13,6 +15,12 @@ const BottomNav = () => {
                 <AiFillHome className="text-2xl" />
                 <span className="text-sm">Home</span>
             </Link>
+            {user?.role === 'Shopkeeper' && (
+                <Link to={'/editmenu'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
+                    <BiFoodMenu className="text-2xl" />
+                    <span className="text-sm">Menu</span>
+                </Link>
+            )}
             <Link className="flex flex-col items-center text-gray-600 hover:text-orange-500">
                 <AiOutlineUser className="text-2xl" />
                 <span className="text-sm">Profile</span>

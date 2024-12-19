@@ -1,0 +1,16 @@
+{/* Search Bar Section */}
+{/* <div className="flex items-center justify-center mb-8">
+    <section className="searchBar flex w-full max-w-xl justify-between items-center bg-gray-200 py-3 rounded-full px-4">
+        <FaSearch className="text-xl text-gray-600" />
+        <input type="text" className="bg-gray-200 w-full h-full outline-none text-gray-700 pl-2"
+            placeholder="Search for meals or restaurants..." />
+        <BsToggles2 className="text-xl text-gray-600" />
+    </section>
+</div> */}
+
+
+{/* Food Items Slider */}
+        {/* <section className="itemSlider flex gap-4 overflow-x-auto whitespace-nowrap scroll-smooth mb-8">
+          <FoodItem foodName="Burger" foodImage={burgerImage} />
+          <FoodItem foodName="Pizza" foodImage={burgerImage} />
+        </section> */}

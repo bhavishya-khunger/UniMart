@@ -34,14 +34,14 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   address: [{
-    spot : {
+    spot: {
       type: String,
     },
-    details : {
+    details: {
       type: String,
     }
   }],
-  cart : {
+  cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart',
   },
@@ -75,6 +75,25 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  isShopVerified: {
+    type: Boolean,
+    default: false,
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  referalCode: {
+    type: String,
+    unique: true,
+    default: function () {
+      return this.name.substring(0, 3).toUpperCase() + this.sid;
+    },
+  },
+  agreesToDeliver: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 // to compare hashed passwords

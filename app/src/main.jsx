@@ -16,6 +16,7 @@ import CartPage from "./pages/CartPage.jsx";
 import Restaurant from "./pages/Restaurant.jsx";
 import ShopForm from "./pages/ShopForm.jsx";
 import UserProtectRoute from "./pages/UserProtectRoute.jsx";
+import MenuShop from "./pages/MenuShop.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,6 +46,11 @@ const router = createBrowserRouter(
       <Route path="/:id" element={
         <UserProtectRoute>
           <Restaurant />
+        </UserProtectRoute>
+      } />
+      <Route path="/editmenu" element={
+        <UserProtectRoute>
+          <MenuShop />
         </UserProtectRoute>
       } />
     </>

@@ -54,7 +54,7 @@ const Restaurant = () => {
         <h1 className="text-xl font-bold mb-4">Snacks For You</h1>
         {items?.map((item) => {
           return (
-            <Item itemName={item?.itemName} itemDesc={item?.itemDesc} itemImage={item?.itemImage} isVeg={item?.veg} />
+            <Item options={true} itemName={item?.itemName} itemDesc={item?.itemDesc} itemImage={item?.itemImage} isVeg={item?.veg} />
           )
         })}
         <div className="w-full h-14"></div>

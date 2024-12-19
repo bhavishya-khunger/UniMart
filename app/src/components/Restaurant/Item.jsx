@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Item = ({ itemName, itemImage, isVeg, itemDesc }) => {
+const Item = ({ itemName, itemImage, isVeg, itemDesc, options }) => {
     const [quantity, setQuantity] = useState(0);
 
     const updateQuantity = (change) => {
@@ -27,23 +27,24 @@ const Item = ({ itemName, itemImage, isVeg, itemDesc }) => {
                     <img className='h-full w-24 rounded-xl' src={itemImage} alt="" />
                     {/* Order Quantity */}
                 </div>
-                <div className="flex items-center h-2/6">
-                    <button
-                        className="bg-gray-200 text-black px-2 border border-gary-200 rounded-l"
-                        onClick={() => updateQuantity(-1)}
-                    >
-                        -
-                    </button>
-                    <span className="w-8 text-center border-t border-b border-gray-200">
-                        {quantity}
-                    </span>
-                    <button
-                        className="bg-gray-200 border border-gray-200 text-black px-2 rounded-r"
-                        onClick={() => updateQuantity(1)}
-                    >
-                        +
-                    </button>
-                </div>
+                {options && (
+                    <div className="flex items-center h-2/6">
+                        <button
+                            className="bg-gray-200 text-black px-2 border border-gary-200 rounded-l"
+                            onClick={() => updateQuantity(-1)}
+                        >
+                            -
+                        </button>
+                        <span className="w-8 text-center border-t border-b border-gray-200">
+                            {quantity}
+                        </span>
+                        <button
+                            className="bg-gray-200 border border-gray-200 text-black px-2 rounded-r"
+                            onClick={() => updateQuantity(1)}
+                        >
+                            +
+                        </button>
+                    </div>)}
             </div>
         </div>
     )

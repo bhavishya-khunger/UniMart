@@ -3,7 +3,7 @@ import { FcCurrencyExchange } from "react-icons/fc";
 
 const Transaction = () => {
     return (
-        <div className='bg-white mt-3 py-3 px-4 rounded-xl w-full h-fit flex justify-between'>
+        <div className='bg-white border shadow-lg mt-3 py-3 px-4 rounded-xl w-full h-fit flex justify-between'>
             <div className='flex gap-4 items-center'>
                 <span className='border-black border rounded-full p-1'>
                     <FcCurrencyExchange size={35} />
