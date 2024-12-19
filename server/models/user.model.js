@@ -7,12 +7,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  shopName: {
-    type: String,
-    required: function () {
-      return this.role === 'Shopkeeper';
-    },
-  },
   account: {
     type: String,
     enum: ['Active', 'Deactivated', 'Suspended'],

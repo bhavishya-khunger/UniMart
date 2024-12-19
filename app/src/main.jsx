@@ -17,13 +17,16 @@ import Restaurant from "./pages/Restaurant.jsx";
 import ShopForm from "./pages/ShopForm.jsx";
 import UserProtectRoute from "./pages/UserProtectRoute.jsx";
 import MenuShop from "./pages/MenuShop.jsx";
+import ShopKeeperWrapper from "./pages/ShopKeeperWrapper.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={
         <UserProtectRoute>
-          <HomePage />
+          <ShopKeeperWrapper>
+            <HomePage />
+          </ShopKeeperWrapper>
         </UserProtectRoute>
       } />
       <Route path="/login" element={<Login />} />

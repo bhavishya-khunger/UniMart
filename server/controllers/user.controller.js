@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password, sid, role, shopName } = req.body;
+        const { name, email, password, sid, role } = req.body;
 
         // console.log(req.body);
         console.log(req.body);
@@ -42,8 +42,7 @@ export const registerUser = async (req, res) => {
             sid,
             password: hashedPass,
             email,
-            role,
-            shopName
+            role
         });
 
         // Save the user to the database

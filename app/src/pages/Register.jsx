@@ -11,7 +11,6 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [sid, setSID] = useState("");
   const [name, setName] = useState("");
-  const [shopname, setShopname] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -43,35 +42,33 @@ const Register = () => {
       return;
     }
 
+    if (!isShopkeeper && (!sid || sid.length !== 8)) {
+      setError("SID entered is invalid.");
+      return;
+    }
+
     try {
       setLoading(true);
       const userPayload = isShopkeeper
-        ? { email, password, name, shopName: shopname, role: "Shopkeeper" }
+        ? { email, password, name, role: "Shopkeeper" }
         : { email, password, sid, name, role: "Student" };
 
-      if (isShopkeeper && !shopname) {
-        setError("All fields are required.");
-        return;
-      }
-
-      if (!isShopkeeper && (!sid || sid.length !== 8)) {
-        setError(isShopkeeper ? "All fields are required." : "SID entered is invalid.");
-        return;
-      }
+      console.log("User Payload:", userPayload); // Log the payload to verify its contents
 
       const endpoint = `${import.meta.env.VITE_USER_BASE_URL}/register`;
       const res = await axios.post(endpoint, userPayload);
-      console.log(res);
+      console.log("Response:", res); // Log the response to verify the server's response
+
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
-      const time = new Date().getTime() + 1000 * 20 * 60; //20min
+      const time = new Date().getTime() + 1000 * 20 * 60; // 20min
       localStorage.setItem('expiryTime', time);
 
       // Redirect on success
       navigate("/");
     } catch (error) {
-      console.log(error?.response);
-      setError(error?.response?.data?.message || "Something went Wrong.");
+      console.log("Error Response:", error?.response); // Log the error response to debug the issue
+      setError(error?.response?.data?.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -88,9 +85,7 @@ const Register = () => {
       </header>
       <main>
         <InputVal value={name} onChange={(e) => setName(e.target.value)} fieldVal="Name" type="text" />
-        {isShopkeeper ? (
-          <InputVal value={shopname} onChange={(e) => setShopname(e.target.value)} fieldVal="Shop Name" type="text" />
-        ) : (
+        {isShopkeeper ? ("") : (
           <InputVal value={sid} onChange={(e) => setSID(e.target.value)} fieldVal="SID" type="text" />
         )}
         <InputVal value={email} onChange={(e) => setEmail(e.target.value)} fieldVal="Email ID" type="email" />

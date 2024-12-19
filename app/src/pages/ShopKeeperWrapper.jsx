@@ -1,24 +1,26 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const UserProtectRoute = ({ children }) => {
+const ShopKeeperWrapper = ({ children }) => {
   const navigate = useNavigate();
-  const isShopKeeper = JSON.parse(localStorage.getItem('user')).role === "Shopkeeper" ? true : false;
-  // work on this -> add a isShopSetup in user for shopkeepers, keep it false, once user sets up shop name and image, set it true and show his shop
-
-  if (new Date().getTime() > expiry) {
-    localStorage.removeItem('expiryTime');
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-  }
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const isShopVerified = user?.isShopVerified;
+  const isStudent = user?.role === 'Student';
 
   useEffect(() => {
-    if (!token) {
-      navigate('/login');
+    if (!user) {
+      navigate('/login'); // Redirect to login if user is not logged in
+      return;
     }
-  }, [token, navigate]); // Dependencies ensure navigation happens when `token` changes.
 
-  return token ? <>{children}</> : null; // Render children only if token exists.
+    if (isStudent) {
+      navigate('/');
+    } else if (!isShopVerified) {
+      navigate('/shopdetails');
+    }
+  }, [user, navigate]);
+
+  return <>{children}</>;
 };
 
-export default UserProtectRoute;
+export default ShopKeeperWrapper;
