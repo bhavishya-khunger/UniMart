@@ -17,6 +17,7 @@ import Restaurant from "./pages/Restaurant.jsx";
 import ShopForm from "./pages/ShopForm.jsx";
 import UserProtectRoute from "./pages/UserProtectRoute.jsx";
 import MenuShop from "./pages/MenuShop.jsx";
+import AddItemsForm from "./pages/AddItemsForm.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -53,6 +54,7 @@ const router = createBrowserRouter(
           <MenuShop />
         </UserProtectRoute>
       } />
+      <Route path="/addItems" element={<AddItemsForm/>}/>
     </>
   )
 );
