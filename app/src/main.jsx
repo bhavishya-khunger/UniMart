@@ -38,22 +38,30 @@ const router = createBrowserRouter(
       } />
       <Route path="/wallet" element={
         <UserProtectRoute>
-          <Wallet />
+          <ShopKeeperWrapper>
+            <Wallet />
+          </ShopKeeperWrapper>
         </UserProtectRoute>
       } />
       <Route path="/cart" element={
         <UserProtectRoute>
-          <CartPage />
+          <ShopKeeperWrapper>
+            <CartPage />
+          </ShopKeeperWrapper>
         </UserProtectRoute>
       } />
       <Route path="/:id" element={
         <UserProtectRoute>
-          <Restaurant />
+          <ShopKeeperWrapper>
+            <Restaurant />
+          </ShopKeeperWrapper>
         </UserProtectRoute>
       } />
       <Route path="/editmenu" element={
         <UserProtectRoute>
-          <MenuShop />
+          <ShopKeeperWrapper>
+            <MenuShop />
+          </ShopKeeperWrapper>
         </UserProtectRoute>
       } />
     </>
