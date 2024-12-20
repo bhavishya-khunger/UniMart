@@ -5,6 +5,7 @@ import Transaction from '../components/Wallet/Transaction';
 import axios from 'axios';
 
 const Wallet = () => {
+    const [transactions, setTransactions] = useState([]);
     const copyToClipboard = () => {
         navigator.clipboard.writeText(referalCode).then(() => {
             alert(`Referral code (${referalCode}) copied to clipboard!`);
@@ -14,6 +15,17 @@ const Wallet = () => {
     };
     const currUser = JSON.parse(localStorage.getItem('user'));
     const referalCode = currUser?.referalCode; // This should be fetched from the backend 
+
+    useEffect(() => {
+        try {
+            axios.get(`${import.meta.env.VITE_USER_BASE_URL}/transactions/${currUser?._id}`).then((res) => {
+                setTransactions(res.data.transactions);
+                console.log(res.data.transactions);
+            });
+        } catch (error) {   
+            console.error(error);
+        }
+    }, []);
 
     return (
         <>
@@ -50,8 +62,8 @@ const Wallet = () => {
                 <p className="mt-3 font-semibold text-lg">Recent Transactions</p>
                 <div className='bg-white'>
                     {currUser?.transactionHistory?.length === 0 && <p className="text-center mt-4 text-gray-400">No transactions yet!</p>}
-                    {currUser?.transactionHistory?.map((transaction, index) => (
-                        <Transaction key={index} transaction={transaction} />
+                    {transactions?.map((transaction, index) => (
+                        <Transaction key={index} date={transaction?.createdAt} value={transaction?.coinsEarned - transaction?.coinsSpent} />
                     ))}
                 </div>
                 <div className="h-20"></div>

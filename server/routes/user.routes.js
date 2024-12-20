@@ -8,7 +8,7 @@ router.post('/register', registerUser)
 router.post('/login', loginUser)
 router.get('/logout', logoutUser)
 router.get('/profile', protectRoute, getProfile)
-router.get('/transactions', protectRoute, getTransactionHistory)
+router.get('/transactions/:userId', getTransactionHistory)
 router.get('/orders', protectRoute, getOrderHistory)
 
 export default router;

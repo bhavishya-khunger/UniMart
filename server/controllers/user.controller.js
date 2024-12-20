@@ -146,19 +146,18 @@ export const getProfile = async (req, res) => {
     }
 }
 
-// TO BE UPDATED
 export const getTransactionHistory = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
 
         if (!userId) return res.status(400).json({ message: "User Not Found" });
 
-        const user = await User.findById(userId).select('-password');
+        const transactions = await User.findById(userId).select('-password').populate('transactionHistory');
 
-        if (!user) return res.status(400).json({ message: "User Not Found" });
+        if (!transactions) return res.status(400).json({ message: "No Transactions Yet" });
 
         return res.status(200).json({
-            transactions: user?.transactionHistory
+            transactions: transactions?.transactionHistory
         })
     } catch (error) {
         console.log(error);

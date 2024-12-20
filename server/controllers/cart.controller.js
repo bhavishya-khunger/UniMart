@@ -5,6 +5,7 @@ import Product from '../models/product.model.js';
 import bcrypt from 'bcrypt';
 import { log } from 'console';
 import Order from '../models/order.model.js';
+import Transaction from '../models/transaction.model.js';
 
 
 export const addToCart = async (req, res) => {
@@ -155,18 +156,34 @@ export const orderCart = async (req, res) => {
             return res.status(400).json({ message: "User ID is required." });
         }
 
-        const cart = await Cart.findOne({ userId });
+        const user = await User.findById(userId);
+
+        if (!user) return res.status(404).json({ message: "User not found." });
+
+        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const cartItems = cart.items.map(item => {
+            return {
+                item: item.productId,
+                totalPrice: item.total,
+            }
+        });
+
+        console.log("cartItems", cart);
 
         if (!cart) {
             return res.status(404).json({ message: "Cart not found." });
         }
+
+        if (user?.coins < cart?.totalPrice) return res.status(400).json({
+            message: "Current Balance: " + user?.coins + "pts"
+        });
 
         if (cart.items.length === 0) return res.status(400).json({ message: "Cart is empty." });
 
         // Create order from cart
         const order = new Order({
             userId,
-            productDetails: cart.items,
+            productDetails: cartItems,
         });
 
         await order.save();
@@ -178,7 +195,7 @@ export const orderCart = async (req, res) => {
 
         res.status(200).json({
             message: "Order placed successfully. Waiting for the acceptance!",
-            order,
+            order: order,
         });
     } catch (error) {
         console.error(error);
@@ -204,6 +221,88 @@ export const findAOrder = async (req, res) => {
             message: "Order found successfully.",
             order,
         });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const processOrder = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+
+        if (!orderId) {
+            return res.status(400).json({ message: "Order ID is required." });
+        }
+
+        const order = await Order.findById(orderId)
+            .populate('userId', '-password')
+            .populate('productDetails.item')
+            .populate('deliveryPersonId', '-password');
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found." });
+        }
+
+        for (let i = 0; i < order.productDetails.length; i++) {
+            const shopKeeper = await User.findById(order.productDetails[i].item.shopkeeperId);
+            const user = await User.findById(order.userId._id);
+            const deliveryPerson = await User.findById(order.deliveryPersonId._id);
+            const orderValue = order.productDetails[i].totalPrice;
+            const admin = await User.findOne({ role: 'Admin' });
+
+            const deliveryPersonEarning = Math.ceil(orderValue * 0.08);
+            const shopKeeperEarning = Math.ceil(orderValue * 0.87);
+            const adminEarning = orderValue - deliveryPersonEarning - shopKeeperEarning;
+
+            user.coins -= orderValue;
+            deliveryPerson.coins += deliveryPersonEarning;
+            shopKeeper.coins += shopKeeperEarning;
+            admin.coins += adminEarning;
+
+            const userTransaction = await new Transaction ({
+                userId: user._id,
+                coinsEarned: 0,
+                coinsSpent: orderValue,
+                orderId: order._id,
+            }).save();
+
+            const deliveryPersonTransaction = await new Transaction ({
+                userId: deliveryPerson._id,
+                coinsEarned: deliveryPersonEarning,
+                coinsSpent: 0,
+                orderId: order._id,
+            }).save();
+
+            const shopKeeperTransaction = await new Transaction ({
+                userId: shopKeeper._id,
+                coinsEarned: shopKeeperEarning,
+                coinsSpent: 0,
+                orderId: order._id,
+            }).save();
+
+            const adminTransaction = await new Transaction ({
+                userId: admin._id,
+                coinsEarned: adminEarning,
+                coinsSpent: 0,
+                orderId: order._id,
+            }).save();
+
+            user.transactionHistory.push(userTransaction);
+            deliveryPerson.transactionHistory.push(deliveryPersonTransaction);
+            shopKeeper.transactionHistory.push(shopKeeperTransaction);
+            admin.transactionHistory.push(adminTransaction);
+
+            await user.save();
+            await deliveryPerson.save();
+            await shopKeeper.save();
+            await admin.save();
+        } 
+        
+        return res.status(200).json({
+            message: "Order processed successfully.",
+            order,
+        })
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error." });

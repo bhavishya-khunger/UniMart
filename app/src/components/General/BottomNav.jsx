@@ -31,7 +31,7 @@ const BottomNav = () => {
                 </Link>
             )}
             {user?.role !== 'Admin' && (
-                <Link className="flex flex-col items-center text-gray-600 hover:text-orange-500">
+                <Link to={'/userpage'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
                     <AiOutlineUser className="text-2xl" />
                     <span className="text-sm">Profile</span>
                 </Link>

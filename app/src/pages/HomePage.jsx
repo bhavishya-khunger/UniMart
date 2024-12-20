@@ -23,7 +23,7 @@ function App() {
       }
     }
     getOrderDetails();
-  }, [activeOrder.orderStatus]);
+  }, [activeOrder?.orderStatus]);
   const user = JSON.parse(localStorage.getItem('user'));
 
 
@@ -51,7 +51,7 @@ function App() {
         </section>
 
         {/* Current Order Section */}
-        {(activeOrder?.orderStatus !== 'Pending' && activeOrder?.orderStatus !== 'Delivered') && (
+        {(activeOrder && activeOrder?.orderStatus !== 'Pending' && activeOrder?.orderStatus !== 'Delivered') && (
           <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border">
             <h2 className="bg-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
               Order : {activeOrder?.orderStatus}

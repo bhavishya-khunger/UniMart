@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const CartPage = () => {
   const currUser = JSON.parse(localStorage.getItem("user"));
   const [bill, setBill] = useState(true);
+  const [errorText, setErrorText] = useState("");
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
@@ -23,7 +24,8 @@ const CartPage = () => {
       console.log("Order placed:", response.data);
       navigate('/cart/order');
     } catch (error) {
-      console.error("Error placing order:", error.message);
+      console.error("Error placing order:", error);
+      setErrorText(error.response.data.message);
     }
   }
 
@@ -96,6 +98,13 @@ const CartPage = () => {
             <span className="text-gray-600">Delivery</span>
             <span className="text-gray-600">{(8 / 100) * totalPrice}</span>
           </div>
+
+          <div className="flex justify-center items-center">
+            {/* Error Pop */}
+            {errorText && <ErrorPop text={errorText} />}
+          </div>
+
+
 
           {/* <div className="flex justify-between items-center border-b py-2">
           <span className="text-gray-600">Discount</span>

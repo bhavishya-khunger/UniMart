@@ -6,12 +6,12 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  productDetails: [
-    {
+  productDetails: [{
+    item: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',
-    },
-  ],
+    }, totalPrice: Number
+  }],
   deliveryPersonId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
