@@ -14,6 +14,19 @@ const Restaurant = () => {
   const navigate = useNavigate();
   const currUser = JSON.parse(localStorage.getItem("user"));
 
+  const addToCart = async (productId) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/add`, {
+        userId: currUser._id,
+        productId,
+      });
+      console.log("Item added to cart:", response.data);
+      setCartItems(response.data.items);
+    } catch (error) {
+      console.error("Error adding item to cart:", error.message);
+    }
+  }
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -54,6 +67,7 @@ const Restaurant = () => {
             cartQty={
               cartItems?.find((cartItem) => cartItem.productId._id === item._id)?.quantity || 0
             }
+            onAddToCart={() => addToCart(item._id)}
             options={true}
             itemName={item?.productName}
             itemDesc={item?.desc}

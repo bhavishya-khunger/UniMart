@@ -6,11 +6,11 @@ const Item = ({RestaurantName, ItemName, ItemImg, ItemPrice, ItemQty}) => {
       <span className='h-full flex gap-2 items-center'>
       <img src={ItemImg} alt="" className='w-16 h-16' />
       <div className='flex flex-col'>
-        <p className='text-lg font-semibold'>{ItemName}</p>
+        <p className='font-semibold italic'>{ItemName}</p>
         <p className='text-sm'>{RestaurantName}</p>
       </div>
       </span>
-      <div className=''>₹{ItemPrice} &times; {ItemQty}</div>
+      <div className='text-sm'>₹{ItemPrice} &times; {ItemQty}</div>
     </div>
   )
 }
