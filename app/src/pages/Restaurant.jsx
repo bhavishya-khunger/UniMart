@@ -10,7 +10,7 @@ const Restaurant = () => {
   const [cartItems, setCartItems] = useState([]);
   const [shopName, setShopName] = useState("");
   const shopId = useParams().shopId;
-  console.log("Shop ID:", shopId);
+  // console.log("Shop ID:", shopId);
   const navigate = useNavigate();
   const currUser = JSON.parse(localStorage.getItem("user"));
 
@@ -80,13 +80,13 @@ const Restaurant = () => {
       </main>
 
       <footer className="fixed bottom-0 rounded-t-2xl w-full bg-white shadow-2xl shadow-black py-4 px-6 flex items-center justify-between">
-        <p className="font-semibold text-lg">{`${cartItems.length} items added`}</p>
+        <p className="font-semibold text-lg">{`${cartItems?.length} items added`}</p>
         <button
           id="menu"
           className="px-3 py-2 text-lg text-white bg-black rounded-lg flex items-center gap-2"
           onClick={(e) => {
             e.preventDefault();
-            navigate("/cart");
+            navigate("/cart", { state: { restaurantId: shopId } });
           }}
         >
           View Cart

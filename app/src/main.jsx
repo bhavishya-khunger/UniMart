@@ -21,6 +21,7 @@ import AddItemsForm from "./pages/AddItemsForm.jsx";
 import ShopKeeperWrapper from "./pages/ShopKeeperWrapper.jsx";
 import AdminInsights from "./pages/AdminInsights.jsx";
 import UserPage from "./pages/UserPage.jsx";
+import OrderConfirmScreen from "./pages/OrderConfirmScreen.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -76,6 +77,7 @@ const router = createBrowserRouter(
       } />
       <Route path="/addItems" element={<AddItemsForm/>}/>
       <Route path="/userpage" element={<UserPage/>}/>
+      <Route path="/cart/order" element={<OrderConfirmScreen/>}/>
     </>
   )
 );

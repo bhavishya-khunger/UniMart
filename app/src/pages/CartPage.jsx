@@ -5,12 +5,28 @@ import { FaArrowLeftLong, FaChevronUp } from "react-icons/fa6";
 import { FaChevronDown } from "react-icons/fa";
 import axios from "axios";
 import ErrorPop from "../components/General/ErrorPop";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const CartPage = () => {
   const currUser = JSON.parse(localStorage.getItem("user"));
   const [bill, setBill] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const restaurantId = location.state?.restaurantId;
+  const orderCart = async () => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order`, {
+        userId: currUser._id,
+      });
+      console.log("Order placed:", response.data);
+      navigate('/cart/order');
+    } catch (error) {
+      console.error("Error placing order:", error.message);
+    }
+  }
+
   useEffect(() => {
     const fetchCart = async () => {
       try {
@@ -28,6 +44,7 @@ const CartPage = () => {
     <div className="bg-gray-50 min-h-screen flex flex-col">
       <header className="flex justify-start gap-16 items-center py-4 px-6">
         <button
+          onClick={() => navigate(`/${restaurantId}`)}
           className="bg-white h-12 w-12 rounded-full border-2 border-white text-black text-2xl font-bold flex justify-center items-center hover:bg-gray-200"
         >
           <FaArrowLeftLong />
@@ -43,7 +60,7 @@ const CartPage = () => {
         {cartItems?.length !== 0 ? (<div className="w-full py-3 shadow-xl bg-white mt-3 rounded-xl ">
           {/* Item Component */}
           {cartItems.map((item) => (
-            <Item ItemImg={item?.productId?.productImg} ItemName={item?.productId?.productName} ItemPrice={item?.price} ItemQty={item?.quantity} RestaurantName={item?.productId?.shopName} />
+            <Item key={item?._id} ItemImg={item?.productId?.productImg} ItemName={item?.productId?.productName} ItemPrice={item?.price} ItemQty={item?.quantity} RestaurantName={item?.productId?.shopName} />
           ))}
         </div>) : ""}
 
@@ -93,6 +110,7 @@ const CartPage = () => {
           </div>
           <button
             disabled={totalPrice === 0}
+            onClick={orderCart}
             id="process"
             className="bg-[#FF4539] text-white w-full py-3 text-lg font-medium rounded-lg active:scale-95 disabled:bg-gray-300 disabled:active:scale-100"
           >

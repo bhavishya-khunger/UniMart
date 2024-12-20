@@ -8,27 +8,22 @@ const orderSchema = new mongoose.Schema({
   },
   productDetails: [
     {
-      name: { type: String, required: true },
-      quantity: { type: Number, required: true },
-      price: { type: Number, required: true },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
     },
   ],
-  shopkeeperId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  },
   deliveryPersonId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
   orderStatus: {
     type: String,
-    enum: ['Pending', 'Accepted', 'Completed', 'Delivered'],
+    enum: ['Pending', 'Accepted', 'Completed', 'Delivered', 'Cancelled'],
     default: 'Pending',
   },
   prePayment: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 }, { timestamps: true });
 

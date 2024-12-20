@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 function Restaurant({ restaurantId, restaurantImage, restaurantName, rating }) {
   const navigate = useNavigate();
   return (
-    <div onClick={() => navigate(`/${restaurantId}`)} className="bg-white shadow-lg w-full h-60 flex flex-col rounded-2xl overflow-hidden">
+    <div onClick={() => navigate(`/${restaurantId}` )} className="bg-white shadow-lg w-full h-60 flex flex-col rounded-2xl overflow-hidden">
       {/* Background image container */}
       <img
         className="h-[75%]"

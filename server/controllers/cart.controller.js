@@ -4,6 +4,7 @@ import Coupon from '../models/coupon.model.js';
 import Product from '../models/product.model.js';
 import bcrypt from 'bcrypt';
 import { log } from 'console';
+import Order from '../models/order.model.js';
 
 
 export const addToCart = async (req, res) => {
@@ -108,7 +109,7 @@ export const getCart = async (req, res) => {
             return res.status(400).json({ message: "User ID is required." });
         }
 
-        const cart = await Cart.findOne({ userId }).populate({path: 'items.productId', model: 'Product'});
+        const cart = await Cart.findOne({ userId }).populate({ path: 'items.productId', model: 'Product' });
 
         if (!cart) {
             return res.status(404).json({ message: "Cart not found." });
@@ -132,7 +133,7 @@ export const applyCoupon = async (req, res) => {
 
         const coupon = await Coupon.findOne({ code });
         if (!coupon) {
-            return res.status(400).json({message: "Invalid Coupon code"});
+            return res.status(400).json({ message: "Invalid Coupon code" });
         }
 
         const cart = await Cart.findById(cartId);
@@ -143,5 +144,68 @@ export const applyCoupon = async (req, res) => {
 
     } catch (error) {
         log(error);
+    }
+};
+
+export const orderCart = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required." });
+        }
+
+        const cart = await Cart.findOne({ userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found." });
+        }
+
+        if (cart.items.length === 0) return res.status(400).json({ message: "Cart is empty." });
+
+        // Create order from cart
+        const order = new Order({
+            userId,
+            productDetails: cart.items,
+        });
+
+        await order.save();
+
+        // Clear cart
+        cart.items = [];
+        cart.totalPrice = 0;
+        await cart.save();
+
+        res.status(200).json({
+            message: "Order placed successfully. Waiting for the acceptance!",
+            order,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const findAOrder = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required." });
+        }
+
+        const order = await Order.find({ userId });
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found." });
+        }
+
+        res.status(200).json({
+            message: "Order found successfully.",
+            order,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error." });
     }
 }

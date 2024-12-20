@@ -7,6 +7,7 @@ import { MdCall } from "react-icons/md";
 
 function App() {
   const [restaurants, setRestaurants] = useState([]);
+  const [activeOrder, setActiveOrder] = useState({});
   useEffect(() => {
     const getShops = async () => {
       const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
@@ -14,7 +15,15 @@ function App() {
       setRestaurants(response.data.shops);
     }
     getShops();
-  }, []);
+    const getOrderDetails = async () => {
+      const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/${JSON.parse(localStorage.getItem('user'))._id}`);
+      if (response.data.order) {
+        setActiveOrder(response.data.order[response.data.order.length - 1]);
+        console.log(response.data.order);
+      }
+    }
+    getOrderDetails();
+  }, [activeOrder.orderStatus]);
   const user = JSON.parse(localStorage.getItem('user'));
 
 
@@ -42,22 +51,28 @@ function App() {
         </section>
 
         {/* Current Order Section */}
-        {/* <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border">
-          <h2 className="bg-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">Live Order Tracking</h2>
-          <p className="italic mt-2">Your order from <b>Gyoza Cafe</b> of <b>Cheese Burger</b> will be delivered by 3:45pm (40 minutes from the order time)</p>
-          <div className="flex items-center justify-between px-3 w-full mt-3 h-fit py-2 rounded-xl bg-blue-100">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-400 text-white p-1 text-lg rounded-full h-10 w-10 flex items-center justify-center">B</span>
+        {(activeOrder?.orderStatus !== 'Pending' && activeOrder?.orderStatus !== 'Delivered') && (
+          <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border">
+            <h2 className="bg-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
+              Order : {activeOrder?.orderStatus}
+            </h2>
+            <p className="italic mt-2">
+              Your order from <b>Gyoza Cafe</b> of <b>Cheese Burger</b> will be delivered by 3:45pm (40 minutes from the order time)
+            </p>
+            <div className="flex items-center justify-between px-3 w-full mt-3 h-fit py-2 rounded-xl bg-blue-100">
+              <div className="flex items-center gap-3">
+                <span className="bg-red-400 text-white p-1 text-lg rounded-full h-10 w-10 flex items-center justify-center">B</span>
+                <span>
+                  <p className="text-lg font-semibold">Bhavishya Khunger</p>
+                  <p className="text-sm">SID: 23104071</p>
+                </span>
+              </div>
               <span>
-                <p className="text-lg font-semibold">Bhavishya Khunger</p>
-                <p className="text-sm">SID: 23104071</p>
+                <MdCall size={22} className="mr-2" />
               </span>
             </div>
-            <span>
-              <MdCall size={22} className="mr-2" />
-            </span>
-          </div>
-        </section> */}
+          </section>
+        )}
 
         {/* Recommended Section */}
         <section className="flex justify-between items-center mb-6 py-2 rounded-lg">
