@@ -29,7 +29,7 @@ export const getProductsForShopkeeper = async (req, res) => {
         }
 
         // Return products
-        res.status(200).json({ products });
+        res.status(200).json({ products, shopName: shop?.shopName });
     } catch (error) {
         console.error("Error fetching products for shopkeeper:", error);
         res.status(500).json({ message: "Internal server error." });

@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
-import { FaBell, FaSearch } from "react-icons/fa";
-import { BsToggles2 } from "react-icons/bs";
-import { AiFillHome, AiOutlineUser, AiOutlineWallet } from "react-icons/ai";
-import FoodItem from "../components/HomePage/FoodItem";
 import Restaurant from "../components/HomePage/Restaurant";
-import burgerImage from "../Images/HomePage/burger.png";
 import axios from 'axios'
-import { Link } from "react-router-dom";
 import BottomNav from "../components/General/BottomNav";
-import ErrorPop, { } from "../components/General/ErrorPop"
+import ErrorPop from "../components/General/ErrorPop"
+import { MdCall } from "react-icons/md";
 
 function App() {
   const [restaurants, setRestaurants] = useState([]);
@@ -25,7 +20,7 @@ function App() {
 
   return (
     <>
-      <div className={user.role === "Shopkeeper" ? "hidden" : "px-4 py-5 h-full"}> 
+      <div className={user.role === "Shopkeeper" ? "hidden" : "px-4 py-5 h-full"}>
         {/* Header Section */}
         <header className="flex justify-between items-center mb-8">
           <div className="heading">
@@ -45,6 +40,24 @@ function App() {
             className="h-56 w-full max-w-xl rounded-3xl"
           />
         </section>
+
+        {/* Current Order Section */}
+        {/* <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border">
+          <h2 className="bg-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">Live Order Tracking</h2>
+          <p className="italic mt-2">Your order from <b>Gyoza Cafe</b> of <b>Cheese Burger</b> will be delivered by 3:45pm (40 minutes from the order time)</p>
+          <div className="flex items-center justify-between px-3 w-full mt-3 h-fit py-2 rounded-xl bg-blue-100">
+            <div className="flex items-center gap-3">
+              <span className="bg-red-400 text-white p-1 text-lg rounded-full h-10 w-10 flex items-center justify-center">B</span>
+              <span>
+                <p className="text-lg font-semibold">Bhavishya Khunger</p>
+                <p className="text-sm">SID: 23104071</p>
+              </span>
+            </div>
+            <span>
+              <MdCall size={22} className="mr-2" />
+            </span>
+          </div>
+        </section> */}
 
         {/* Recommended Section */}
         <section className="flex justify-between items-center mb-6 py-2 rounded-lg">
@@ -70,9 +83,9 @@ function App() {
         </section>
         <div className="w-full h-20">
         </div>
-      <BottomNav /> 
+        <BottomNav />
       </div>
-      <div className={user.role === "Student" ? "hidden" : "px-4 py-5 h-full"}> 
+      <div className={user.role === "Student" ? "hidden" : "px-4 py-5 h-full"}>
         {/* Header Section */}
         <header className="flex justify-between items-center mb-8">
           <div className="heading">
@@ -99,7 +112,7 @@ function App() {
         </section>
         <div className="w-full h-20">
         </div>
-      <BottomNav /> 
+        <BottomNav />
       </div>
     </>
   );

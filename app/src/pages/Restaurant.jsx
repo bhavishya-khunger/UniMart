@@ -8,6 +8,7 @@ import axios from "axios";
 const Restaurant = () => {
   const [items, setItems] = useState([]);
   const [cartItems, setCartItems] = useState([]);
+  const [shopName, setShopName] = useState("");
   const shopId = useParams().shopId;
   console.log("Shop ID:", shopId);
   const navigate = useNavigate();
@@ -17,8 +18,9 @@ const Restaurant = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_PRODUCT_BASE_URL}/${shopId}`);
-        console.log("Products fetched:", response.data.products);
+        console.log("Products fetched:", response);
         setItems(response.data.products);
+        setShopName(response.data.shopName);
       } catch (error) {
         console.error("Error getting products:", error.message);
       }
@@ -40,7 +42,7 @@ const Restaurant = () => {
     <div className="flex flex-col min-h-screen text-gray-800">
       <header className="flex fixed w-full items-center justify-between gap-16 bg-white shadow-md p-4">
         <FaArrowLeftLong onClick={() => navigate("/")} size={22} />
-        <p className="text-xl font-bold text-black">Gyoza Cafe</p>
+        <p className="text-xl font-bold text-black">{shopName}</p>
         <IoIosMenu size={30} />
       </header>
 
@@ -49,18 +51,22 @@ const Restaurant = () => {
         {items?.map((item) => (
           <Item
             key={item._id}
+            cartQty={
+              cartItems?.find((cartItem) => cartItem.productId._id === item._id)?.quantity || 0
+            }
             options={true}
             itemName={item?.productName}
             itemDesc={item?.desc}
             itemImage={item?.productImg}
             isVeg={item?.isVeg}
+            itemPrice={item?.price}
           />
         ))}
         <div className="w-full h-14"></div>
       </main>
 
       <footer className="fixed bottom-0 rounded-t-2xl w-full bg-white shadow-2xl shadow-black py-4 px-6 flex items-center justify-between">
-        <p className="font-semibold text-lg">{`${cartItems?.length} items added`}</p>
+        <p className="font-semibold text-lg">{`${cartItems.length} items added`}</p>
         <button
           id="menu"
           className="px-3 py-2 text-lg text-white bg-black rounded-lg flex items-center gap-2"

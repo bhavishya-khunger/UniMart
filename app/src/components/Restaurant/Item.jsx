@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-const Item = ({ itemName, itemImage, isVeg, itemDesc, options }) => {
-    const [quantity, setQuantity] = useState(0);
+const Item = ({ cartQty, itemPrice, itemName, itemImage, isVeg, itemDesc, options }) => {
+    const [quantity, setQuantity] = useState(cartQty);
 
     const updateQuantity = (change) => {
         setQuantity((prev) => Math.max(0, prev + change));
@@ -18,9 +18,10 @@ const Item = ({ itemName, itemImage, isVeg, itemDesc, options }) => {
                         style={{ backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Non_veg_symbol.svg/2048px-Non_veg_symbol.svg.png')" }}
                     ></div>}
                 <h2 className="text-lg font-semibold mb-1">{itemName}</h2>
-                <p id="para1" className="text-xs italic text-gray-600 mb-4 w-48">
+                <p id="para1" className="text-xs italic text-gray-600 mb-1 w-48">
                     {itemDesc}
                 </p>
+                <p className='text-sm font-semibold italic'>Rs. {itemPrice}/-</p>
             </div>
             <div className='h-full flex flex-col items-center justify-center'>
                 <div className='h-4/6'>
