@@ -1,0 +1,111 @@
+*{
+    background-color: white;
+    
+}
+#top{
+    height:30px;
+    width:90%;
+    position: absolute;
+    top:30px;
+    left:180px;
+    right:10px;
+    color:rgb(13, 13, 12);
+    font-weight: 600;
+    font-size: xx-large;
+    
+    
+    
+}
+#arrow{
+    background-color: rgba(250, 250, 250, 0.8);
+    height:60px;
+    width: 60px;
+    border:2px solid rgba(250, 250, 250, 0.8);
+    border-radius: 50%;
+    position:absolute;
+    top:20px;
+    left:20px;
+    font-weight: 900;
+    font-size: xx-large;
+    color:black;
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+#box1{
+    height:200px;
+    width:35%;
+    color:black;
+    position: absolute;
+    padding: 3%;
+    top:20%;
+    left:5%;
+    margin-right: 5px;
+    background-color: rgba(221, 186, 172,0.5);
+    font-size: x-large;
+    font-weight: 600;
+    font-family: 'Times New Roman', Times, serif;
+    border-radius: 25px;
+}
+#box2{
+    height:200px;
+    width:35%;
+    color:black;
+    font-size: x-large;
+    font-weight: 600;
+    font-family: 'Times New Roman', Times, serif;
+    padding: 3%;
+    position: absolute;
+    top:20%;
+    left:55%;
+    background-color:  rgba(221, 186, 172,0.5);
+    border-radius: 25px;
+}
+#request{
+    height: 100px;
+    width:88%;
+    position: absolute;
+    left:5%;
+    right:10%;
+    top:57%;
+    color:black;
+    font-size: x-large;
+    padding:10px;
+    font-weight: 500;
+    font-family: 'Times New Roman', Times, serif;
+    background-color: rgba(221, 186, 172,0.5);
+   
+
+}
+#yes{
+    width:150px;
+    height:40px;
+    border:5px solid rgb(144, 211, 144);
+    border-radius: 15px;
+    background-color: rgb(144, 211, 144);
+    color:black;
+    font-size: x-large;
+    font-weight: 600;
+    font-family: 'Times New Roman', Times, serif;
+    margin-right:30px;
+    padding-bottom: 4px;
+    position:absolute;
+    top:55px;
+    left:10%;
+}
+#no{
+    width:150px;
+    height:40px;
+    border:5px solid rgb(225, 144, 144);
+    border-radius: 15px;
+    background-color: rgb(225, 144, 144);
+    color:black;
+    font-size: x-large;
+    font-weight: 600;
+    font-family: 'Times New Roman', Times, serif;
+    position:absolute;
+    top: 55px;
+    left:50%;
+    padding-bottom: 4px;
+
+}
