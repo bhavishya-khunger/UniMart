@@ -244,67 +244,79 @@ export const processOrder = async (req, res) => {
             return res.status(404).json({ message: "Order not found." });
         }
 
+        let totalOrderValue = 0;
+        let totalDeliveryPersonEarnings = 0;
+        let totalShopKeeperEarnings = 0;
+        let totalAdminEarnings = 0;
+
+        for (let i = 0; i < order.productDetails.length; i++) {
+            const orderValue = order.productDetails[i].totalPrice;
+            totalOrderValue += orderValue;
+            totalDeliveryPersonEarnings += Math.ceil(orderValue * 0.08);
+            totalShopKeeperEarnings += Math.ceil(orderValue * 0.87);
+        }
+
+        totalAdminEarnings = totalOrderValue - totalDeliveryPersonEarnings - totalShopKeeperEarnings;
+
+        const user = await User.findById(order.userId._id);
+        const deliveryPerson = await User.findById(order.deliveryPersonId._id);
+        const admin = await User.findOne({ role: 'Admin' });
+
+        user.coins -= totalOrderValue;
+        deliveryPerson.coins += totalDeliveryPersonEarnings;
+        admin.coins += totalAdminEarnings;
+
+        const userTransaction = await new Transaction({
+            userId: user._id,
+            coinsEarned: 0,
+            coinsSpent: totalOrderValue,
+            orderId: order._id,
+        }).save();
+
+        const deliveryPersonTransaction = await new Transaction({
+            userId: deliveryPerson._id,
+            coinsEarned: totalDeliveryPersonEarnings,
+            coinsSpent: 0,
+            orderId: order._id,
+        }).save();
+
         for (let i = 0; i < order.productDetails.length; i++) {
             const shopKeeper = await User.findById(order.productDetails[i].item.shopkeeperId);
-            const user = await User.findById(order.userId._id);
-            const deliveryPerson = await User.findById(order.deliveryPersonId._id);
-            const orderValue = order.productDetails[i].totalPrice;
-            const admin = await User.findOne({ role: 'Admin' });
+            const shopKeeperEarnings = Math.ceil(order.productDetails[i].totalPrice * 0.87);
+            shopKeeper.coins += shopKeeperEarnings;
 
-            const deliveryPersonEarning = Math.ceil(orderValue * 0.08);
-            const shopKeeperEarning = Math.ceil(orderValue * 0.87);
-            const adminEarning = orderValue - deliveryPersonEarning - shopKeeperEarning;
-
-            user.coins -= orderValue;
-            deliveryPerson.coins += deliveryPersonEarning;
-            shopKeeper.coins += shopKeeperEarning;
-            admin.coins += adminEarning;
-
-            const userTransaction = await new Transaction ({
-                userId: user._id,
-                coinsEarned: 0,
-                coinsSpent: orderValue,
-                orderId: order._id,
-            }).save();
-
-            const deliveryPersonTransaction = await new Transaction ({
-                userId: deliveryPerson._id,
-                coinsEarned: deliveryPersonEarning,
-                coinsSpent: 0,
-                orderId: order._id,
-            }).save();
-
-            const shopKeeperTransaction = await new Transaction ({
+            const shopKeeperTransaction = await new Transaction({
                 userId: shopKeeper._id,
-                coinsEarned: shopKeeperEarning,
+                coinsEarned: shopKeeperEarnings,
                 coinsSpent: 0,
                 orderId: order._id,
             }).save();
 
-            const adminTransaction = await new Transaction ({
-                userId: admin._id,
-                coinsEarned: adminEarning,
-                coinsSpent: 0,
-                orderId: order._id,
-            }).save();
-
-            user.transactionHistory.push(userTransaction);
-            deliveryPerson.transactionHistory.push(deliveryPersonTransaction);
             shopKeeper.transactionHistory.push(shopKeeperTransaction);
-            admin.transactionHistory.push(adminTransaction);
-
-            await user.save();
-            await deliveryPerson.save();
             await shopKeeper.save();
-            await admin.save();
-        } 
-        
+        }
+
+        const adminTransaction = await new Transaction({
+            userId: admin._id,
+            coinsEarned: totalAdminEarnings,
+            coinsSpent: 0,
+            orderId: order._id,
+        }).save();
+
+        user.transactionHistory.push(userTransaction);
+        deliveryPerson.transactionHistory.push(deliveryPersonTransaction);
+        admin.transactionHistory.push(adminTransaction);
+
+        await user.save();
+        await deliveryPerson.save();
+        await admin.save();
+
         return res.status(200).json({
             message: "Order processed successfully.",
             order,
-        })
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error." });
     }
-}
+};

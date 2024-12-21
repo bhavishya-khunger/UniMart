@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Item = ({ onAddToCart, cartQty, itemPrice, itemName, itemImage, isVeg, itemDesc, options }) => {
+const Item = ({ onAddToCart, onRemoveFromCart, cartQty, itemPrice, itemName, itemImage, isVeg, itemDesc, options }) => {
     const [quantity, setQuantity] = useState(cartQty);
 
     const updateQuantity = (change) => {
@@ -32,7 +32,10 @@ const Item = ({ onAddToCart, cartQty, itemPrice, itemName, itemImage, isVeg, ite
                     <div className="flex items-center h-2/6">
                         <button
                             className="bg-gray-200 text-black px-2 border border-gary-200 rounded-l"
-                            onClick={() => updateQuantity(-1)}
+                            onClick={() => {
+                                updateQuantity(-1);
+                                onRemoveFromCart();
+                            }}
                         >
                             -
                         </button>
