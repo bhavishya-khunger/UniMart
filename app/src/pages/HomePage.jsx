@@ -5,10 +5,14 @@ import BottomNav from "../components/General/BottomNav";
 import ErrorPop from "../components/General/ErrorPop"
 import { MdCall } from "react-icons/md";
 import { SocketContext } from '../context/SocketContext.jsx';
+import {useNavigate} from 'react-router-dom';
 
 function App() {
   const [restaurants, setRestaurants] = useState([]);
   const [activeOrder, setActiveOrder] = useState({});
+  const [shopOrders, setShopOrders] = useState([]);
+
+  const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     const getShops = async () => {
@@ -25,18 +29,38 @@ function App() {
       }
     }
     getOrderDetails();
+    const getShopOrders = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_USER_BASE_URL}/orders/${user?._id}`);
+        setShopOrders(res.data.orders);
+        console.log(res.data.orders);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getShopOrders();
   }, [activeOrder?.orderStatus]);
-  const user = JSON.parse(localStorage.getItem('user'));
+
+  const sortedOrders = [...shopOrders].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   const { socket } = useContext(SocketContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     socket.emit("join", { userId: user._id });
+    socket.on("order-accepted", () => {
+      if (user?.role === "Shopkeeper") {
+        navigate('/');
+      }
+    })
   }, [user]);
   console.log(activeOrder);
   return (
     <>
-      <div className={user.role === "Shopkeeper" ? "hidden" : "px-4 py-5 h-full"}>
+      {/* show this to student, hidden for ADMIN and SHOPKEEPER */}
+      <div className={user.role !== "Student" ? "hidden" : "px-4 py-5 h-full"}>
         {/* Header Section */}
         <header className="flex justify-between items-center mb-8">
           <div className="heading">
@@ -68,7 +92,7 @@ function App() {
             </p>
             <ol className="list-disc ml-6">
               {activeOrder?.productDetails?.map((item) => {
-                return <li className="font-semibold italic">{item?.totalPrice/item?.item?.price} x {item?.item?.productName}</li>
+                return <li className="font-semibold italic">{item?.totalPrice / item?.item?.price} x {item?.item?.productName}</li>
               })}
             </ol>
             <p className="italic mt-2">
@@ -118,7 +142,8 @@ function App() {
         </div>
         <BottomNav />
       </div>
-      <div className={user.role === "Student" ? "hidden" : "px-4 py-5 h-full"}>
+      {/* show this to shopkeeper, hidden for ADMIN and STUDENT */}
+      <div className={user.role !== "Shopkeeper" ? "hidden" : "px-4 py-5 h-full"}>
         {/* Header Section */}
         <header className="flex justify-between items-center mb-8">
           <div className="heading">
@@ -139,12 +164,126 @@ function App() {
           />
         </section>
 
-        {/* Recommended Section */}
+        {/* Live Order Section */}
         <section className="flex justify-between items-center mb-6 py-2 rounded-lg">
           <h2 className="text-xl font-semibold">{"Live Orders"}</h2>
         </section>
-        <div className="w-full h-20">
+        <div className="w-full">
+
+
+
+
+
+
+
+        <div className="max-w-7xl mx-auto p-4">
+      {sortedOrders.length ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedOrders.map((order) => {
+            // Filter items for the current shopkeeper
+            const filteredItems = order.productDetails.filter(
+              (product) => product.item.shopkeeperId === user._id
+            );
+
+            // Skip rendering if no matching items
+            if (filteredItems.length === 0) return null;
+
+            return (
+              <div
+                key={order._id}
+                className="border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition duration-200"
+              >
+                {/* Header */}
+                <div className="bg-gray-100 p-4 rounded-t-lg">
+                  <h5 className="text-lg font-semibold">Order ID: {order._id}</h5>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Status:{" "}
+                    <span className="text-green-600 font-medium">
+                      {order.orderStatus}
+                    </span>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Prepayment:{" "}
+                    <span
+                      className={`font-medium ${
+                        order.prePayment ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {order.prePayment ? "Yes" : "No"}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Products Section */}
+                <div className="p-4">
+                  <h6 className="text-md font-medium mb-2">Products:</h6>
+                  <ul className="space-y-2">
+                    {filteredItems.map((product, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center space-x-4 text-sm text-gray-700"
+                      >
+                        <img
+                          src={product.item.productImg}
+                          alt={product.item.productName}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium">{product.item.productName}</p>
+                          <p className="text-xs text-gray-500">
+                            {product.item.desc}
+                          </p>
+                        </div>
+                        <div>
+                          <p>Qty: {product.quantity}</p>
+                          <p>₹{product.totalPrice}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Footer */}
+                <div className="bg-gray-50 p-4 rounded-b-lg text-sm">
+                  <p className="mb-1">
+                    Delivery Person:{" "}
+                    <span className="font-medium text-gray-800">
+                      {order.deliveryPersonId?.name || "N/A"}
+                    </span>
+                  </p>
+                  <p>
+                    Contact:{" "}
+                    <span className="font-medium text-gray-800">
+                      {order.deliveryPersonId?.email || "N/A"}
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Created At:{" "}
+                    {new Date(order.createdAt).toLocaleString("en-US", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
+      ) : (
+        <p className="text-center text-gray-500">No orders available.</p>
+      )}
+    </div>
+
+
+
+
+
+
+
+
+
+        </div>
+        <div className="h-20 w-full"></div>
         <BottomNav />
       </div>
     </>

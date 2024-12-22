@@ -1,4 +1,6 @@
 import User from '../models/user.model.js';
+import Shop from '../models/shop.model.js';
+import Order from '../models/order.model.js';
 import bcrypt from 'bcrypt';
 
 export const registerUser = async (req, res) => {
@@ -164,21 +166,37 @@ export const getTransactionHistory = async (req, res) => {
     }
 }
 
-// To be UPDATED
-export const getOrderHistory = async (req, res) => {
+export const getOrdersForShop = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
 
-        if (!userId) return res.status(400).json({ message: "User Not Found" });
+        // Check if userId is provided
+        if (!userId) {
+            return res.status(400).json({ message: "User ID not provided." });
+        }
 
-        const user = await User.findById(userId).select('-password');
+        // Find the shop owned by the user
+        const shop = await Shop.findOne({ owner: userId });
 
-        if (!user) return res.status(400).json({ message: "User Not Found" });
+        // If no shop is found, return an error
+        if (!shop) {
+            return res.status(400).json({ message: "Shop not registered." });
+        }
 
+        // Find all orders with the status 'Accepted'
+        const allOrders = await Order.find({ orderStatus: "Accepted" }).populate("productDetails.item").populate("deliveryPersonId");
+
+        // Filter orders based on shopkeeperId
+        const shopOrders = allOrders.filter((order) =>
+            order.productDetails.some((productDetail) => productDetail.item.shopkeeperId.equals(shop.owner))
+        );
+
+        // Respond with the filtered orders
         return res.status(200).json({
-            orders: user?.orderHistory
-        })
+            orders: shopOrders,
+        });
     } catch (error) {
-        console.log(error);
+        console.error("Error in getOrdersForShop:", error);
+        return res.status(500).json({ message: "Internal server error." });
     }
-}
+};
