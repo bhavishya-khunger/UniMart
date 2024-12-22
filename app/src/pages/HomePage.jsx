@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Restaurant from "../components/HomePage/Restaurant";
 import axios from 'axios'
 import BottomNav from "../components/General/BottomNav";
 import ErrorPop from "../components/General/ErrorPop"
 import { MdCall } from "react-icons/md";
+import { SocketContext } from '../context/SocketContext.jsx';
 
 function App() {
   const [restaurants, setRestaurants] = useState([]);
   const [activeOrder, setActiveOrder] = useState({});
+
   useEffect(() => {
     const getShops = async () => {
       const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
@@ -26,7 +28,12 @@ function App() {
   }, [activeOrder?.orderStatus]);
   const user = JSON.parse(localStorage.getItem('user'));
 
+  const { socket } = useContext(SocketContext);
 
+  useEffect(() => {
+    socket.emit("join", { userId: user._id });
+  }, [user]);
+  console.log(activeOrder);
   return (
     <>
       <div className={user.role === "Shopkeeper" ? "hidden" : "px-4 py-5 h-full"}>
@@ -57,14 +64,25 @@ function App() {
               Order : {activeOrder?.orderStatus}
             </h2>
             <p className="italic mt-2">
-              Your order from <b>Gyoza Cafe</b> of <b>Cheese Burger</b> will be delivered by 3:45pm (40 minutes from the order time)
+              Your order of
+            </p>
+            <ol className="list-disc ml-6">
+              {activeOrder?.productDetails?.map((item) => {
+                return <li className="font-semibold italic">{item?.totalPrice/item?.item?.price} x {item?.item?.productName}</li>
+              })}
+            </ol>
+            <p className="italic mt-2">
+              is placed successfully.
+            </p>
+            <p className="italic mt-2">
+              Please contact {activeOrder?.deliveryPersonId?.name} for more details.
             </p>
             <div className="flex items-center justify-between px-3 w-full mt-3 h-fit py-2 rounded-xl bg-blue-100">
               <div className="flex items-center gap-3">
-                <span className="bg-red-400 text-white p-1 text-lg rounded-full h-10 w-10 flex items-center justify-center">B</span>
+                <span className="bg-red-400 text-white p-1 text-lg rounded-full h-10 w-10 flex items-center justify-center">{activeOrder?.deliveryPersonId?.name[0]}</span>
                 <span>
-                  <p className="text-lg font-semibold">Bhavishya Khunger</p>
-                  <p className="text-sm">SID: 23104071</p>
+                  <p className="text-lg font-semibold">{activeOrder?.deliveryPersonId?.name}</p>
+                  <p className="text-sm">SID: {activeOrder?.deliveryPersonId?.sid}</p>
                 </span>
               </div>
               <span>

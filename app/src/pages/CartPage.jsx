@@ -16,18 +16,32 @@ const CartPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const restaurantId = location.state?.restaurantId;
+
   const orderCart = async () => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order`, {
+      // Step 1: Place the order
+      const response1 = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order`, {
         userId: currUser._id,
       });
-      console.log("Order placed:", response.data);
+      console.log("Order placed:", response1.data);
+
+      // Step 2: Request the order (make sure this only happens once)
+      const response2 = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/request`, {
+        orderId: response1?.data?.order?._id,
+      });
+      await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/request`, {
+        orderId: response1?.data?.order?._id,
+      });
+      console.log("Request Sent:", response2.data);
+
+      // Now that the order has been successfully placed and requested, navigate to the next page
       navigate('/cart/order');
     } catch (error) {
       console.error("Error placing order:", error);
-      setErrorText(error.response.data.message);
+      setErrorText(error.response?.data?.message || "An error occurred while processing your order.");
     }
-  }
+  };
+
 
   useEffect(() => {
     const fetchCart = async () => {

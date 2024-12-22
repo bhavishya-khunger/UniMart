@@ -1,11 +1,13 @@
 import User from '../models/user.model.js';
 import Cart from '../models/cart.model.js';
+import Shop from '../models/shop.model.js';
 import Coupon from '../models/coupon.model.js';
 import Product from '../models/product.model.js';
 import bcrypt from 'bcrypt';
 import { log } from 'console';
 import Order from '../models/order.model.js';
 import Transaction from '../models/transaction.model.js';
+import { sendMessageToSocketId } from '../src/socket.js';
 
 
 export const addToCart = async (req, res) => {
@@ -211,7 +213,17 @@ export const findAOrder = async (req, res) => {
             return res.status(400).json({ message: "User ID is required." });
         }
 
-        const order = await Order.find({ userId });
+        const order = await Order.find({ userId })
+            .populate('userId', '-password')
+            .populate('productDetails.item')
+            .populate('deliveryPersonId')
+            .populate({
+                path: 'productDetails.item', // Populate the `item` field in `productDetails`
+                populate: {
+                    path: 'shopkeeperId', // Populate the `shopkeeperId` field within `Product`
+                    model: 'User', // Reference the Shopkeeper model
+                },
+            });
 
         if (!order) {
             return res.status(404).json({ message: "Order not found." });
@@ -236,13 +248,18 @@ export const processOrder = async (req, res) => {
         }
 
         const order = await Order.findById(orderId)
-            .populate('userId', '-password')
+            .populate('userId', '-password -address')
             .populate('productDetails.item')
             .populate('deliveryPersonId', '-password');
 
         if (!order) {
             return res.status(404).json({ message: "Order not found." });
         }
+
+        const hello = Array.isArray(order.userId.address);
+        console.log(hello);
+
+        console.log(order);
 
         let totalOrderValue = 0;
         let totalDeliveryPersonEarnings = 0;
@@ -313,10 +330,142 @@ export const processOrder = async (req, res) => {
 
         return res.status(200).json({
             message: "Order processed successfully.",
+            order
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const sendRequest = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+
+        if (!orderId) {
+            return res.status(400).json({ message: "No order ID provided." });
+        }
+
+        const order = await Order.findById(orderId)
+            .populate('userId', '-password')
+            .populate('productDetails.item')
+            .populate({
+                path: 'productDetails.item', // Populate the `item` field in `productDetails`
+                populate: {
+                    path: 'shopkeeperId', // Populate the `shopkeeperId` field within `Product`
+                    model: 'User', // Reference the Shopkeeper model
+                },
+            });
+
+        if (!order) {
+            return res.status(400).json({ message: "No order exists with this ID." });
+        }
+
+        if (order?.orderStatus !== "Pending") return res.status(400).json({ message: "Delivery Partner already assigned." });
+
+        // Use Promise.all to fetch all shops concurrently
+        const shops = await Promise.all(
+            order.productDetails.map(async (product) => {
+                if (product.item.shopkeeperId) {
+                    return await Shop.findOne({ owner: product.item.shopkeeperId }).select('shopName');
+                }
+                return null; // Handle cases where `shopkeeperId` is missing
+            })
+        );
+
+        let totalFee = 0;
+        order.productDetails.map((product) => {
+            totalFee += product?.totalPrice;
+        });
+
+        const deliveryFee = Math.ceil(0.08 * totalFee);
+
+        const users = await User.find({ agreesToDeliver: true }).select('-password');
+
+        const filteredUsers = users.filter(
+            (user) => user._id.toString() !== order.userId._id.toString()
+        );
+
+        // Send order and shops to the users via socket
+        filteredUsers.map((user) => {
+            sendMessageToSocketId(user.socketId, {
+                event: "order-request",
+                data: { order, shops, deliveryFee },
+            });
+        });
+
+        return res.status(200).json({
+            message: "Requests Sent to the users.",
+            filteredUsers,
             order,
+            shops,
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal server error." });
+        return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+};
+
+export const confirmOrder = async (req, res) => {
+    try {
+        const { orderId, userId } = req.body;
+
+        if (!orderId) return res.status(400).json({ message: "No order ID found." });
+
+        if (!userId) return res.status(400).json({ message: "No user ID found." });
+
+        const order = await Order.findById(orderId);
+
+        if (order.deliveryPersonId) {
+            return res.status(400).json({ message: "Delivery person already assigned." });
+        }
+
+        // Fetch the order details and update it
+        const updatedOrder = await Order.findByIdAndUpdate(
+            orderId,
+            { deliveryPersonId: userId, orderStatus: "Accepted" },
+            { new: true }
+        )
+            .populate('userId', '-password')
+            .populate('productDetails.item')
+            .populate({
+                path: 'productDetails.item', // Populate the `item` field in `productDetails`
+                populate: {
+                    path: 'shopkeeperId', // Populate the `shopkeeperId` field within `Product`
+                    model: 'User', // Reference the Shopkeeper model
+                },
+            });
+
+        if (!updatedOrder) return res.status(404).json({ message: "Order not found." });
+
+       
+
+        const deliveryPerson = await User.findById(userId).select('-password');
+
+        if (!deliveryPerson) {
+            return res.status(404).json({ message: "Delivery person not found." });
+        }
+
+        // Send message to the user who placed the order
+        sendMessageToSocketId(updatedOrder?.userId?.socketId, {
+            event: 'order-accepted',
+            data: { updatedOrder, deliveryPerson },
+        });
+
+        // Send message to all shopkeepers associated with the order
+        const shopkeeperIds = updatedOrder.productDetails.map(detail => detail.item.shopkeeperId);
+        for (const shopkeeper of shopkeeperIds) {
+            if (shopkeeper?.socketId) {
+                sendMessageToSocketId(shopkeeper.socketId, {
+                    event: 'order-accepted',
+                    data: { updatedOrder, deliveryPerson },
+                });
+            }
+        }
+
+        return res.status(200).json({ message: "Order confirmed and notifications sent." });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: err.message });
     }
 };

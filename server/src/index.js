@@ -9,6 +9,7 @@ import userRoutes from '../routes/user.routes.js';
 import productRoutes from '../routes/product.routes.js';
 import shopRoutes from '../routes/shop.routes.js';
 import cartRoutes from '../routes/cart.routes.js';
+import { initializeSocket } from './socket.js';
 
 dotenv.config();
 
@@ -19,7 +20,9 @@ const corsOptions = {
     credentials: true,
 };
 
-app.use(cors(corsOptions));
+initializeSocket(server);
+
+app.use(cors()); //remove cors options for PORT
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(cookieParser());

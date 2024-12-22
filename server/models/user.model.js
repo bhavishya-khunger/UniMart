@@ -7,6 +7,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  socketId: {
+    type: String,
+  },
   account: {
     type: String,
     enum: ['Active', 'Deactivated', 'Suspended'],
@@ -27,14 +30,15 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  address: [{
-    spot: {
-      type: String,
-    },
-    details: {
-      type: String,
-    }
-  }],
+  phone: {
+    type: Number,
+    minlength: 10,
+    maxlength: 10,
+  },
+  address: {
+    type: String,
+    default: "",
+  },
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart',

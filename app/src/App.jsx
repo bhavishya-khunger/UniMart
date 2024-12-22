@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Route, Routes } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react'
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import HomePage from "./pages/HomePage.jsx";
@@ -14,14 +14,22 @@ import ShopKeeperWrapper from "./pages/ShopKeeperWrapper.jsx";
 import AdminInsights from "./pages/AdminInsights.jsx";
 import UserPage from "./pages/UserPage.jsx";
 import OrderConfirmScreen from "./pages/OrderConfirmScreen.jsx";
-import LiveRequest from "./pages/LiveRequest.jsx";
-import DeliveryListener from './components/DeliveryListener.jsx';
+import { SocketContext } from './context/SocketContext.jsx';
+import LiveRequest from './pages/LiveRequest.jsx';
+
 
 const App = () => {
-  const [liveRequest, setLiveRequest] = useState(null);
+  const user = JSON.parse(localStorage.getItem('user'));
+  const navigate = useNavigate();
+  const { socket } = useContext(SocketContext);
+  useEffect(() => {
+    socket.emit("join", { userId: user?._id });
+    socket.on("order-request", () => {
+      navigate('/liverequest');
+    })
+  }, [user])
   return (
     <div className='h-full w-full flex flex-col'>
-      <DeliveryListener setLiveRequest={setLiveRequest} />
       <Routes>
         <Route path="/" element={
           <UserProtectRoute>
@@ -75,8 +83,7 @@ const App = () => {
         <Route path="/addItems" element={<AddItemsForm />} />
         <Route path="/userpage" element={<UserPage />} />
         <Route path="/cart/order" element={<OrderConfirmScreen />} />
-        <Route path="/liverequest" element={<LiveRequest liveRequest={liveRequest} setLiveRequest={setLiveRequest} />} />
-        {/* Other Routes */}
+        <Route path="/liverequest" element={<LiveRequest />} />
       </Routes>
     </div>
   )
