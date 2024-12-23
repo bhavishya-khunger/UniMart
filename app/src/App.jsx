@@ -16,6 +16,7 @@ import UserPage from "./pages/UserPage.jsx";
 import OrderConfirmScreen from "./pages/OrderConfirmScreen.jsx";
 import { SocketContext } from './context/SocketContext.jsx';
 import LiveRequest from './pages/LiveRequest.jsx';
+import UserProfile from './pages/UserProfile.jsx';
 
 
 const App = () => {
@@ -82,6 +83,7 @@ const App = () => {
         } />
         <Route path="/addItems" element={<AddItemsForm />} />
         <Route path="/userpage" element={<UserPage />} />
+        <Route path="/userpage/profile" element={<UserProfile />} />
         <Route path="/cart/order" element={<OrderConfirmScreen />} />
         <Route path="/liverequest" element={<LiveRequest />} />
       </Routes>

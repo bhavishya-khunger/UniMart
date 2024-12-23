@@ -16,13 +16,17 @@ const Wallet = () => {
     const currUser = JSON.parse(localStorage.getItem('user'));
     const referalCode = currUser?.referalCode; // This should be fetched from the backend 
 
+    const sortedTransactions = [...transactions].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
     useEffect(() => {
         try {
             axios.get(`${import.meta.env.VITE_USER_BASE_URL}/transactions/${currUser?._id}`).then((res) => {
                 setTransactions(res.data.transactions);
                 console.log(res.data.transactions);
             });
-        } catch (error) {   
+        } catch (error) {
             console.error(error);
         }
     }, []);
@@ -62,7 +66,7 @@ const Wallet = () => {
                 <p className="mt-3 font-semibold text-lg">Recent Transactions</p>
                 <div className='bg-white'>
                     {currUser?.transactionHistory?.length === 0 && <p className="text-center mt-4 text-gray-400">No transactions yet!</p>}
-                    {transactions?.map((transaction, index) => (
+                    {sortedTransactions?.map((transaction, index) => (
                         <Transaction key={index} date={transaction?.createdAt} value={transaction?.coinsEarned - transaction?.coinsSpent} />
                     ))}
                 </div>

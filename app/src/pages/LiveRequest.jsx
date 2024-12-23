@@ -35,7 +35,7 @@ const LiveRequest = () => {
         // Cleanup listeners when component unmounts or socket changes
         return () => {
             socket.off("order-request");
-            socket.off("ride-confirmed");
+            socket.off("order-accepted");
         };
     }, [socket]);
 
@@ -50,6 +50,7 @@ const LiveRequest = () => {
                 }
             );
             console.log('Order accepted:', response.data);
+            localStorage.setItem("order-for-delivery", JSON.stringify(response.data.updatedOrder));
             const res = socket.emit("order-confirmed");
             console.log("RESPONSE: ", res);
             navigate('/');

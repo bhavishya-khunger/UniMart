@@ -256,11 +256,6 @@ export const processOrder = async (req, res) => {
             return res.status(404).json({ message: "Order not found." });
         }
 
-        const hello = Array.isArray(order.userId.address);
-        console.log(hello);
-
-        console.log(order);
-
         let totalOrderValue = 0;
         let totalDeliveryPersonEarnings = 0;
         let totalShopKeeperEarnings = 0;
@@ -274,7 +269,7 @@ export const processOrder = async (req, res) => {
         }
 
         totalAdminEarnings = totalOrderValue - totalDeliveryPersonEarnings - totalShopKeeperEarnings;
-
+        console.log("ADMIN EARNINGS ARE ", totalAdminEarnings);
         const user = await User.findById(order.userId._id);
         const deliveryPerson = await User.findById(order.deliveryPersonId._id);
         const admin = await User.findOne({ role: 'Admin' });
@@ -330,7 +325,7 @@ export const processOrder = async (req, res) => {
 
         return res.status(200).json({
             message: "Order processed successfully.",
-            order
+            order: await Order.findById(orderId)
         });
     } catch (error) {
         console.log(error);
@@ -463,7 +458,7 @@ export const confirmOrder = async (req, res) => {
             }
         }
 
-        return res.status(200).json({ message: "Order confirmed and notifications sent." });
+        return res.status(200).json({ message: "Order confirmed and notifications sent.", updatedOrder });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ message: err.message });

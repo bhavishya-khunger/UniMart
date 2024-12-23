@@ -200,3 +200,40 @@ export const getOrdersForShop = async (req, res) => {
         return res.status(500).json({ message: "Internal server error." });
     }
 };
+
+export const startAcceptingOrders = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const user = await User.findById(userId);
+        user.agreesToDeliver = !user.agreesToDeliver;
+        await user.save();
+        return res.status(200).json({
+            message: "User Updated.",
+            user: await User.findById(userId).select('-password')
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export const editProfile = async (req, res) => {
+    try {
+        const {userId, address, phone} = req.body;
+
+        if (!userId) return res.status(400).json({
+            message: "User ID is required.",
+        });
+
+        const user = await User.findByIdAndUpdate(userId, {address: address, phone: phone});
+
+        await user.save();
+
+        return res.status(200).json({
+            message: "User saved!",
+            user: await User.findById(userId).select('-password'),
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
