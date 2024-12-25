@@ -5,6 +5,10 @@ const shopSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
     shopImage: {
         type: String,
         required: true,

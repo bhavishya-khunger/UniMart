@@ -176,7 +176,7 @@ export const orderCart = async (req, res) => {
             return res.status(404).json({ message: "Cart not found." });
         }
 
-        if (user?.coins < cart?.totalPrice) return res.status(400).json({
+        if (user?.coins < 1.13*(cart?.totalPrice)) return res.status(400).json({
             message: "Current Balance: " + user?.coins + "pts"
         });
 
@@ -283,6 +283,7 @@ export const processOrder = async (req, res) => {
             coinsEarned: 0,
             coinsSpent: totalOrderValue,
             orderId: order._id,
+            title: "Order Debit"
         }).save();
 
         const deliveryPersonTransaction = await new Transaction({
@@ -290,6 +291,7 @@ export const processOrder = async (req, res) => {
             coinsEarned: totalDeliveryPersonEarnings,
             coinsSpent: 0,
             orderId: order._id,
+            title: "Delivery Credit"
         }).save();
 
         for (let i = 0; i < order.productDetails.length; i++) {
@@ -302,6 +304,7 @@ export const processOrder = async (req, res) => {
                 coinsEarned: shopKeeperEarnings,
                 coinsSpent: 0,
                 orderId: order._id,
+                title: "Order Credit"
             }).save();
 
             shopKeeper.transactionHistory.push(shopKeeperTransaction);
@@ -313,6 +316,7 @@ export const processOrder = async (req, res) => {
             coinsEarned: totalAdminEarnings,
             coinsSpent: 0,
             orderId: order._id,
+            title: "Order Commission"
         }).save();
 
         user.transactionHistory.push(userTransaction);

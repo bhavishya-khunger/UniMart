@@ -26,7 +26,7 @@ function UserProfile() {
       navigate('/userpage');
     } catch (error) {
       console.log(error);
-      setError("An error occurred while saving your profile.");
+      setError(error.response.data);
     } finally {
       setLoading(false);
     }

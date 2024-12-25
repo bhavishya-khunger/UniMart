@@ -1,7 +1,7 @@
 import React from 'react'
 import { FcCurrencyExchange } from "react-icons/fc";
 
-const Transaction = ({value, date}) => {
+const Transaction = ({value, date, title}) => {
     const currUser = JSON.parse(localStorage.getItem('user'));
     const role = currUser?.role; 
     function formatDate(dateString) {
@@ -40,10 +40,7 @@ const Transaction = ({value, date}) => {
                     <FcCurrencyExchange size={35} />
                 </span>
                 <div className='text-white flex flex-col justify-center'>
-                    {/* Student Hai */}
-                    {(role === 'Student' && value > 0) ? <span>Delivery Credit</span> : <span>Order {value > 0 ? 'Credit' : 'Debit'}</span>}
-                    {/* <span>Order {value > 0 ? "Credit" : "Debit"}</span> */}
-
+                    <span>{title}</span>
                     <span className='text-xs'>{formatDate(date)}</span>
                 </div>
             </div>

@@ -3,7 +3,7 @@ import Restaurant from "../components/HomePage/Restaurant";
 import axios from 'axios'
 import BottomNav from "../components/General/BottomNav";
 import ErrorPop from "../components/General/ErrorPop"
-import { MdCall } from "react-icons/md";
+import { MdCall, MdDone } from "react-icons/md";
 import { SocketContext } from '../context/SocketContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
@@ -298,7 +298,7 @@ function App() {
                         <p>
                           Contact:{" "}
                           <span className="font-medium text-gray-800">
-                            {order.deliveryPersonId?.email || "N/A"}
+                            {order.deliveryPersonId?.phone || "N/A"}
                           </span>
                         </p>
                         <p className="text-xs text-gray-500">
@@ -308,6 +308,8 @@ function App() {
                             timeStyle: "short",
                           })}
                         </p>
+                        <button className="bg-green-600 py-3 flex items-center text-base w-full justify-center gap-3 text-white px-2 rounded-full mt-3 active:scale-95">
+                          <MdDone size={22}/> Mark as Complete</button>
                       </div>
                     </div>
                   );

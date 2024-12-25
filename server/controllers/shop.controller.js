@@ -3,7 +3,7 @@ import User from "../models/user.model.js";
 
 export const getAllShops = async (req, res) => {
     try {
-        const shops = await Shop.find({});
+        const shops = await Shop.find({ verified: true });
 
         if (!shops) return res.status(400).json({
             message: "No Shops Found Near You."
@@ -57,3 +57,18 @@ export const createShop = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 };
+
+export const getUnverifiedShops = async (req, res) => {
+    try {
+        const shops = await Shop.find({ verified: false }).populate("owner");
+
+        if (!shops) return res.status(400).json({
+            message: "Can't find any recent shop registrations."
+        })
+        return res.status(200).json({
+            shops
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}

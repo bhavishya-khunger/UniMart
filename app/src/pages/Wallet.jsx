@@ -56,7 +56,7 @@ const Wallet = () => {
                     <div className="mt-5 border border-gray-200 shadow-lg rounded-xl bg-white h-fit w-full px-3 py-4 flex flex-col items-center">
                         <p>Your Unique referal code is</p>
                         <p className='text-xl font-mono'>{referalCode}</p>
-                        <p className='text-center text-sm italic'>Share the code with your friends and earn 20 coins!</p>
+                        <p className='text-center text-sm italic'>Share the code with your friends and earn 30 points!</p>
                         <button onClick={copyToClipboard} className="mt-2 flex justify-center gap-3 self-center py-2 w-full rounded-xl items-center text-white bg-[#FF4539] active:scale-95">
                             {/* #FF4539 - use this when u change */}
                             <BsCopy />Copy Invite Code
@@ -67,7 +67,7 @@ const Wallet = () => {
                 <div className='bg-white'>
                     {currUser?.transactionHistory?.length === 0 && <p className="text-center mt-4 text-gray-400">No transactions yet!</p>}
                     {sortedTransactions?.map((transaction, index) => (
-                        <Transaction key={index} date={transaction?.createdAt} value={transaction?.coinsEarned - transaction?.coinsSpent} />
+                        <Transaction key={index} title={transaction?.title} date={transaction?.createdAt} value={transaction?.coinsEarned - transaction?.coinsSpent} />
                     ))}
                 </div>
                 <div className="h-20"></div>

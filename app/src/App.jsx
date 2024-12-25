@@ -81,6 +81,13 @@ const App = () => {
             </ShopKeeperWrapper>
           </UserProtectRoute>
         } />
+        <Route path="/editmenu/add" element={
+          <UserProtectRoute>
+            <ShopKeeperWrapper>
+              <AddItemsForm />
+            </ShopKeeperWrapper>
+          </UserProtectRoute>
+        } />
         <Route path="/addItems" element={<AddItemsForm />} />
         <Route path="/userpage" element={<UserPage />} />
         <Route path="/userpage/profile" element={<UserProfile />} />
