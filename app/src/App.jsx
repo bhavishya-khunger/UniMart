@@ -17,6 +17,7 @@ import OrderConfirmScreen from "./pages/OrderConfirmScreen.jsx";
 import { SocketContext } from './context/SocketContext.jsx';
 import LiveRequest from './pages/LiveRequest.jsx';
 import UserProfile from './pages/UserProfile.jsx';
+import PdfUpload from './pages/PdfUpload.jsx';
 
 
 const App = () => {
@@ -67,6 +68,7 @@ const App = () => {
             </ShopKeeperWrapper>
           </UserProtectRoute>
         } />
+        <Route path = "/pdfpage" element = {<PdfUpload/>} />
         <Route path="/:shopId" element={
           <UserProtectRoute>
             <ShopKeeperWrapper>
@@ -86,6 +88,7 @@ const App = () => {
         <Route path="/userpage/profile" element={<UserProfile />} />
         <Route path="/cart/order" element={<OrderConfirmScreen />} />
         <Route path="/liverequest" element={<LiveRequest />} />
+        <Route path='/pdf' element={<PdfUpload/>}/>
       </Routes>
     </div>
   )
