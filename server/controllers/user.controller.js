@@ -196,33 +196,34 @@ export const getOrdersForShop = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        // Check if userId is provided
         if (!userId) {
             return res.status(400).json({ message: "User ID not provided." });
         }
 
-        // Find the shop owned by the user
         const shop = await Shop.findOne({ owner: userId });
 
-        // If no shop is found, return an error
         if (!shop) {
             return res.status(400).json({ message: "Shop not registered." });
         }
 
-        // Find all orders with the status 'Accepted'
-        const allOrders = await Order.find({ orderStatus: "Accepted" }).populate("productDetails.item").populate("deliveryPersonId");
+        const allOrders = await Order.find({
+            orderStatus: { $in: ['Completed', 'Accepted'] }
+        })
+        .populate("productDetails.item")
+        .populate("deliveryPersonId");
 
-        // Filter orders based on shopkeeperId
         const shopOrders = allOrders.filter((order) =>
-            order.productDetails.some((productDetail) => productDetail.item.shopkeeperId.equals(shop.owner))
+            Array.isArray(order.productDetails) &&
+            order.productDetails.some((productDetail) =>
+                productDetail?.item?.shopkeeperId?.toString() === shop.owner.toString()
+            )
         );
 
-        // Respond with the filtered orders
         return res.status(200).json({
             orders: shopOrders,
         });
     } catch (error) {
-        console.error("Error in getOrdersForShop:", error);
+        console.error("Error in getOrdersForShop:", error.message, error.stack);
         return res.status(500).json({ message: "Internal server error." });
     }
 };

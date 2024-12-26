@@ -4,6 +4,7 @@ import additems from "../assets/additems.webp";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ErrorPop from '../components/General/ErrorPop';
+import { FaArrowLeftLong } from 'react-icons/fa6';
 
 function AddItemsForm() {
   const navigate = useNavigate();
@@ -40,6 +41,14 @@ function AddItemsForm() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-start">
+      <div className='w-full fixed px-3'>
+        <button
+          onClick={() => navigate("/editmenu")}
+          className="bg-white h-12 w-12 rounded-full border-2 border-white text-black text-2xl font-bold flex justify-center items-center"
+        >
+          <FaArrowLeftLong />
+        </button>
+      </div>
       <img src={additems} alt="error" className='w-40 mt-3' />
       <header className="flex flex-col items-center justify-center">
         <h1 className="font-bold text-2xl mt-2 text-center mb-3">

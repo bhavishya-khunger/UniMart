@@ -18,7 +18,7 @@ export const addToCart = async (req, res) => {
             return res.status(400).json({ message: "User ID and Product ID are required." });
         }
 
-        const product = await Product.findById(productId);
+        const product = await Product.findById(productId).populate('shopkeeperId');
         if (!product) {
             return res.status(404).json({ message: "Product not found." });
         }
@@ -27,6 +27,12 @@ export const addToCart = async (req, res) => {
 
         if (!cart) {
             cart = new Cart({ userId, items: [], totalPrice: 0 });
+        } else {
+            // Check if the cart already contains items from a different shop
+            const existingShopId = cart.items.length > 0 ? cart.items[0].productId.shopkeeperId : null;
+            if (existingShopId && existingShopId.toString() !== product.shopkeeperId._id.toString()) {
+                return res.status(400).json({ message: "You can only add items from the same shop." });
+            }
         }
 
         const existingItem = cart.items.find(item => item.productId.toString() === productId);
@@ -163,6 +169,17 @@ export const orderCart = async (req, res) => {
         if (!user) return res.status(404).json({ message: "User not found." });
 
         const cart = await Cart.findOne({ userId }).populate('items.productId');
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found." });
+        }
+
+        // Ensure all items in the cart belong to the same shop
+        const shopIds = cart.items.map(item => item.productId.shopkeeperId.toString());
+        const uniqueShopIds = [...new Set(shopIds)];
+        if (uniqueShopIds.length > 1) {
+            return res.status(400).json({ message: "All items in the cart must belong to the same shop." });
+        }
+
         const cartItems = cart.items.map(item => {
             return {
                 item: item.productId,
@@ -170,13 +187,7 @@ export const orderCart = async (req, res) => {
             }
         });
 
-        console.log("cartItems", cart);
-
-        if (!cart) {
-            return res.status(404).json({ message: "Cart not found." });
-        }
-
-        if (user?.coins < 1.13*(cart?.totalPrice)) return res.status(400).json({
+        if (user?.coins < 1.13 * (cart?.totalPrice)) return res.status(400).json({
             message: "Current Balance: " + user?.coins + "pts"
         });
 
@@ -203,7 +214,7 @@ export const orderCart = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Internal server error." });
     }
-}
+};
 
 export const findAOrder = async (req, res) => {
     try {
@@ -437,7 +448,7 @@ export const confirmOrder = async (req, res) => {
 
         if (!updatedOrder) return res.status(404).json({ message: "Order not found." });
 
-       
+
 
         const deliveryPerson = await User.findById(userId).select('-password');
 
@@ -466,5 +477,137 @@ export const confirmOrder = async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json({ message: err.message });
+    }
+};
+
+export const cancelOrder = async (req, res) => {
+    try {
+        const { orderId, shopkeeperId } = req.body;
+
+        if (!orderId) return res.status(400).json({ message: "Order ID not found." });
+        if (!shopkeeperId) return res.status(400).json({ message: "Shopkeeper ID not found." });
+
+        const order = await Order.findById(orderId).populate('productDetails.item');
+
+        if (!order) return res.status(400).json({ message: "Order not found." });
+
+        // Verify that the request is being sent by the shopkeeper from whose shop the order is placed
+        const isAuthorized = order.productDetails.some(detail => detail.item.shopkeeperId.toString() === shopkeeperId);
+        if (!isAuthorized) return res.status(403).json({ message: "You are not authorized to cancel this order." });
+
+        order.orderStatus = "Cancelled";
+        await order.save();
+
+        res.status(200).json({ message: "Order cancelled successfully.", order });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const markOrderForPickup = async (req, res) => {
+    try {
+        const { orderId, shopkeeperId } = req.body;
+
+        if (!orderId) return res.status(400).json({ message: "Order ID is required." });
+        if (!shopkeeperId) return res.status(400).json({ message: "Shopkeeper ID is required." });
+
+        const order = await Order.findById(orderId).populate('productDetails.item');
+
+        if (!order) return res.status(404).json({ message: "Order not found." });
+
+        const isAuthorized = order.productDetails.some(detail => detail.item.shopkeeperId.toString() === shopkeeperId);
+        if (!isAuthorized) return res.status(403).json({ message: "You are not authorized to mark this order for pickup." });
+
+        if (order.orderStatus === "Completed") return res.status(400).json({ message: "Order already marked as Completed!" });
+
+        order.orderStatus = "Completed";
+        await order.save();
+
+        const shop = await Shop.findOne({ owner: shopkeeperId }).select('shopName');
+        const shopName = shop ? shop.shopName : 'Unknown Shop';
+
+        if (order.deliveryPersonId && order.deliveryPersonId.socketId) {
+            sendMessageToSocketId(order.deliveryPersonId.socketId, {
+                event: 'order-ready-for-pickup',
+                data: { order, shopName },
+            });
+        }
+
+        res.status(200).json({ message: "Order marked as prepared for pickup.", order });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const markOrderOutForDelivery = async (req, res) => {
+    try {
+        const { orderId, deliveryPersonId } = req.body;
+
+        if (!orderId) return res.status(400).json({ message: "Order ID is required." });
+        if (!deliveryPersonId) return res.status(400).json({ message: "Delivery Person ID is required." });
+
+        const order = await Order.findById(orderId).populate('productDetails.item');
+
+        if (!order) return res.status(404).json({ message: "Order not found." });
+
+        if (order.deliveryPersonId.toString() !== deliveryPersonId) {
+            return res.status(403).json({ message: "You are not authorized to update this order." });
+        }
+
+        if (order.orderStatus !== "Completed") {
+            return res.status(400).json({ message: "Order is not in a state that can be marked as out for delivery." });
+        }
+
+        order.orderStatus = "Out for Delivery";
+        await order.save();
+
+        // Notify the user who placed the order
+        sendMessageToSocketId(order.userId.socketId, {
+            event: 'order-out-for-delivery',
+            data: { order },
+        });
+
+        res.status(200).json({ message: "Order status updated to Out for Delivery.", order });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const getActiveOrdersByDeliveryPerson = async (req, res) => {
+    try {
+        const { deliveryPersonId } = req.params;
+
+        if (!deliveryPersonId) {
+            return res.status(400).json({ message: "Delivery Person ID is required." });
+        }
+
+        const orders = await Order.find({
+            deliveryPersonId,
+            orderStatus: { $in: ["Accepted", "Out for Delivery", "Completed"] }
+        })
+        .populate('userId', '-password')
+        .populate('productDetails.item')
+        .populate({
+            path: 'productDetails.item',
+            populate: {
+                path: 'shopkeeperId',
+                model: 'User',
+            },
+        });
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ message: "No active orders found for this delivery person." });
+        }
+
+        res.status(200).json({
+            message: "Active orders found successfully.",
+            orders,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error." });
     }
 };

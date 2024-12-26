@@ -22,7 +22,7 @@ const corsOptions = {
 
 initializeSocket(server);
 
-app.use(cors(corsOptions)); //remove cors options for PORT
+app.use(cors()); //remove cors options for PORT
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(cookieParser());
