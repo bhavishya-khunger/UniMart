@@ -14,6 +14,10 @@ const transactionSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
+    title: {
+      type: String,
+      enum: ["Order Debit", "Refund", "Delivery Credit", "Referal Bonus", "Order Credit", "Order Commission"]
+    },
     orderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Order',

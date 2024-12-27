@@ -17,6 +17,7 @@ import OrderConfirmScreen from "./pages/OrderConfirmScreen.jsx";
 import { SocketContext } from './context/SocketContext.jsx';
 import LiveRequest from './pages/LiveRequest.jsx';
 import UserProfile from './pages/UserProfile.jsx';
+import OrderPageNav from './pages/OrderPageNav.jsx';
 import PdfUpload from './pages/PdfUpload.jsx';
 
 
@@ -83,7 +84,15 @@ const App = () => {
             </ShopKeeperWrapper>
           </UserProtectRoute>
         } />
+        <Route path="/editmenu/add" element={
+          <UserProtectRoute>
+            <ShopKeeperWrapper>
+              <AddItemsForm />
+            </ShopKeeperWrapper>
+          </UserProtectRoute>
+        } />
         <Route path="/addItems" element={<AddItemsForm />} />
+        <Route path="/order" element={<OrderPageNav />} />
         <Route path="/userpage" element={<UserPage />} />
         <Route path="/userpage/profile" element={<UserProfile />} />
         <Route path="/cart/order" element={<OrderConfirmScreen />} />

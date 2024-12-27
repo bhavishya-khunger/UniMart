@@ -1,11 +1,24 @@
+import axios from 'axios';
 import React, { useState } from 'react'
+import { MdDeleteForever } from 'react-icons/md';
 
-const Item = ({ onAddToCart, onRemoveFromCart, cartQty, itemPrice, itemName, itemImage, isVeg, itemDesc, options }) => {
+const Item = ({ itemId, onAddToCart, onRemoveFromCart, cartQty, itemPrice, itemName, itemImage, isVeg, itemDesc, options }) => {
     const [quantity, setQuantity] = useState(cartQty);
 
     const updateQuantity = (change) => {
         setQuantity((prev) => Math.max(0, prev + change));
     };
+
+    const deleteProduct = async () => {
+        try {
+            alert("Are you sure you want to remove this product from the menu?");
+            const res = await axios.get(`${import.meta.env.VITE_PRODUCT_BASE_URL}/delete/${itemId}`);
+            console.log(res);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div className="w-full flex items-center justify-between h-32 my-4 py-[3px]">
             <div className='flex flex-col'>
@@ -28,6 +41,7 @@ const Item = ({ onAddToCart, onRemoveFromCart, cartQty, itemPrice, itemName, ite
                     <img className='h-full w-24 rounded-xl' src={itemImage} alt="" />
                     {/* Order Quantity */}
                 </div>
+                {!options && <MdDeleteForever onClick={() => deleteProduct()} className='mt-2' size={22} />}
                 {options && (
                     <div className="flex items-center h-2/6">
                         <button

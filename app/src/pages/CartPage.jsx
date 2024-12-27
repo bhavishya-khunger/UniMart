@@ -110,7 +110,7 @@ const CartPage = () => {
 
           <div className="flex justify-between items-center border-b py-2">
             <span className="text-gray-600">Delivery</span>
-            <span className="text-gray-600">{(8 / 100) * totalPrice}</span>
+            <span className="text-gray-600">{Math.floor((8 / 100) * totalPrice)}pts</span>
           </div>
 
           <div className="flex justify-center items-center">

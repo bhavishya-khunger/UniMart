@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema({
   socketId: {
     type: String,
   },
+  referredBy: {
+    type: String,
+  },
   account: {
     type: String,
     enum: ['Active', 'Deactivated', 'Suspended'],

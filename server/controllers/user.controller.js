@@ -2,10 +2,11 @@ import User from '../models/user.model.js';
 import Shop from '../models/shop.model.js';
 import Order from '../models/order.model.js';
 import bcrypt from 'bcrypt';
+import Transaction from '../models/transaction.model.js';
 
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password, sid, role } = req.body;
+        const { name, email, password, sid, role, referalCode } = req.body;
 
         // console.log(req.body);
         console.log(req.body);
@@ -38,14 +39,39 @@ export const registerUser = async (req, res) => {
         // Hash the password
         const hashedPass = await bcrypt.hash(password, 10);
 
+        // Referral
+        console.log(referalCode);
+        if (referalCode.length > 0) {
+            const referredByUsers = await User.find({ referalCode: referalCode });
+
+            if (referredByUsers.length === 0) return res.status(400).json({ message: "Invalid Referral Code" });
+
+            const referredBy = referredByUsers[0];
+
+            const referal = new Transaction({
+                userId: referredBy._id,
+                coinsEarned: 30,
+                coinsSpent: 0,
+                title: "Referal Bonus"
+            });
+
+            referredBy.coins += 30;
+            referredBy.transactionHistory.push(referal);
+
+            await referal.save();
+            await referredBy.save();
+        }
+
         // Create a new user
         const user = new User({
             name,
             sid,
+            referredBy: referalCode ? referalCode : "",
             password: hashedPass,
             email,
             role
         });
+
 
         // Save the user to the database
         await user.save();
@@ -170,33 +196,34 @@ export const getOrdersForShop = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        // Check if userId is provided
         if (!userId) {
             return res.status(400).json({ message: "User ID not provided." });
         }
 
-        // Find the shop owned by the user
         const shop = await Shop.findOne({ owner: userId });
 
-        // If no shop is found, return an error
         if (!shop) {
             return res.status(400).json({ message: "Shop not registered." });
         }
 
-        // Find all orders with the status 'Accepted'
-        const allOrders = await Order.find({ orderStatus: "Accepted" }).populate("productDetails.item").populate("deliveryPersonId");
+        const allOrders = await Order.find({
+            orderStatus: { $in: ['Completed', 'Accepted'] }
+        })
+        .populate("productDetails.item")
+        .populate("deliveryPersonId");
 
-        // Filter orders based on shopkeeperId
         const shopOrders = allOrders.filter((order) =>
-            order.productDetails.some((productDetail) => productDetail.item.shopkeeperId.equals(shop.owner))
+            Array.isArray(order.productDetails) &&
+            order.productDetails.some((productDetail) =>
+                productDetail?.item?.shopkeeperId?.toString() === shop.owner.toString()
+            )
         );
 
-        // Respond with the filtered orders
         return res.status(200).json({
             orders: shopOrders,
         });
     } catch (error) {
-        console.error("Error in getOrdersForShop:", error);
+        console.error("Error in getOrdersForShop:", error.message, error.stack);
         return res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -224,6 +251,11 @@ export const editProfile = async (req, res) => {
         if (!userId) return res.status(400).json({
             message: "User ID is required.",
         });
+
+        console.log(phone);
+        if (phone && phone <= 999999999 && phone>=10000000000) {
+            return res.status(400).json("Phone Number Invalid");
+        }
 
         const user = await User.findByIdAndUpdate(userId, {address: address, phone: phone});
 

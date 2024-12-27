@@ -3,6 +3,7 @@ import { AiFillHome, AiOutlineUser, AiOutlineWallet } from 'react-icons/ai'
 import { Link } from 'react-router-dom'
 import { BiFoodMenu } from "react-icons/bi";
 import { MdAdminPanelSettings } from "react-icons/md";
+import { IoBagCheckOutline } from "react-icons/io5";
 
 const BottomNav = () => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -30,6 +31,10 @@ const BottomNav = () => {
                     <span className="text-sm">Menu</span>
                 </Link>
             )}
+            <Link to={'/order'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
+                <IoBagCheckOutline className="text-2xl" />
+                <span className="text-sm">Order</span>
+            </Link>
             {user?.role !== 'Admin' && (
                 <Link to={'/userpage'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
                     <AiOutlineUser className="text-2xl" />

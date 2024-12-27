@@ -13,6 +13,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [referalCode, setReferalCode] = useState("");
 
   const navigate = useNavigate();
 
@@ -50,8 +51,8 @@ const Register = () => {
     try {
       setLoading(true);
       const userPayload = isShopkeeper
-        ? { email, password, name, role: "Shopkeeper" }
-        : { email, password, sid, name, role: "Student" };
+        ? { email, password, name, role: "Shopkeeper", referalCode }
+        : { email, password, sid, name, role: "Student", referalCode };
 
       console.log("User Payload:", userPayload); // Log the payload to verify its contents
 
@@ -90,6 +91,7 @@ const Register = () => {
         )}
         <InputVal value={email} onChange={(e) => setEmail(e.target.value)} fieldVal="Email ID" type="email" />
         <InputVal value={password} onChange={(e) => setPassword(e.target.value)} fieldVal="Password" type="password" />
+        <InputVal value={referalCode} onChange={(e) => setReferalCode(e.target.value)} fieldVal="Referral Code (optional)" type="text" />
         <div className="flex flex-col items-center justify-center w-[80vw]">
           {loading && <Loading />}
           {error && <ErrorPop text={error} />}
