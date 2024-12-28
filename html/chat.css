@@ -2,6 +2,7 @@
     background-color:rgb(228, 246,248);
 }
 #sent{
+    font-family: Arial, Helvetica, sans-serif;
     position: absolute;
     margin-top: 220px;
     font-size: 25px;
@@ -9,18 +10,62 @@
 #frame{
     position:absolute;
     margin-top: 265px;
-    height:139px;
+    height:70px;
     width:350px;
     border-radius: 15px;
     background-color: rgb(231, 202,191);
 }
 #photo{
     position: relative;
-    top:13px;
-    left:12px;
-    height:110px;
-    width:100px;
+    display: inline-block;
+    top:9px;
+    left:6px;
+    height:50px;
+    width:45px;
     border-radius: 50%;
     background-image:url("S_photo.jpg");
     background-size:cover;
+}
+#content{
+    position: relative;
+    display: inline-block;
+    margin-left:40px;
+    margin-top: 15px;
+    background-color: rgb(231, 202,191);
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+#friends{
+    font-family: Arial, Helvetica, sans-serif;
+    position: absolute;
+    margin-top: 380px;
+    font-size: 25px;
+}
+#frame2{
+    position:absolute;
+    margin-top: 420px;
+    height:70px;
+    width:350px;
+    border-radius: 15px;
+    background-color: rgb(231, 202,191);
+}
+#image{
+    position: relative;
+    display: inline-block;
+    top:9px;
+    left:6px;
+    height:50px;
+    width:45px;
+    border-radius: 50%;
+    background-image:url("S_photo.jpg");
+    background-size:cover;
+}
+#content2{
+    position: relative;
+    display: inline-block;
+    margin-left:40px;
+    margin-top: 15px;
+    background-color: rgb(231, 202,191);
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
 }
