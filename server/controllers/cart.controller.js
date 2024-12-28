@@ -340,7 +340,8 @@ export const processOrder = async (req, res) => {
 
         return res.status(200).json({
             message: "Order processed successfully.",
-            order: await Order.findById(orderId)
+            order: await Order.findById(orderId),
+            user: order?.userId?._id
         });
     } catch (error) {
         console.log(error);
@@ -524,6 +525,9 @@ export const markOrderForPickup = async (req, res) => {
         order.orderStatus = "Completed";
         await order.save();
 
+        const shopKeeper = await User.findById(shopkeeperId).select('-password');
+        shopKeeper?.orderHistory?.push(order);
+
         const shop = await Shop.findOne({ owner: shopkeeperId }).select('shopName');
         const shopName = shop ? shop.shopName : 'Unknown Shop';
 
@@ -561,6 +565,11 @@ export const markOrderOutForDelivery = async (req, res) => {
         }
 
         order.orderStatus = "Out for Delivery";
+
+        // Generate a 4-digit OTP
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        order.otp = otp;
+        
         await order.save();
 
         // Notify the user who placed the order
@@ -608,6 +617,44 @@ export const getActiveOrdersByDeliveryPerson = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const markOrderAsDelivered = async (req, res) => {
+    try {
+        const { orderId, deliveryPersonId, otp } = req.body;
+
+        if (!orderId) return res.status(400).json({ message: "Order ID is required." });
+        if (!deliveryPersonId) return res.status(400).json({ message: "Delivery Person ID is required." });
+        if (!otp) return res.status(400).json({ message: "OTP is required." });
+
+        const order = await Order.findById(orderId).populate('productDetails.item');
+
+        if (!order) return res.status(404).json({ message: "Order not found." });
+
+        if (order.deliveryPersonId.toString() !== deliveryPersonId) {
+            return res.status(403).json({ message: "You are not authorized to update this order." });
+        }
+
+        if (order.otp !== otp) {
+            return res.status(400).json({ message: "Invalid OTP." });
+        }
+
+        order.orderStatus = "Delivered";
+        order.otp = null; // Clear the OTP as it is no longer needed
+
+        await order.save();
+
+        // Notify the user who placed the order
+        sendMessageToSocketId(order.userId.socketId, {
+            event: 'order-delivered',
+            data: { order },
+        });
+
+        res.status(200).json({ message: "Order marked as delivered.", order });
+    } catch (error) {
+        console.log(error);
         res.status(500).json({ message: "Internal server error." });
     }
 };

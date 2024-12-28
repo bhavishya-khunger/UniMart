@@ -1,14 +1,62 @@
-import React, { useState } from "react";
-import { MdOutlineArrowBack } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import { MdDelete, MdDone, MdDoneAll, MdOutlineArrowBack } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import OrderContainer from "../components/UserPage/OrderContainer";
 import BottomNav from "../components/General/BottomNav";
-import { BiCoin, BiDownvote, BiLogOut, BiPencil } from "react-icons/bi";
+import { BiCoin, BiCross, BiDownvote, BiLogOut, BiPencil } from "react-icons/bi";
 import axios from 'axios';
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+import FriendCard from "../components/UserPage/FriendCard";
 
 function UserPage() {
   const currUser = JSON.parse(localStorage.getItem("user"));
+  const [inputValue, setInputValue] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_USER_BASE_URL}/all`);
+        const students = res.data.students.map(student => ({
+          sid: student.sid.toString(), // Ensure sid is a string
+          name: student.name
+        }));
+
+        // Filter out the current user
+        const filtered = students.filter(stud => stud?.sid !== currUser?.sid?.toString());
+
+        // Update state
+        setAllUsers(filtered);
+        console.log("Filtered students: ", filtered);
+      } catch (error) {
+        console.error("Error fetching students: ", error.message || error);
+      }
+    };
+    fetchStudents();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+
+    if (value) {
+      const filteredSuggestions = allUsers.filter(user =>
+        user.sid.includes(value) || user.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filteredSuggestions);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleAddFriend = (sid) => {
+    setInputValue(sid);
+    setSuggestions([]);
+  };
+
+
+
   const [accepting, setAccepting] = useState(currUser?.agreesToDeliver || false);
   const [showLogout, setShowLogout] = useState(false);
   const navigate = useNavigate();
@@ -78,7 +126,7 @@ function UserPage() {
                 <label htmlFor="check">Earn Coins : OFF</label>
               </button>
             :
-            <div className="bg-black px-4 h-fit mt-4 py-2 rounded-full">Role : Shopkeeper</div>}
+            <div className="bg-black px-4 h-fit mt-4 py-2 rounded-full">Status: {currUser?.isShopVerified ? "Verified" : "Approval Pending"}</div>}
           <div onClick={() => setShowLogout(!showLogout)} className="mt-4 pl-6 flex items-center">
             {!showLogout ? <FaAngleDown /> : <FaAngleUp />}
           </div>
@@ -90,9 +138,54 @@ function UserPage() {
         )}
       </header>
       <main>
-        <div className="flex flex-col items-center justify-start w-[100vw] mt-4 ">
-          {/* Item container */}
-          To be made
+        <h1 className="text-center text-xl mt-3 font-semibold">Friend's Section</h1>
+        <div className="flex px-5 flex-col items-center justify-start w-[100vw] mt-4">
+          <div className="relative w-full">
+            <div className="flex w-full items-center justify-evenly gap-4">
+              <input
+                value={inputValue}
+                onChange={handleInputChange}
+                placeholder="Send friend request to SID"
+                className="w-full outline-none text-lg pl-2 h-12 rounded-lg bg-white shadow-lg border border-gray-300"
+                type="text"
+              />
+              <button
+                // onClick={ok}
+                className="bg-orange-500 text-white border border-orange-600 h-12 px-3 rounded-lg active:scale-90"
+              >
+                Add
+              </button>
+            </div>
+            {suggestions.length > 0 && (
+              <div className="absolute bg-white shadow-lg border border-gray-300 rounded-lg mt-2 w-full z-10">
+                {suggestions.map((user) => (
+                  <div
+                    key={user.sid}
+                    onClick={() => handleAddFriend(user.sid)}
+                    className="px-4 py-2 hover:bg-orange-100 cursor-pointer"
+                  >
+                    {user.name} ({user.sid})
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Incoming */}
+
+        <h1 className="text-center text-gray-500 text-lg mt-3 font-semibold">Incoming Requests</h1>
+        <div className="w-full px-5 mt-2">
+          <FriendCard deleteTrue={false} controls={true} name={"Bhavishya Khunger"} sid={23104071} />
+        </div>
+        <h1 className="text-center text-gray-500 text-lg mt-3 font-semibold">Sent Requests</h1>
+        <div className="w-full px-5 mt-2">
+          <FriendCard name={"Saksham Grover"} sid={23104097} />
+        </div>
+        <h1 className="text-center text-gray-500 text-lg mt-3 font-semibold">My Friends</h1>
+        <div className="w-full px-5 mt-2">
+          <FriendCard deleteTrue={true} name={"Bhavishya Khunger"} sid={23104071} />
+          <div className="h-20"></div>
         </div>
       </main>
       <BottomNav />

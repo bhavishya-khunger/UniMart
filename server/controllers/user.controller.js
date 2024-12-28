@@ -269,3 +269,19 @@ export const editProfile = async (req, res) => {
         console.log(error);
     }
 }
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password');
+        const shopkeepers = users.filter(user => user.role === 'Shopkeeper');
+        const students = users.filter(user => user.role === 'Student');
+        return res.status(200).json({ 
+            totalUsers: users,
+            shopkeepers: shopkeepers,
+            students: students
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};

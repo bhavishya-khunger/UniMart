@@ -3,12 +3,42 @@ import BottomNav from '../components/General/BottomNav';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import axios from 'axios';
 import { MdCall, MdDone } from 'react-icons/md';
+import ErrorPop from '../components/General/ErrorPop';
 
 const OrderPageNav = () => {
     const [activeTab, setActiveTab] = useState('placed');
     const [placedOrders, setPlacedOrders] = useState([]);
     const [deliveryOrders, setDeliveryOrders] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
+    const [otpCode, setOtpCode] = useState('');
+    const [error, setError] = useState("");
+
+    const submitOTP = async (orderId) => {
+        console.log("Submit Called");
+        console.log(orderId);
+        try {
+            const res = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/markDelivered`, {
+                orderId: orderId,
+                deliveryPersonId: user?._id,
+                otp: otpCode
+            });
+            console.log(res);
+            if (res.status === 200) {
+                try {
+                    const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/process`, {
+                        orderId: orderId
+                    })
+                    console.log(response);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            setError(error?.response?.data?.message);
+        }
+    }
+
     async function markAsPickedup(orderId) {
         try {
             await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/markForDelivery`, {
@@ -54,7 +84,7 @@ const OrderPageNav = () => {
         <div style={{ backgroundColor: 'white' }}>
             <div style={{ display: 'flex', justifyContent: 'space-around', position: "sticky", top: 0, background: "#fff", padding: '10px', borderBottom: '2px solid white' }}>
                 <div onClick={() => handleTabClick('placed')} style={tabStyle(activeTab === 'placed')}>
-                    Placed Orders
+                    Active Orders
                 </div>
                 <div onClick={() => handleTabClick('delivery')} style={tabStyle(activeTab === 'delivery')}>
                     Delivery Orders
@@ -66,10 +96,12 @@ const OrderPageNav = () => {
             <TransitionGroup>
                 <CSSTransition key={activeTab} timeout={300} classNames="fade">
                     <div style={{ padding: '20px' }}>
+
                         {/* Active Placed Orders */}
+
                         {activeTab === 'placed' && (
                             placedOrders?.map((activeOrder) => {
-                                return activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Cancelled" && (
+                                return activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered"  && (
                                     <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-blue-500">
                                         <h2 className="bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
                                             Order Status : {activeOrder?.orderStatus}
@@ -102,6 +134,12 @@ const OrderPageNav = () => {
                                                 }} size={22} className="mr-2" />
                                             </span>
                                         </div>
+                                        {activeOrder?.orderStatus === "Out for Delivery" && (
+                                            <span className='w-full text-sm mt-3 text-center'>
+                                                Your order is Out For Delivery. Kindly share the below OTP with {activeOrder?.deliveryPersonId?.name} to accept the order.
+                                                <div className='text-lg bg-blue-600 text-white mt-2 rounded-lg'>OTP : {activeOrder?.otp}</div>
+                                            </span>
+                                        )}
                                     </section>
                                 )
                             })
@@ -109,6 +147,7 @@ const OrderPageNav = () => {
                         {activeTab === 'placed' && !placedOrders.length && <p className='text-center'>No Active Placed Orders</p>}
 
                         {/* Active Delivery Orders */}
+
                         {activeTab === 'delivery' && deliveryOrders && (deliveryOrders?.map((orderForDelivery) => {
                             return (
                                 <section className="w-full px-4 py-2 mb-8 bg-white border border-black shadow h-fit rounded-lg">
@@ -150,16 +189,36 @@ const OrderPageNav = () => {
                                         <MdDone size={20} /> Mark Order as Picked Up
                                     </button>}
                                     {orderForDelivery?.orderStatus === "Out for Delivery" && (
-                                        <div class="text-center mt-4">
-                                        {/* <h2 class="text-xl font-semibold mb-4 mt-2">Enter OTP</h2> */}
-                                        <div class="flex justify-center space-x-2 mb-4">
-                                            <input type="text" maxlength="1" class="w-12 h-12 border border-gray-300 rounded-md text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                            <input type="text" maxlength="1" class="w-12 h-12 border border-gray-300 rounded-md text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                            <input type="text" maxlength="1" class="w-12 h-12 border border-gray-300 rounded-md text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                            <input type="text" maxlength="1" class="w-12 h-12 border border-gray-300 rounded-md text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <div className="text-center mt-4">
+                                            <div className="flex justify-center space-x-2 mb-2">
+                                                {[...Array(4)].map((_, index) => (
+                                                    <input
+                                                        key={index}
+                                                        type="text"
+                                                        maxLength="1"
+                                                        className="w-12 h-12 border border-gray-300 rounded-md text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            if (value.length === 1) {
+                                                                const nextInput = e.target.nextElementSibling;
+                                                                if (nextInput) {
+                                                                    nextInput.focus();
+                                                                }
+                                                            }
+                                                            setOtpCode((prev) => {
+                                                                const newOtp = prev.split('');
+                                                                newOtp[index] = value;
+                                                                return newOtp.join('');
+                                                            });
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <div className='flex items-center justify-center mb-4'>
+                                                {error && <ErrorPop text={error} />}
+                                            </div>
+                                            {otpCode?.length === 4 ? <button onClick={() => submitOTP(orderForDelivery?._id)} className="bg-black mb-2 text-white px-4 py-2 rounded-md active:scale-95">Submit</button> : <button disabled onSubmit={() => submitOTP(orderForDelivery?._id)} className="bg-black mb-2 text-white px-4 py-2 rounded-md disabled:opacity-40">Submit</button>}
                                         </div>
-                                        <button class="bg-black mb-2 text-white px-4 py-2 rounded-md hover:bg-blue-600">Submit</button>
-                                    </div>
                                     )}
                                 </section>
                             )
@@ -186,7 +245,8 @@ const OrderPageNav = () => {
                                         <p className="italic mt-2">
                                             Date:&nbsp;
                                             {new Date(activeOrder?.updatedAt).toLocaleString("en-US", {
-                                                dateStyle: "medium"
+                                                dateStyle: "medium",
+                                                timeStyle: "short"
                                             })}
                                         </p>
                                     </section>

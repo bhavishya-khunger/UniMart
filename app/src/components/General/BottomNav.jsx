@@ -31,11 +31,13 @@ const BottomNav = () => {
                     <span className="text-sm">Menu</span>
                 </Link>
             )}
-            <Link to={'/order'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
-                <IoBagCheckOutline className="text-2xl" />
-                <span className="text-sm">Order</span>
-            </Link>
             {user?.role !== 'Admin' && (
+                <Link to={'/order'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
+                    <IoBagCheckOutline className="text-2xl" />
+                    <span className="text-sm">Orders</span>
+                </Link>
+            )}
+            {(
                 <Link to={'/userpage'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
                     <AiOutlineUser className="text-2xl" />
                     <span className="text-sm">Profile</span>

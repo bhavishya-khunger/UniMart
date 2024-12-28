@@ -49,7 +49,7 @@ function AddItemsForm() {
           <FaArrowLeftLong />
         </button>
       </div>
-      <img src={additems} alt="error" className='w-40 mt-3' />
+      <img src={additems} alt="Image" className='w-40 mt-3' />
       <header className="flex flex-col items-center justify-center">
         <h1 className="font-bold text-2xl mt-2 text-center mb-3">
           Add A New Creation
@@ -73,6 +73,12 @@ function AddItemsForm() {
           value={formData.itemDescription}
           onChange={(e) => setFormData({ ...formData, itemDescription: e.target.value })}
         />
+        {formData?.itemImageLink && (
+          <div className='items-center bg-gray-100 px-5 rounded-xl mb-3 py-1 justify-center flex flex-col'>
+            <p className='text-sm text-gray-700'>Image Preview:</p>
+            <img src={formData?.itemImageLink} alt="Image" className='w-44 rounded-xl mb-3 mt-2' />
+          </div>
+        )}
         <InputVal
           fieldVal="Item Image Link"
           type="text"

@@ -1,6 +1,6 @@
 import express from 'express';
 import { protectRoute } from '../middlewares/auth.user.js';
-import { addToCart, cancelOrder, confirmOrder, findAOrder, getActiveOrdersByDeliveryPerson, getCart, markOrderForPickup, markOrderOutForDelivery, orderCart, processOrder, removeItemFromCart, sendRequest } from '../controllers/cart.controller.js';
+import { addToCart, cancelOrder, confirmOrder, findAOrder, getActiveOrdersByDeliveryPerson, getCart, markOrderAsDelivered, markOrderForPickup, markOrderOutForDelivery, orderCart, processOrder, removeItemFromCart, sendRequest } from '../controllers/cart.controller.js';
 
 const router = express.Router();
 
@@ -18,5 +18,6 @@ router.post('/order/confirm', confirmOrder);
 router.post('/order/cancel', cancelOrder); 
 router.post('/order/markForPickup', markOrderForPickup); 
 router.post('/order/markForDelivery', markOrderOutForDelivery);
+router.post('/order/markDelivered', markOrderAsDelivered);
 
 export default router;
