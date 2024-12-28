@@ -1,5 +1,26 @@
+*{
+    background-color:rgb(228, 246,248);
+}
 #sent{
     position: absolute;
     margin-top: 220px;
-    
+    font-size: 25px;
+}
+#frame{
+    position:absolute;
+    margin-top: 265px;
+    height:139px;
+    width:350px;
+    border-radius: 15px;
+    background-color: rgb(231, 202,191);
+}
+#photo{
+    position: relative;
+    top:13px;
+    left:12px;
+    height:110px;
+    width:100px;
+    border-radius: 50%;
+    background-image:url("S_photo.jpg");
+    background-size:cover;
 }
