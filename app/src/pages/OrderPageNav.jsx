@@ -1,34 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import BottomNav from '../components/General/BottomNav';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import axios from 'axios';
 import { MdCall, MdDone } from 'react-icons/md';
 import ErrorPop from '../components/General/ErrorPop';
+import { UserDataContext } from '../context/UserContext';
 
 const OrderPageNav = () => {
     const [activeTab, setActiveTab] = useState('placed');
     const [placedOrders, setPlacedOrders] = useState([]);
     const [deliveryOrders, setDeliveryOrders] = useState([]);
-    const user = JSON.parse(localStorage.getItem("user"));
+    const {user, setUser} = useContext(UserDataContext);
     const [otpCode, setOtpCode] = useState('');
     const [error, setError] = useState("");
 
     const submitOTP = async (orderId) => {
-        console.log("Submit Called");
-        console.log(orderId);
         try {
             const res = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/markDelivered`, {
                 orderId: orderId,
                 deliveryPersonId: user?._id,
                 otp: otpCode
             });
-            console.log(res);
             if (res.status === 200) {
                 try {
                     const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/process`, {
                         orderId: orderId
                     })
-                    console.log(response);
                 } catch (error) {
                     console.log(error);
                 }

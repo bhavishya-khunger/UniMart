@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import BottomNav from '../components/General/BottomNav'
 import { FaArrowLeftLong, FaPencil } from 'react-icons/fa6'
 import Item from '../components/Restaurant/Item'
 import { BiPlus, BiPlusCircle } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { UserDataContext } from '../context/UserContext'
 
 const MenuShop = () => {
     const navigate = useNavigate();
     const [menu, setMenu] = useState([]);
-    const currUser = JSON.parse(localStorage.getItem("user"));
+    const {user, setUser} = useContext(UserDataContext);
+
     useEffect(() => {
         const getMenuItems = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_PRODUCT_BASE_URL}/menu/${currUser?._id}`);
+                const res = await axios.get(`${import.meta.env.VITE_PRODUCT_BASE_URL}/menu/${user?._id}`);
                 setMenu(res.data.products);
             } catch (error) {
                 console.log(error);

@@ -2,6 +2,12 @@ import React from 'react'
 import { MdDelete, MdDone } from 'react-icons/md'
 
 const FriendCard = ({ deleteTrue, accept, reject, name, sid, controls }) => {
+    const handleDelete = () => {
+        if (window.confirm('Are you sure you want to delete this request?')) {
+            reject();
+        }
+    };
+
     return (
         <div className="flex mb-2 justify-between px-3 py-2 rounded-xl gap-2 shadow-md border">
             <span className='flex items-center gap-2'>
@@ -15,17 +21,23 @@ const FriendCard = ({ deleteTrue, accept, reject, name, sid, controls }) => {
             </span>
             {controls && (
                 <span className='flex items-center gap-1'>
-                    <span className="ml-3 h-10 w-10 bg-green-500 text-white text-xl flex items-center justify-center rounded-full active:scale-90">
+                    <span
+                        onClick={accept}
+                        className="ml-3 h-10 w-10 bg-green-500 text-white text-xl flex items-center justify-center rounded-full active:scale-90">
                         <MdDone />
                     </span>
-                    <span className="h-10 w-10 bg-red-500 text-white text-xl flex items-center justify-center rounded-full active:scale-90">
+                    <span
+                        onClick={handleDelete}
+                        className="h-10 w-10 bg-red-500 text-white text-xl flex items-center justify-center rounded-full active:scale-90">
                         <MdDelete />
                     </span>
                 </span>
             )}
             {deleteTrue && (
                 <span className='flex items-center gap-1'>
-                    <span className="h-10 w-10 bg-red-500 text-white text-xl flex items-center justify-center rounded-full active:scale-90">
+                    <span
+                        onClick={handleDelete}
+                        className="h-10 w-10 bg-red-500 text-white text-xl flex items-center justify-center rounded-full active:scale-90">
                         <MdDelete />
                     </span>
                 </span>

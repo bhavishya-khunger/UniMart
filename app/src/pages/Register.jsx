@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import InputVal from "../components/General/InputVal";
 import { Link, useNavigate } from "react-router-dom";
 import ErrorPop from "../components/General/ErrorPop";
 import axios from "axios";
 import Loading from "../components/General/Loading";
+import { UserDataContext } from '../context/UserContext'
 
 const Register = () => {
   const [isShopkeeper, setIsShopkeeper] = useState(false);
@@ -14,6 +15,8 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [referalCode, setReferalCode] = useState("");
+
+  const { user, setUser } = useContext(UserDataContext);
 
   const navigate = useNavigate();
 
@@ -61,7 +64,7 @@ const Register = () => {
       console.log("Response:", res); // Log the response to verify the server's response
 
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      setUser(res.data.user);
       const time = new Date().getTime() + 1000 * 20 * 60; // 20min
       localStorage.setItem('expiryTime', time);
 

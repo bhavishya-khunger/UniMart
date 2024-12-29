@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaArrowLeftLong, FaAngleRight } from "react-icons/fa6";
 import { IoIosMenu } from "react-icons/io";
 import Item from "../components/Restaurant/Item";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { UserDataContext } from '../context/UserContext'
 
 const Restaurant = () => {
   const [items, setItems] = useState([]);
@@ -12,12 +13,12 @@ const Restaurant = () => {
   const shopId = useParams().shopId;
   // console.log("Shop ID:", shopId);
   const navigate = useNavigate();
-  const currUser = JSON.parse(localStorage.getItem("user"));
+  const { user, setUser } = useContext(UserDataContext);
 
   const addToCart = async (productId) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/add`, {
-        userId: currUser._id,
+        userId: user._id,
         productId,
       });
       console.log("Item added to cart:", response.data);
@@ -30,7 +31,7 @@ const Restaurant = () => {
   const removeFromCart = async (productId) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/remove`, {
-        userId: currUser._id,
+        userId: user._id,
         productId,
       });
       console.log("Item removed from cart:", response.data);
@@ -53,7 +54,7 @@ const Restaurant = () => {
     };
     const fetchCart = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/getcart/${currUser._id}`);
+        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/getcart/${user._id}`);
         console.log("Cart fetched:", response.data);
         setCartItems(response.data.items);
       } catch (error) {

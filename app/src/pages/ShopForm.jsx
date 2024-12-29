@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import InputVal from '../components/General/InputVal';
 import Loading from '../components/General/Loading';
 import { useNavigate } from 'react-router-dom';
 import ErrorPop from '../components/General/ErrorPop';
 import axios from 'axios';
+import { UserDataContext } from '../context/UserContext'
 
 const ShopForm = () => {
     const [shopName, setShopName] = useState('');
@@ -13,7 +14,7 @@ const ShopForm = () => {
     const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const { user, setUser } = useContext(UserDataContext);
 
     const handleSubmit = async () => {
         if (!shopName || !shopImage) {
@@ -28,14 +29,9 @@ const ShopForm = () => {
                 `${import.meta.env.VITE_SHOP_BASE_URL}/create-shop`,
                 { shopName, shopImage, owner: user._id }
             );
-            console.log(res);
-            localStorage.setItem('user', JSON.stringify(res.data.user));
-            const userhai = localStorage.getItem('user');
-            console.log('User:', userhai);
-            console.log('Shop Created:', res.data.user);
+            setUser(res.data.user);
             setSubmitted(true);
         } catch (error) {
-            console.log('Error Response:', error?.response);
             setError(error?.response?.data?.message || 'Something went wrong.');
         } finally {
             setLoading(false);

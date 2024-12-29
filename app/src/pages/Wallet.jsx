@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import BottomNav from '../components/General/BottomNav';
 import { BsCopy, BsWallet2 } from 'react-icons/bs';
 import Transaction from '../components/Wallet/Transaction';
 import axios from 'axios';
+import { UserDataContext } from '../context/UserContext';
 
 const Wallet = () => {
     const [transactions, setTransactions] = useState([]);
@@ -13,8 +14,8 @@ const Wallet = () => {
             console.error('Failed to copy: ', err);
         });
     };
-    const currUser = JSON.parse(localStorage.getItem('user'));
-    const referalCode = currUser?.referalCode; // This should be fetched from the backend 
+    const { user, setUser } = useContext(UserDataContext);
+    const referalCode = user?.referalCode; // This should be fetched from the backend 
 
     const sortedTransactions = [...transactions].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -22,9 +23,8 @@ const Wallet = () => {
 
     useEffect(() => {
         try {
-            axios.get(`${import.meta.env.VITE_USER_BASE_URL}/transactions/${currUser?._id}`).then((res) => {
+            axios.get(`${import.meta.env.VITE_USER_BASE_URL}/transactions/${user?._id}`).then((res) => {
                 setTransactions(res.data.transactions);
-                console.log(res.data.transactions);
             });
         } catch (error) {
             console.error(error);
@@ -44,15 +44,15 @@ const Wallet = () => {
                     </div>
                     <div className="mt-3 flex gap-2 items-center">
                         <BsWallet2 size={30} color="#fde047" />
-                        <h1 className="text-4xl text-yellow-300 font-semibold">{currUser?.coins}pts</h1>
+                        <h1 className="text-4xl text-yellow-300 font-semibold">{user?.coins}pts</h1>
                     </div>
                     <div className="text-red-50 pt-4 pb-2 border-t border-dashed border-red-50 mt-5 flex flex-col">
-                        <span>{currUser?.name}</span>
-                        <span className="text-xs">{currUser?.role}</span>
-                        <span className="text-xs">{currUser?.email}</span>
+                        <span>{user?.name}</span>
+                        <span className="text-xs">{user?.role}</span>
+                        <span className="text-xs">{user?.email}</span>
                     </div>
                 </div>
-                {currUser?.role === 'Student' && (
+                {user?.role === 'Student' && (
                     <div className="mt-5 border border-gray-200 shadow-lg rounded-xl bg-white h-fit w-full px-3 py-4 flex flex-col items-center">
                         <p>Your Unique referal code is</p>
                         <p className='text-xl font-mono'>{referalCode}</p>
@@ -65,7 +65,7 @@ const Wallet = () => {
                 )}
                 <p className="mt-3 font-semibold text-lg">Recent Transactions</p>
                 <div className='bg-white'>
-                    {currUser?.transactionHistory?.length === 0 && <p className="text-center mt-4 text-gray-400">No transactions yet!</p>}
+                    {user?.transactionHistory?.length === 0 && <p className="text-center mt-4 text-gray-400">No transactions yet!</p>}
                     {sortedTransactions?.map((transaction, index) => (
                         <Transaction key={index} title={transaction?.title} date={transaction?.createdAt} value={transaction?.coinsEarned - transaction?.coinsSpent} />
                     ))}

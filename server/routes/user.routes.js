@@ -1,5 +1,5 @@
 import express from 'express';
-import { editProfile, getAllUsers, getOrdersForShop, getProfile, getTransactionHistory, loginUser, logoutUser, registerUser, startAcceptingOrders } from '../controllers/user.controller.js';
+import { addFriend, deleteFriend, editProfile, getAllUsers, getOrdersForShop, getProfile, getTransactionHistory, loginUser, logoutUser, registerUser, sendFriendRequest, startAcceptingOrders } from '../controllers/user.controller.js';
 import { protectRoute } from '../middlewares/auth.user.js';
 import { verifyShop } from '../controllers/admin.controller.js';
 
@@ -14,6 +14,12 @@ router.get('/transactions/:userId', getTransactionHistory)
 router.get('/orders/:userId', getOrdersForShop)
 router.post('/accept-orders', startAcceptingOrders)
 router.get('/all', getAllUsers)
+
+// FRIENDS
+
+router.post('/send-request', sendFriendRequest)
+router.post('/add-friend', addFriend)
+router.post('/remove-friend', deleteFriend)
 
 // ADMIN
 router.post('/verify-shop', verifyShop);

@@ -3,6 +3,7 @@ import { SocketContext } from '../context/SocketContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { io } from 'socket.io-client';
+import { UserDataContext } from '../context/UserContext'
 
 const LiveRequest = () => {
     const { socket } = useContext(SocketContext);
@@ -11,7 +12,7 @@ const LiveRequest = () => {
     const [data, setData] = useState({});
     const [shops, setShops] = useState([]);
     const [delivery, setDelivery] = useState('');
-    const currUser = JSON.parse(localStorage.getItem("user") || '{}');
+    const {user, setUser} = useContext(UserDataContext);
 
     useEffect(() => {
         // Listen to the socket event and update state
@@ -45,14 +46,11 @@ const LiveRequest = () => {
             const response = await axios.post(
                 `${import.meta.env.VITE_CART_BASE_URL}/order/confirm`,
                 {
-                    userId: currUser?._id,
+                    userId: user?._id,
                     orderId: data?._id,
                 }
             );
-            console.log('Order accepted:', response.data);
-            localStorage.setItem("order-for-delivery", JSON.stringify(response.data.updatedOrder));
-            const res = socket.emit("order-confirmed");
-            console.log("RESPONSE: ", res);
+            socket.emit("order-confirmed");
             navigate('/');
         } catch (error) {
             console.error('Error accepting order:', error?.response?.data || error.message);

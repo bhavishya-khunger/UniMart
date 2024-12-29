@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import burgerImg from '../Images/HomePage/burger.png'
 import Item from "../components/Cart/Item";
 import { FaArrowLeftLong, FaChevronUp } from "react-icons/fa6";
@@ -6,9 +6,10 @@ import { FaChevronDown } from "react-icons/fa";
 import axios from "axios";
 import ErrorPop from "../components/General/ErrorPop";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserDataContext } from '../context/UserContext';
 
 const CartPage = () => {
-  const currUser = JSON.parse(localStorage.getItem("user"));
+  const {user, setUser} = useContext(UserDataContext);
   const [bill, setBill] = useState(true);
   const [errorText, setErrorText] = useState("");
   const [totalPrice, setTotalPrice] = useState(0);
@@ -21,7 +22,7 @@ const CartPage = () => {
     try {
       // Step 1: Place the order
       const response1 = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order`, {
-        userId: currUser._id,
+        userId: user._id,
       });
       console.log("Order placed:", response1.data);
 
@@ -46,7 +47,7 @@ const CartPage = () => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/getcart/${currUser._id}`);
+        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/getcart/${user._id}`);
         console.log("Cart fetched:", response.data);
         setCartItems(response.data.items);
         setTotalPrice(response.data.totalPrice);

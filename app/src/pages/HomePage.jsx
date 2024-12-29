@@ -7,12 +7,13 @@ import { MdCall } from "react-icons/md";
 import { SocketContext } from '../context/SocketContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import ShopLiveOrder from "../components/HomePage/ShopLiveOrder.jsx";
+import { UserDataContext } from '../context/UserContext.jsx'
 
 function App() {
   const [restaurants, setRestaurants] = useState([]);
   const [shopOrders, setShopOrders] = useState([]);
 
-  const user = JSON.parse(localStorage.getItem('user'));
+  const {user, setUser} = useContext(UserDataContext);
 
   useEffect(() => {
     if (user?.role === 'Admin') return navigate('/admininsights');

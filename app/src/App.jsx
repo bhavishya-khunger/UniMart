@@ -18,16 +18,26 @@ import { SocketContext } from './context/SocketContext.jsx';
 import LiveRequest from './pages/LiveRequest.jsx';
 import UserProfile from './pages/UserProfile.jsx';
 import OrderPageNav from './pages/OrderPageNav.jsx';
+import { UserDataContext } from './context/UserContext.jsx';
 
 
 const App = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { user, setUser } = useContext(UserDataContext);
   const navigate = useNavigate();
   const { socket } = useContext(SocketContext);
   useEffect(() => {
     socket.emit("join", { userId: user?._id });
     socket.on("order-request", () => {
       navigate('/liverequest');
+    })
+    socket.on("friendRequestReceived", (data) => {
+      setUser(data);
+    })
+    socket.on("friendDeleted", (data) => {
+      setUser(data);
+    })
+    socket.on("friendRequestApproved", (data) => {
+      setUser(data);
     })
   }, [user])
   return (

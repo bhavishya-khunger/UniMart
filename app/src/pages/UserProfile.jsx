@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import InputVal from '../components/General/InputVal.jsx';
 import Loading from '../components/General/Loading.jsx';
 import ErrorPop from '../components/General/ErrorPop.jsx';
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { UserDataContext } from '../context/UserContext.jsx'
 
 function UserProfile() {
-  const currUser = JSON.parse(localStorage.getItem('user'));
-  const [address, setAddress] = useState(currUser?.address);
-  const [phone, setPhone] = useState(currUser?.phone);
+  const { user, setUser } = useContext(UserDataContext);
+  const [address, setAddress] = useState(user?.address);
+  const [phone, setPhone] = useState(user?.phone);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -18,15 +19,14 @@ function UserProfile() {
     setError("");
     try {
       const res = await axios.post(`${import.meta.env.VITE_USER_BASE_URL}/edit`, {
-        userId: currUser?._id,
+        userId: user?._id,
         address,
         phone,
       });
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setUser(res.data.user);
       navigate('/userpage');
     } catch (error) {
-      console.log(error);
-      setError(error.response.data);
+      setError(error.response.data || "Something went Wrong.");
     } finally {
       setLoading(false);
     }

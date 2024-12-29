@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import InputVal from "../components/General/InputVal";
 import { Link, useNavigate } from "react-router-dom";
 import ErrorPop from "../components/General/ErrorPop";
 import axios from "axios";
 import Loading from "../components/General/Loading";
+import { UserDataContext } from "../context/UserContext";
 
 const Login = () => {
+  const {user, setUser} = useContext(UserDataContext);
   const [credential, setCredential] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -31,6 +33,7 @@ const Login = () => {
       if (res.status === 200) {
         console.log(res);
         localStorage.setItem('token', res.data.token);
+        setUser(res.data.user);
         localStorage.setItem('user', JSON.stringify(res.data.user)); // change this with context
         const time = new Date().getTime() + 1000 * 20 * 60; //20min
         localStorage.setItem('expiryTime', time);

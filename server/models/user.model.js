@@ -94,7 +94,17 @@ const userSchema = new mongoose.Schema({
   agreesToDeliver: {
     type: Boolean,
     default: false,
-  }
+  },
+  friendList: [{
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+    status: {
+      type: "String",
+      enum: ["Approved", "Declined", "Sent", "Received"]
+    }
+  }]
 });
 
 // to compare hashed passwords

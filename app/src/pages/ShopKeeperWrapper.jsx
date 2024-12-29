@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { UserDataContext } from '../context/UserContext';
 
 const ShopKeeperWrapper = ({ children }) => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const {user, setUser} = useContext(UserDataContext);
   const isShopVerified = user?.isShopVerified;
   const isShopkeeper = user?.role === 'Shopkeeper';
 
