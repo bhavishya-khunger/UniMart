@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import SocketProvider from "./context/SocketContext.jsx";
 import UserContext from "./context/UserContext.jsx";
+import PDFDragAndDrop from "./pages/PdfUpload.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
