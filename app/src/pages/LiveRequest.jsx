@@ -25,12 +25,11 @@ const LiveRequest = () => {
         });
 
         socket.on("order-accepted", () => {
-            console.log('request aayi h');
             setShops([]);
             setDelivery('');
             setReceivesInfo(false);
             setData({});
-            navigate('/');
+            navigate('/order');
         });
 
         // Cleanup listeners when component unmounts or socket changes

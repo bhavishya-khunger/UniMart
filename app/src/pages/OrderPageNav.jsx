@@ -5,14 +5,16 @@ import axios from 'axios';
 import { MdCall, MdDone } from 'react-icons/md';
 import ErrorPop from '../components/General/ErrorPop';
 import { UserDataContext } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const OrderPageNav = () => {
     const [activeTab, setActiveTab] = useState('placed');
     const [placedOrders, setPlacedOrders] = useState([]);
     const [deliveryOrders, setDeliveryOrders] = useState([]);
-    const {user, setUser} = useContext(UserDataContext);
+    const { user, setUser } = useContext(UserDataContext);
     const [otpCode, setOtpCode] = useState('');
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const submitOTP = async (orderId) => {
         try {
@@ -26,6 +28,7 @@ const OrderPageNav = () => {
                     const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/process`, {
                         orderId: orderId
                     })
+                    navigate('/wallet');
                 } catch (error) {
                     console.log(error);
                 }
@@ -47,24 +50,25 @@ const OrderPageNav = () => {
         }
     }
 
-    useEffect(() => {
-        const getOrderDetails = async () => {
-            const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/${JSON.parse(localStorage.getItem('user'))._id}`);
-            if (response.data.order) {
-                setPlacedOrders(response?.data?.order);
-            }
+    const getOrderDetails = async () => {
+        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/${JSON.parse(localStorage.getItem('user'))._id}`);
+        if (response.data.order) {
+            setPlacedOrders(response?.data?.order);
         }
-        getOrderDetails();
+    }
 
-        const getDeliveryOrders = async () => {
-            const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/delivery/${JSON.parse(localStorage.getItem('user'))._id}`);
-            if (response.data.orders) {
-                setDeliveryOrders(response.data.orders);
-                console.log(response.data.orders)
-            }
+    const getDeliveryOrders = async () => {
+        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/delivery/${JSON.parse(localStorage.getItem('user'))._id}`);
+        if (response.data.orders) {
+            setDeliveryOrders(response.data.orders);
+            console.log(response.data.orders)
         }
+    }
+
+    useEffect(() => {
+        getOrderDetails();
         getDeliveryOrders();
-    }, []);
+    }, [placedOrders, deliveryOrders]);
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
@@ -98,7 +102,7 @@ const OrderPageNav = () => {
 
                         {activeTab === 'placed' && (
                             placedOrders?.map((activeOrder) => {
-                                return activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered"  && (
+                                return activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered" && (
                                     <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-blue-500">
                                         <h2 className="bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
                                             Order Status : {activeOrder?.orderStatus}

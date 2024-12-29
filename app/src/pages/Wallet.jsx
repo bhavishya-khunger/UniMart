@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import BottomNav from '../components/General/BottomNav';
-import { BsCopy, BsWallet2 } from 'react-icons/bs';
+import { BsCopy, BsShare, BsWallet2 } from 'react-icons/bs';
 import Transaction from '../components/Wallet/Transaction';
 import axios from 'axios';
 import { UserDataContext } from '../context/UserContext';
@@ -13,6 +13,21 @@ const Wallet = () => {
         }).catch(err => {
             console.error('Failed to copy: ', err);
         });
+    };
+    const handleShare = () => {
+        const message = `🌟 Welcome to UniMart! 🎉
+        
+UniMart is your ultimate platform to get your orders delivered at your hostel door! Whether you're looking for print-on-demand, food pre-order to avoid queues are delivery in exchange of some coins, it is for you. It’s a one-stop shop for everything you need on campus. Join today and explore great deals! 🚀
+
+Use my referral code *${referalCode}* to get exclusive discounts! 🎁 Don't miss out on this opportunity to save while shopping at UniMart!
+
+Join now ➡️ https://w416mzq9-5173.inc1.devtunnels.ms/register?referal=${referalCode} 🌍
+
+#UniMart #CampusShopping #ReferralCode`;
+        const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
+
+        // Open WhatsApp with the pre-filled message
+        window.open(whatsappUrl, "_blank");
     };
     const { user, setUser } = useContext(UserDataContext);
     const referalCode = user?.referalCode; // This should be fetched from the backend 
@@ -57,9 +72,9 @@ const Wallet = () => {
                         <p>Your Unique referal code is</p>
                         <p className='text-xl font-mono'>{referalCode}</p>
                         <p className='text-center text-sm italic'>Share the code with your friends and earn 30 points!</p>
-                        <button onClick={copyToClipboard} className="mt-2 flex justify-center gap-3 self-center py-2 w-full rounded-xl items-center text-white bg-[#FF4539] active:scale-95">
+                        <button onClick={handleShare} className="mt-2 flex justify-center gap-3 self-center py-2 w-full rounded-xl items-center text-white bg-[#FF4539] active:scale-95">
                             {/* #FF4539 - use this when u change */}
-                            <BsCopy />Copy Invite Code
+                            <BsShare />Share Invite Link
                         </button>
                     </div>
                 )}

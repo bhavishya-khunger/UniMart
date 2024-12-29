@@ -193,7 +193,7 @@ function UserPage() {
           </button>
         )}
       </header>
-      <main>
+      <main className={user?.role === "Student" ? "" : "hidden"}>
         <h1 className="text-center text-xl mt-3 font-semibold">Friend's Section</h1>
         <div className="flex px-5 flex-col items-center justify-start w-[100vw] mt-4">
           <div className="relative w-full">

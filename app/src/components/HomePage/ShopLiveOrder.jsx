@@ -1,33 +1,42 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdDone, MdOutlineCancel } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
 
 const ShopLiveOrder = ({ sortedOrders, user }) => {
     const [orders, setOrders] = useState(sortedOrders);
 
+    useEffect(() => {
+        setOrders(sortedOrders);
+    }, [sortedOrders])
+    
     async function cancelOrder(orderId) {
         try {
-            await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/cancel`, {
-                orderId: orderId,
-                shopkeeperId: user?._id
+            const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/cancel`, {
+                orderId,
+                shopkeeperId: user?._id,
             });
-            setOrders(orders);
+            setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
         } catch (error) {
-            console.log(error);
+            console.error("Error canceling the order:", error);
         }
     }
+    
     async function markForPickup(orderId) {
         try {
-            await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/markForPickup`, {
-                orderId: orderId,
-                shopkeeperId: user?._id
+            const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/markForPickup`, {
+                orderId,
+                shopkeeperId: user?._id,
             });
-            setOrders(orders);
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order._id === orderId ? { ...order, orderStatus: "Completed" } : order
+                )
+            );
         } catch (error) {
-            console.log(error);
+            console.error("Error marking the order for pickup:", error);
         }
     }
+    
     return (
         <div>
             {

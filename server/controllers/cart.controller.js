@@ -391,7 +391,7 @@ export const sendRequest = async (req, res) => {
 
         const deliveryFee = Math.ceil(0.08 * totalFee);
 
-        const users = await User.find({ agreesToDeliver: true }).select('-password');
+        const users = await User.find({ agreesToDeliver: true, role: 'Student' }).select('-password');
 
         const filteredUsers = users.filter(
             (user) => user._id.toString() !== order.userId._id.toString()
@@ -495,6 +495,20 @@ export const cancelOrder = async (req, res) => {
         // Verify that the request is being sent by the shopkeeper from whose shop the order is placed
         const isAuthorized = order.productDetails.some(detail => detail.item.shopkeeperId.toString() === shopkeeperId);
         if (!isAuthorized) return res.status(403).json({ message: "You are not authorized to cancel this order." });
+
+        // Notify the user who placed the order
+        sendMessageToSocketId(order.userId.socketId, {
+            event: 'order-cancelled',
+            data: { order },
+        });
+
+        // Notify the delivery person if assigned
+        if (order.deliveryPersonId && order.deliveryPersonId.socketId) {
+            sendMessageToSocketId(order.deliveryPersonId.socketId, {
+                event: 'order-cancelled',
+                data: { order },
+            });
+        }
 
         order.orderStatus = "Cancelled";
         await order.save();

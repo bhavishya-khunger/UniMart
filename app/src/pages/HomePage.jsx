@@ -13,34 +13,36 @@ function App() {
   const [restaurants, setRestaurants] = useState([]);
   const [shopOrders, setShopOrders] = useState([]);
 
-  const {user, setUser} = useContext(UserDataContext);
+  const { user, setUser } = useContext(UserDataContext);
 
   useEffect(() => {
     if (user?.role === 'Admin') return navigate('/admininsights');
   }, [user]);
 
+  const sortOrders = (orders) => {
+    return [...orders].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+  }
+
+  const getShopOrders = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_USER_BASE_URL}/orders/${user?._id}`);
+      setShopOrders(sortOrders(res.data.orders));
+      console.log((res.data.orders));
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
   useEffect(() => {
     const getShops = async () => {
       const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
-      // console.log(response.data.users);
       setRestaurants(response.data.shops);
     }
     getShops();
-    const getShopOrders = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_USER_BASE_URL}/orders/${user?._id}`);
-        setShopOrders(res.data.orders);
-        console.log(res.data.orders);
-      } catch (error) {
-        console.log(error)
-      }
-    }
     getShopOrders();
   }, []);
-
-  const sortedOrders = [...shopOrders].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
 
   const { socket } = useContext(SocketContext);
   const navigate = useNavigate();
@@ -49,7 +51,7 @@ function App() {
     socket.emit("join", { userId: user._id });
     socket.on("order-accepted", () => {
       if (user?.role === "Shopkeeper") {
-        console.log("Order aaya hai!!");
+        getShopOrders();
         navigate('/');
       }
     })
@@ -77,7 +79,7 @@ function App() {
             className="h-56 w-full max-w-xl rounded-3xl"
           />
         </section>
-        
+
         {/* Recommended Section */}
         <section className="flex justify-between items-center mb-6 py-2 rounded-lg">
           <h2 className="text-xl font-semibold">{!restaurants ? "" : "Recommended For You"}</h2>
@@ -140,9 +142,9 @@ function App() {
         </div>
         <div className="w-full">
           <div className="max-w-7xl mx-auto p-4">
-            {sortedOrders.length ? (
+            {shopOrders?.length ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <ShopLiveOrder sortedOrders={sortedOrders} user={user} />
+                <ShopLiveOrder sortedOrders={shopOrders} user={user} />
               </div>
             ) : (
               <p className="text-center text-gray-500">No orders available.</p>

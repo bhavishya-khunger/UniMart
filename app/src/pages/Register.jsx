@@ -1,10 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import InputVal from "../components/General/InputVal";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import ErrorPop from "../components/General/ErrorPop";
 import axios from "axios";
 import Loading from "../components/General/Loading";
-import { UserDataContext } from '../context/UserContext'
+import { UserDataContext } from '../context/UserContext';
 
 const Register = () => {
   const [isShopkeeper, setIsShopkeeper] = useState(false);
@@ -15,10 +15,21 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [referalCode, setReferalCode] = useState("");
+  const [referDisable, setReferDisable] = useState(false);
 
   const { user, setUser } = useContext(UserDataContext);
-
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Extract referral code from URL when component loads
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const referal = params.get("referal");
+    if (referal) {
+      setReferalCode(referal);
+      setReferDisable(true);
+    };
+  }, [location]);
 
   const handleCheckboxChange = () => setIsShopkeeper((prev) => !prev);
 
@@ -57,21 +68,21 @@ const Register = () => {
         ? { email, password, name, role: "Shopkeeper", referalCode }
         : { email, password, sid, name, role: "Student", referalCode };
 
-      console.log("User Payload:", userPayload); // Log the payload to verify its contents
+      console.log("User Payload:", userPayload);
 
       const endpoint = `${import.meta.env.VITE_USER_BASE_URL}/register`;
       const res = await axios.post(endpoint, userPayload);
-      console.log("Response:", res); // Log the response to verify the server's response
+      console.log("Response:", res);
 
-      localStorage.setItem('token', res.data.token);
+      localStorage.setItem("token", res.data.token);
       setUser(res.data.user);
       const time = new Date().getTime() + 1000 * 20 * 60; // 20min
-      localStorage.setItem('expiryTime', time);
+      localStorage.setItem("expiryTime", time);
 
       // Redirect on success
       navigate("/");
     } catch (error) {
-      console.log("Error Response:", error?.response); // Log the error response to debug the issue
+      console.log("Error Response:", error?.response);
       setError(error?.response?.data?.message || "Something went wrong.");
     } finally {
       setLoading(false);
@@ -89,12 +100,12 @@ const Register = () => {
       </header>
       <main>
         <InputVal value={name} onChange={(e) => setName(e.target.value)} fieldVal="Name" type="text" />
-        {isShopkeeper ? ("") : (
+        {!isShopkeeper && (
           <InputVal value={sid} onChange={(e) => setSID(e.target.value)} fieldVal="SID" type="text" />
         )}
         <InputVal value={email} onChange={(e) => setEmail(e.target.value)} fieldVal="Email ID" type="email" />
         <InputVal value={password} onChange={(e) => setPassword(e.target.value)} fieldVal="Password" type="password" />
-        <InputVal value={referalCode} onChange={(e) => setReferalCode(e.target.value)} fieldVal="Referral Code (optional)" type="text" />
+        <InputVal disabled={referDisable} value={referalCode} onChange={(e) => setReferalCode(e.target.value)} fieldVal="Referral Code (optional)" type="text" />
         <div className="flex flex-col items-center justify-center w-[80vw]">
           {loading && <Loading />}
           {error && <ErrorPop text={error} />}

@@ -17,7 +17,7 @@ const OrderConfirmScreen = () => {
         socket.on("order-accepted", () => {
             setAccepted(true);
             setTimeout(() => {
-                navigate('/');
+                navigate('/order');
             }, 3500)
         });
 
