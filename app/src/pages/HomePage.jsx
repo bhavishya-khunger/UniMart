@@ -3,11 +3,11 @@ import Restaurant from "../components/HomePage/Restaurant";
 import axios from 'axios'
 import BottomNav from "../components/General/BottomNav";
 import ErrorPop from "../components/General/ErrorPop"
-import { MdCall } from "react-icons/md";
 import { SocketContext } from '../context/SocketContext.jsx';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ShopLiveOrder from "../components/HomePage/ShopLiveOrder.jsx";
 import { UserDataContext } from '../context/UserContext.jsx'
+import printingPhoto from '../assets/printer.avif'
 
 function App() {
   const [restaurants, setRestaurants] = useState([]);
@@ -34,7 +34,7 @@ function App() {
       console.log(error)
     }
   }
-  
+
   useEffect(() => {
     const getShops = async () => {
       const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
@@ -58,13 +58,16 @@ function App() {
   }, [user]);
   return (
     <>
+      {/* Decorations */}
+      <img className="absolute h-54 w-full object-contain top-0 rounded-b-xl opacity-100 -z-10" src={"https://media.istockphoto.com/id/1190059388/vector/white-splash-on-blue-background-forest-during-a-snow-storm-at-night-christmas-tree.jpg?s=612x612&w=0&k=20&c=6ihDcTPbePYGPhRWt458eQPKvC8kWn2Dv4BR2lTdZTI="} alt="" />
+      {/* <img className="absolute h-54 w-full object-contain top-0 rounded-b-xl opacity-30 -z-10" src={confetti} alt="" /> */}
       {/* show this to student, hidden for ADMIN and SHOPKEEPER */}
       <div className={user.role !== "Student" ? "hidden" : "px-4 py-5 h-full"}>
         {/* Header Section */}
         <header className="flex justify-between items-center mb-8">
           <div className="heading">
-            <h1 className="text-2xl font-bold pl-2">Explore Your Meals</h1>
-            <h1 className="text-2xl font-bold pl-2">With UniMart!</h1>
+            <h1 className="text-2xl text-white font-bold pl-2">Explore Your Meals</h1>
+            <h1 className="text-3xl text-white font-bold pl-2">With UniMart!</h1>
           </div>
           <div className="text-2xl font-semibold flex justify-center items-center w-12 h-12 rounded-full border-2 ml-2 text-blue-600 border-black bg-blue-200">
             {user?.name[0]}
@@ -74,11 +77,21 @@ function App() {
         {/* Cover Image Section */}
         <section className="coverImageContainer flex justify-center items-center relative mb-8">
           <img
-            src="https://img.pikbest.com/templates/20240602/food-burger-restaurant-offer-web-banner-design_10587345.jpg!sw800"
+            src="https://www.shutterstock.com/image-vector/delicious-homemade-burger-splashing-cola-600nw-1805776183.jpg"
             alt="burger"
-            className="h-56 w-full max-w-xl rounded-3xl"
+            className="h-56 w-full border shadow-lg shadow-white max-w-xl rounded-3xl"
           />
         </section>
+
+        {/* Print on Demand */}
+        <Link to={'/pdf'} className="overflow-hidden flex px-3 pr-2 justify-between items-center relative mb-6 transition-colors bg-[#292420] text-white h-28 border-2 border-gray-100 rounded-xl py-2 shadow-md shadow-gray-400 active:scale-95">
+          <span className="flex flex-col text-left">
+            <h1 className="text-sm text-yellow-500 font-semibold italic ">Introducing</h1>
+            <h1 className="text-2xl text-yellow-400 italic font-bold">Print on Demand</h1>
+            <h1 className="text-sm text-yellow-500 font-semibold italic">Choose, Upload, Submit, Collect!</h1>
+          </span>
+          <img className="h-28" src={printingPhoto} alt="" />
+        </Link>
 
         {/* Recommended Section */}
         <section className="flex justify-between items-center mb-6 py-2 rounded-lg">
@@ -111,8 +124,8 @@ function App() {
         {/* Header Section */}
         <header className="flex justify-between items-center mb-8">
           <div className="heading">
-            <h1 className="text-2xl font-bold pl-2">Explore Your Orders</h1>
-            <h1 className="text-2xl font-bold pl-2">With UniMart!</h1>
+            <h1 className="text-2xl text-white font-bold pl-2">Explore Your Orders</h1>
+            <h1 className="text-2xl text-white font-bold pl-2">With UniMart!</h1>
           </div>
           <div className="text-2xl font-semibold flex justify-center items-center w-12 h-12 rounded-full border-2 ml-2 text-blue-600 border-black bg-blue-200">
             {user?.name[0]}
@@ -122,9 +135,9 @@ function App() {
         {/* Cover Image Section */}
         <section className="coverImageContainer flex justify-center items-center relative mb-8">
           <img
-            src="https://img.pikbest.com/templates/20240602/food-burger-restaurant-offer-web-banner-design_10587345.jpg!sw800"
+            src="https://www.shutterstock.com/image-vector/delicious-homemade-burger-splashing-cola-600nw-1805776183.jpg"
             alt="burger"
-            className="h-56 w-full max-w-xl rounded-3xl"
+            className="h-56 shadow-lg shadow-white border w-full max-w-xl rounded-3xl"
           />
         </section>
 

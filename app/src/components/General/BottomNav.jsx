@@ -8,7 +8,7 @@ import { IoBagCheckOutline } from "react-icons/io5";
 const BottomNav = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     return (
-        <nav className="fixed shadow-2xl shadow-gray-600 bottom-0 left-0 w-full bg-white py-3 flex justify-around items-center">
+        <nav className="fixed shadow-inner shadow-gray-200 bottom-0 left-0 w-full bg-white py-3 flex justify-around items-center">
             <Link to={'/wallet'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
                 <AiOutlineWallet className="text-2xl" />
                 <span className="text-sm">Wallet</span>

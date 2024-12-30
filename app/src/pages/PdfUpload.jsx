@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import BottomNav from '../components/General/BottomNav'
 
 const PdfUpload = () => {
   const [file, setFile] = useState(null); // Store the selected file
   const [uploadStatus, setUploadStatus] = useState(""); // Store upload status or result
   const [fileUrl, setFileUrl] = useState(""); // Store the uploaded file's URL
+  const [comments, setComments] = useState("");
 
   const apiKey = import.meta.env.VITE_FILESTACK_API_KEY; // Access the environment variable using import.meta.env // Replace with your Filestack API key
 
@@ -48,99 +50,95 @@ const PdfUpload = () => {
 
   const [selectedVendor, setSelectedVendor] = useState(""); // State for selected vendor
 
-const handleVendorSelection = (vendor) => {
-  setSelectedVendor(vendor === selectedVendor ? "" : vendor); // Toggle vendor selection
-};
+  const handleVendorSelection = (vendor) => {
+    setSelectedVendor(vendor === selectedVendor ? "" : vendor); // Toggle vendor selection
+  };
+
+  const vendors = ["Pankaj Graphics", "Rohit Graphics"];
 
   return (
     <>
       <section className="p-4">
-  <h1 className="text-center text-3xl my-4 bg-orange-500 text-white p-2 rounded-lg shadow-lg">
-    Choose Your Vendor
-  </h1>
-  {/* Container for vendors */}
-  <div className="flex items-center justify-evenly my-4 space-x-4">
-    <div
-      onClick={() => handleVendorSelection("Pankaj Graphics")}
-      className={`border-black border-2 flex flex-col items-center justify-center w-44 h-44 rounded-xl text-white cursor-pointer transition-transform transform hover:scale-105 ${
-        selectedVendor === "Pankaj Graphics" ? "bg-orange-500" : "bg-gray-500"
-      }`}
-    >
-      <img
-        src="https://images.pexels.com/photos/29837298/pexels-photo-29837298/free-photo-of-christmas-gingerbread-cookies-in-teacup-setting.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load"
-        alt="Pankaj Graphics"
-        className="h-[70%] w-[80%] rounded-xl shadow-lg"
-      />
-      <p className="mt-2 font-semibold text-xl">Pankaj Graphics</p>
-    </div>
-    <div
-      onClick={() => handleVendorSelection("Rohit Graphics")}
-      className={`border-black border-2 flex flex-col items-center justify-center w-44 h-44 rounded-xl text-white cursor-pointer transition-transform transform hover:scale-105 ${
-        selectedVendor === "Rohit Graphics" ? "bg-orange-500" : "bg-gray-500"
-      }`}
-    >
-      <img
-        src="https://images.pexels.com/photos/29837298/pexels-photo-29837298/free-photo-of-christmas-gingerbread-cookies-in-teacup-setting.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load"
-        alt="Rohit Graphics"
-        className="h-[70%] w-[80%] rounded-xl shadow-lg"
-      />
-      <p className="mt-2 font-semibold text-xl">Rohit Graphics</p>
-    </div>
-  </div>
-</section>
+        <h1 className="text-center text-2xl my-4 bg-orange-500 text-white p-2 rounded-lg shadow-lg">
+          Choose Your Vendor
+        </h1>
+        {selectedVendor && `Chosen Vendor: ${selectedVendor}`}
+        {/* Container for vendors  */}
+        <div className="grid grid-cols-2 gap-4 my-4">
+          {vendors && vendors.map((ven) => {
+            return (
+              <div
+                key={ven}
+                className={`w-full bg-gray-200 text-base italic py-3 px-4 rounded-2xl text-center cursor-pointer ${selectedVendor === ven ? "bg-orange-500 text-white" : ""}`}
+                onClick={() => handleVendorSelection(ven)}
+              >
+                {ven}
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
-<section className="my-4 p-4">
-  <h1 className="text-2xl text-center mb-4 text-gray-700 font-semibold">
-    Upload Your PDF File
-  </h1>
-  <form onSubmit={handleUpload} className="flex flex-col items-center space-y-6">
-    <div className="flex flex-col items-start w-full max-w-md">
-      <label htmlFor="pdfFile" className="text-lg mb-2 text-gray-600">
-        Choose a PDF:
-      </label>
-      <input
-        type="file"
-        id="pdfFile"
-        accept="application/pdf"
-        onChange={handleFileChange}
-        className="p-2 border-2 border-gray-300 rounded-lg w-full bg-white focus:ring-2 focus:ring-gray-500"
-      />
-    </div>
+      <section className="my-2 p-2 px-4">
+        <h1 className="text-2xl text-center mb-4 text-gray-700 font-semibold">
+          Upload Your PDF File
+        </h1>
+        <form onSubmit={handleUpload} className="flex flex-col items-center space-y-6">
+          <div className="flex flex-col items-start w-full max-w-md">
+            <label htmlFor="pdfFile" className="text-lg mb-2 text-gray-600">
+              Choose a PDF:
+            </label>
+            <input
+              required
+              type="file"
+              id="pdfFile"
+              accept="application/pdf"
+              onChange={handleFileChange}
+              className="p-2 border-2 border-gray-300 rounded-lg w-full bg-white focus:ring-2 focus:ring-gray-500"
+            />
+          </div>
 
-    <div className="flex flex-col items-start w-full max-w-md">
-      <label htmlFor="comments" className="text-lg mb-2 text-gray-600">
-        Add Additional Comments:
-      </label>
-      <input
-        type="text"
-        id="comments"
-        placeholder="Enter your comments here"
-        className="p-2 border-2 border-gray-300 rounded-lg w-full bg-white focus:ring-2 focus:ring-gray-500"
-      />
-    </div>
+          <div className="flex flex-col items-start w-full max-w-md">
+            <label htmlFor="comments" className="text-lg mb-2 text-gray-600">
+              Add Additional Comments:
+            </label>
+            <input
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              type="text"
+              id="comments"
+              placeholder="e.g. Print BW, Print on single page, Colored print"
+              className="p-2 border-2 border-gray-300 rounded-lg w-full bg-white focus:ring-2 focus:ring-gray-500"
+            />
+          </div>
 
-    <button
-      type="submit"
-      className="text-lg px-6 py-3 bg-orange-500 text-white font-bold rounded-full transition-all duration-300 ease-in-out transform hover:bg-orange-600 hover:scale-105 active:scale-95"
-    >
-      Upload PDF
-    </button>
-  </form>
-  {/* Sample container for checking URL */}
-  {/* {fileUrl && (
-    <p className="mt-6 text-center text-gray-700">
-      Given URL:{" "}
-      <a
-        href={fileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-500 underline hover:text-blue-700"
-      >
-        {fileUrl}
-      </a>
-    </p>
-  )} */}
-</section>
+          <button
+            type="submit"
+            className="text-lg px-6 py-3 bg-orange-500 text-white font-bold rounded-full transition-all duration-300 ease-in-out transform hover:bg-orange-600 hover:scale-105 active:scale-95"
+          >
+            Upload PDF
+          </button>
+        </form>
+        {/* Sample container for checking URL */}
+        {fileUrl && (
+          <p className="mt-6 text-center text-gray-700">
+            Given URL:{" "}
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 underline hover:text-blue-700"
+            >
+              {fileUrl}
+              {comments}
+            </a>
+          </p>
+        )}
+        {selectedVendor}
+        {uploadStatus}
+        {comments}
+        <BottomNav />
+      </section>
     </>
   );
 };

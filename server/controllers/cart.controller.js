@@ -158,7 +158,7 @@ export const applyCoupon = async (req, res) => {
 
 export const orderCart = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, comments } = req.body;
 
         if (!userId) {
             return res.status(400).json({ message: "User ID is required." });
@@ -195,6 +195,7 @@ export const orderCart = async (req, res) => {
 
         // Create order from cart
         const order = new Order({
+            comments: comments,
             userId,
             productDetails: cartItems,
         });
@@ -583,7 +584,7 @@ export const markOrderOutForDelivery = async (req, res) => {
         // Generate a 4-digit OTP
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
         order.otp = otp;
-        
+
         await order.save();
 
         // Notify the user who placed the order
@@ -611,15 +612,15 @@ export const getActiveOrdersByDeliveryPerson = async (req, res) => {
             deliveryPersonId,
             orderStatus: { $in: ["Accepted", "Out for Delivery", "Completed"] }
         })
-        .populate('userId', '-password')
-        .populate('productDetails.item')
-        .populate({
-            path: 'productDetails.item',
-            populate: {
-                path: 'shopkeeperId',
-                model: 'User',
-            },
-        });
+            .populate('userId', '-password')
+            .populate('productDetails.item')
+            .populate({
+                path: 'productDetails.item',
+                populate: {
+                    path: 'shopkeeperId',
+                    model: 'User',
+                },
+            });
 
         if (!orders || orders.length === 0) {
             return res.status(404).json({ message: "No active orders found for this delivery person." });

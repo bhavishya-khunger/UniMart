@@ -26,6 +26,10 @@ const shopSchema = new mongoose.Schema({
     menu: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
+    }],
+    shopOrders: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Order",
     }]
 })
 

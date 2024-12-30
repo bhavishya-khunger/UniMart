@@ -6,6 +6,10 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  shopId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Shop',
+  },
   productDetails: [{
     item: {
       type: mongoose.Schema.Types.ObjectId,
@@ -20,6 +24,17 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ['Pending', 'Accepted', 'Completed', 'Out for Delivery', 'Delivered', 'Cancelled'],
     default: 'Pending',
+  },
+  comments: String,
+  pdfLink: String,
+  orderTotal: Number,
+  friendsOnly: {
+    type: Boolean,
+    default: false,
+  },
+  time: {
+    type: Date,
+    default: Date.now,
   },
   prePayment: {
     type: Boolean,

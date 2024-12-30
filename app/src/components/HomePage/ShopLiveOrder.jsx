@@ -108,6 +108,12 @@ const ShopLiveOrder = ({ sortedOrders, user }) => {
                             {/* Footer */}
                             <div className="bg-gray-50 p-4 rounded-b-lg text-sm">
                                 <p className="mb-1">
+                                    Comments:{" "}
+                                    <span className="font-medium text-gray-800">
+                                        {order?.comments || "N/A"}
+                                    </span>
+                                </p>
+                                <p className="mb-1">
                                     Delivery Person:{" "}
                                     <span className="font-medium text-gray-800">
                                         {order.deliveryPersonId?.name || "N/A"}
