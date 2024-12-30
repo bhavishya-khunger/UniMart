@@ -8,10 +8,10 @@ import { UserDataContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 const OrderPageNav = () => {
-    const [activeTab, setActiveTab] = useState('placed');
     const [placedOrders, setPlacedOrders] = useState([]);
     const [deliveryOrders, setDeliveryOrders] = useState([]);
     const { user, setUser } = useContext(UserDataContext);
+    const [activeTab, setActiveTab] = useState(user?.role === "Student" ? "placed" : "past");
     const [otpCode, setOtpCode] = useState('');
     const [error, setError] = useState("");
     const navigate = useNavigate();
@@ -84,12 +84,15 @@ const OrderPageNav = () => {
     return (
         <div style={{ backgroundColor: 'white' }}>
             <div style={{ display: 'flex', justifyContent: 'space-around', position: "sticky", top: 0, background: "#fff", padding: '10px', borderBottom: '2px solid white' }}>
-                <div onClick={() => handleTabClick('placed')} style={tabStyle(activeTab === 'placed')}>
-                    Active Orders
-                </div>
-                <div onClick={() => handleTabClick('delivery')} style={tabStyle(activeTab === 'delivery')}>
-                    Delivery Orders
-                </div>
+                {user?.role === "Student" && (
+                    <>
+                        <div onClick={() => handleTabClick('placed')} style={tabStyle(activeTab === 'placed')}>
+                            Active Orders
+                        </div>
+                        <div onClick={() => handleTabClick('delivery')} style={tabStyle(activeTab === 'delivery')}>
+                            Delivery Orders
+                        </div></>
+                )}
                 <div onClick={() => handleTabClick('past')} style={tabStyle(activeTab === 'past')}>
                     Past Orders
                 </div>

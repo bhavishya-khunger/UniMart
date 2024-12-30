@@ -1,11 +1,31 @@
-import React, { useState } from "react";
-import BottomNav from '../components/General/BottomNav'
+import React, { useContext, useEffect, useState } from "react";
+import BottomNav from '../components/General/BottomNav';
+import { UserDataContext } from '../context/UserContext';
+import axios from 'axios';
+import ErrorPop from '../components/General/ErrorPop';
 
 const PdfUpload = () => {
   const [file, setFile] = useState(null); // Store the selected file
   const [uploadStatus, setUploadStatus] = useState(""); // Store upload status or result
   const [fileUrl, setFileUrl] = useState(""); // Store the uploaded file's URL
   const [comments, setComments] = useState("");
+  const { user, setUser } = useContext(UserDataContext);
+  const [error, setError] = useState("");
+  const [vendors, setVendors] = useState([]);
+
+  const getPrinters = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-printers`);
+      setVendors(res?.data?.printers)
+    } catch (error) {
+      setError(error?.response?.data?.message)
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getPrinters();
+  }, [vendors])
 
   const apiKey = import.meta.env.VITE_FILESTACK_API_KEY; // Access the environment variable using import.meta.env // Replace with your Filestack API key
 
@@ -50,17 +70,20 @@ const PdfUpload = () => {
 
   const [selectedVendor, setSelectedVendor] = useState(""); // State for selected vendor
 
-  const handleVendorSelection = (vendor) => {
-    setSelectedVendor(vendor === selectedVendor ? "" : vendor); // Toggle vendor selection
+  const handleVendorSelection = (vendorId) => {
+    setSelectedVendor(vendorId === selectedVendor ? "" : vendorId); // Toggle vendor selection
   };
 
-  const vendors = ["Pankaj Graphics", "Rohit Graphics"];
+  const sendPrintRequest = () => {
+
+  }
 
   return (
     <>
       <section className="p-4">
+        <img src="https://img.freepik.com/free-vector/printing-invoices-concept-illustration_114360-4693.jpg" alt="" className="h-48 w-full object-contain self-center" />
         <h1 className="text-center text-2xl my-4 bg-orange-500 text-white p-2 rounded-lg shadow-lg">
-          Choose Your Vendor
+          Step 1: Choose Vendor
         </h1>
         {selectedVendor && `Chosen Vendor: ${selectedVendor}`}
         {/* Container for vendors  */}
@@ -68,11 +91,11 @@ const PdfUpload = () => {
           {vendors && vendors.map((ven) => {
             return (
               <div
-                key={ven}
-                className={`w-full bg-gray-200 text-base italic py-3 px-4 rounded-2xl text-center cursor-pointer ${selectedVendor === ven ? "bg-orange-500 text-white" : ""}`}
-                onClick={() => handleVendorSelection(ven)}
+                key={ven?._id}
+                className={`w-full bg-gray-200 text-base italic py-3 px-4 rounded-2xl text-center cursor-pointer ${selectedVendor === ven?.shopName ? "bg-gray-500 text-white" : ""}`}
+                onClick={() => handleVendorSelection(ven?.shopName)}
               >
-                {ven}
+                {ven?.shopName}
               </div>
             );
           })}
@@ -80,8 +103,8 @@ const PdfUpload = () => {
       </section>
 
       <section className="my-2 p-2 px-4">
-        <h1 className="text-2xl text-center mb-4 text-gray-700 font-semibold">
-          Upload Your PDF File
+        <h1 className="text-center text-2xl mb-3 bg-orange-500 text-white p-2 rounded-lg shadow-lg">
+          Step 2: Upload Your PDF
         </h1>
         <form onSubmit={handleUpload} className="flex flex-col items-center space-y-6">
           <div className="flex flex-col items-start w-full max-w-md">
@@ -111,7 +134,7 @@ const PdfUpload = () => {
               className="p-2 border-2 border-gray-300 rounded-lg w-full bg-white focus:ring-2 focus:ring-gray-500"
             />
           </div>
-
+          {error && <ErrorPop text={error} />}
           <button
             type="submit"
             className="text-lg px-6 py-3 bg-orange-500 text-white font-bold rounded-full transition-all duration-300 ease-in-out transform hover:bg-orange-600 hover:scale-105 active:scale-95"
@@ -119,24 +142,7 @@ const PdfUpload = () => {
             Upload PDF
           </button>
         </form>
-        {/* Sample container for checking URL */}
-        {fileUrl && (
-          <p className="mt-6 text-center text-gray-700">
-            Given URL:{" "}
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 underline hover:text-blue-700"
-            >
-              {fileUrl}
-              {comments}
-            </a>
-          </p>
-        )}
-        {selectedVendor}
-        {uploadStatus}
-        {comments}
+        <div className="h-20"></div>
         <BottomNav />
       </section>
     </>

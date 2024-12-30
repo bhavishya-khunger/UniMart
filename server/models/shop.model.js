@@ -5,6 +5,10 @@ const shopSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    shopType: {
+        type: String,
+        enum: ["food", "print"],
+    },
     verified: {
         type: Boolean,
         default: false,
@@ -13,12 +17,14 @@ const shopSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    shopRating: [{rater: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-    }, rating: {
-        type: Number
-    }}],
+    shopRating: [{
+        rater: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        }, rating: {
+            type: Number
+        }
+    }],
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

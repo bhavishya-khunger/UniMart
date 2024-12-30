@@ -1,6 +1,7 @@
 import express from 'express';
 import { protectRoute } from '../middlewares/auth.user.js';
 import { addToCart, cancelOrder, confirmOrder, findAOrder, getActiveOrdersByDeliveryPerson, getCart, markOrderAsDelivered, markOrderForPickup, markOrderOutForDelivery, orderCart, processOrder, removeItemFromCart, sendRequest } from '../controllers/cart.controller.js';
+import { postPrintOrder } from '../controllers/printer.controller.js';
 
 const router = express.Router();
 
@@ -20,4 +21,7 @@ router.post('/order/markForPickup', markOrderForPickup);
 router.post('/order/markForDelivery', markOrderOutForDelivery);
 router.post('/order/markDelivered', markOrderAsDelivered);
 
+// Printing Routes
+
+router.post('/print/request', postPrintOrder);
 export default router;

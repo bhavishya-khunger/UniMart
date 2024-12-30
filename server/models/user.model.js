@@ -104,7 +104,15 @@ const userSchema = new mongoose.Schema({
       type: "String",
       enum: ["Approved", "Declined", "Sent", "Received"]
     }
-  }]
+  }],
+  shopType: {
+    type: String,
+    enum: ["food", "print"],
+  },
+  shopId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Shop",
+  }
 });
 
 // to compare hashed passwords

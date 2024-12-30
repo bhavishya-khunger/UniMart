@@ -25,7 +25,7 @@ const BottomNav = () => {
                     <span className="text-sm">Admin Insights</span>
                 </Link>
             )}
-            {user?.role === 'Shopkeeper' && (
+            {user?.role === 'Shopkeeper' && user?.shopType && user?.shopType === "food" && (
                 <Link to={'/editmenu'} className="flex flex-col items-center text-gray-600 hover:text-orange-500">
                     <BiFoodMenu className="text-2xl" />
                     <span className="text-sm">Menu</span>

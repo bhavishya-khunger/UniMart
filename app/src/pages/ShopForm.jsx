@@ -12,12 +12,13 @@ const ShopForm = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [shopType, setShopType] = useState("shop");
     const navigate = useNavigate();
 
     const { user, setUser } = useContext(UserDataContext);
 
     const handleSubmit = async () => {
-        if (!shopName || !shopImage) {
+        if (!shopName || !shopImage || !shopType) {
             setError('All fields are required.');
             return;
         }
@@ -27,9 +28,10 @@ const ShopForm = () => {
         try {
             const res = await axios.post(
                 `${import.meta.env.VITE_SHOP_BASE_URL}/create-shop`,
-                { shopName, shopImage, owner: user._id }
+                { shopName, shopType, shopImage, owner: user._id }
             );
             setUser(res.data.user);
+            console.log("submitted");
             setSubmitted(true);
         } catch (error) {
             setError(error?.response?.data?.message || 'Something went wrong.');
@@ -64,6 +66,13 @@ const ShopForm = () => {
             <main>
                 <InputVal value={shopName} onChange={(e) => setShopName(e.target.value)} fieldVal="Shop's Name (to be displayed)" type="text" />
                 <InputVal value={shopImage} onChange={(e) => setShopImage(e.target.value)} fieldVal="Display Image Link" type="text" />
+                <div className="container flex flex-col mb-2">
+                    <label className="text-gray-600">Shop Type</label>
+                    <select onChange={(e) => setShopType(e.target.value)} value={shopType} className="border-2 py-1 rounded-lg mt-1 bg-gray-100 text-lg outline-none w-[75vw]">
+                        <option className='text-sm' value="food">Food</option>
+                        <option className='text-sm' value="print">Printing Services</option>
+                    </select>
+                </div>
                 <div className="flex flex-col items-center justify-center w-[80vw]">
                     {loading && <Loading />}
                     {error && <ErrorPop text={error} />}

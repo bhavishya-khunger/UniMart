@@ -17,10 +17,12 @@ export const getAllShops = async (req, res) => {
 
 export const createShop = async (req, res) => {
     try {
-        const { shopName, shopImage, owner } = req.body;
+        const { shopName, shopType, shopImage, owner } = req.body;
+
+        console.log("SHOP: ", shopType);
 
         // Validate input
-        if (!shopName || !shopImage || !owner) {
+        if (!shopName || !shopImage || !owner || !shopType) {
             return res.status(400).json({ message: "All fields are required." });
         }
 
@@ -33,13 +35,13 @@ export const createShop = async (req, res) => {
         }
 
         // Create shop
-        const newShop = new Shop({ shopImage, shopName, owner });
+        const newShop = new Shop({ shopImage, shopName, owner, shopType });
         await newShop.save();
 
         // Update user
         const user = await User.findByIdAndUpdate(
             owner,
-            { isShopVerified: true },
+            { shopId: newShop?._id, shopType: shopType, isShopVerified: true },
             { new: true }
         );
         if (!user) {
@@ -70,5 +72,20 @@ export const getUnverifiedShops = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+    }
+}
+
+export const getPrinters = async (req, res) => {
+    try {
+        const printers = await Shop.find({ shopType: "print", verified: true }).populate("owner");
+
+        if (!printers || printers.length === 0) {
+            return res.status(404).json({ message: "No printers found." });
+        }
+
+        return res.status(200).json({ printers });
+    } catch (error) {
+        console.error("Error fetching printers:", error.message);
+        return res.status(500).json({ error: error.message });
     }
 }
