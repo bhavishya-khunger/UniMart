@@ -38,7 +38,7 @@ function App() {
   useEffect(() => {
     const getShops = async () => {
       const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
-      setRestaurants(response.data.shops);
+      setRestaurants(response.data.shops.filter((shop) => shop?.shopType === "food"));
     }
     getShops();
     getShopOrders();

@@ -352,7 +352,7 @@ export const processOrder = async (req, res) => {
 
 export const sendRequest = async (req, res) => {
     try {
-        const { orderId } = req.body;
+        const { orderId, selfPickUp, sendToFriends, pickupTime } = req.body;
 
         if (!orderId) {
             return res.status(400).json({ message: "No order ID provided." });
@@ -360,6 +360,7 @@ export const sendRequest = async (req, res) => {
 
         const order = await Order.findById(orderId)
             .populate('userId', '-password')
+            .populate('userId.friendList')
             .populate('productDetails.item')
             .populate({
                 path: 'productDetails.item', // Populate the `item` field in `productDetails`
@@ -368,6 +369,8 @@ export const sendRequest = async (req, res) => {
                     model: 'User', // Reference the Shopkeeper model
                 },
             });
+
+        const placedByFriends = order?.userId?.friendList;
 
         if (!order) {
             return res.status(400).json({ message: "No order exists with this ID." });
@@ -399,16 +402,25 @@ export const sendRequest = async (req, res) => {
         );
 
         // Send order and shops to the users via socket
-        filteredUsers.map((user) => {
-            sendMessageToSocketId(user.socketId, {
-                event: "order-request",
-                data: { order, shops, deliveryFee },
+        if (!sendToFriends) {
+            filteredUsers.map((user) => {
+                sendMessageToSocketId(user.socketId, {
+                    event: "order-request",
+                    data: { order, shops, deliveryFee },
+                });
             });
-        });
+        } else {
+            placedByFriends.map((user) => {
+                sendMessageToSocketId(user.socketId, {
+                    event: "order-request",
+                    data: { order, shops, deliveryFee },
+                });
+            });
+        }
 
         return res.status(200).json({
             message: "Requests Sent to the users.",
-            filteredUsers,
+            allUsers: sendToFriends ? placedByFriends : filteredUsers,
             order,
             shops,
         });

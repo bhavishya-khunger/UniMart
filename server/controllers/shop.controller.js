@@ -4,7 +4,7 @@ import User from "../models/user.model.js";
 export const getAllShops = async (req, res) => {
     try {
         const shops = await Shop.find({ verified: true });
-
+        console.log(shops);
         if (!shops) return res.status(400).json({
             message: "No Shops Found Near You."
         });

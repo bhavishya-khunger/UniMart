@@ -12,7 +12,7 @@ const ShopForm = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [shopType, setShopType] = useState("shop");
+    const [shopType, setShopType] = useState("food");
     const navigate = useNavigate();
 
     const { user, setUser } = useContext(UserDataContext);

@@ -44,6 +44,9 @@ const CartPage = () => {
       // Step 2: Request the order (make sure this only happens once)
       const response2 = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/request`, {
         orderId: response1?.data?.order?._id,
+        selfPickUp: selfPickUp,
+        sendToFriends: sendToFriends,
+        pickupTime: pickupTime
       });
       await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/request`, {
         orderId: response1?.data?.order?._id,
@@ -133,9 +136,6 @@ const CartPage = () => {
             <span className="text-gray-600">Delivery</span>
             <span className="text-gray-600">{Math.floor((8 / 100) * totalPrice)}pts</span>
           </div>
-          <div className="flex justify-center items-center">
-            {errorText && <ErrorPop text={errorText} />}
-          </div>
         </div>
 
         <div className="mt-4 flex flex-col w-full justify-center">
@@ -172,6 +172,15 @@ const CartPage = () => {
                 />
               </div>
             )}
+          </div>
+          <div className="flex justify-center items-center">
+            {errorText && <ErrorPop text={errorText} />}
+          </div>
+          <div className="flex flex-col w-full justify-center">
+            <div className="flex justify-between items-center py-2">
+              <h3 className="text-black font-semibold">PAYMENT TOTAL</h3>
+              <h3 className="text-black font-semibold">{Math.floor((108 / 100) * totalPrice)} pts</h3>
+            </div>
           </div>
           <button
             disabled={totalPrice === 0}
