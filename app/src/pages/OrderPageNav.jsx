@@ -30,11 +30,11 @@ const OrderPageNav = () => {
                     })
                     navigate('/wallet');
                 } catch (error) {
-                    console.log(error);
+                    // console.log(error);
                 }
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             setError(error?.response?.data?.message);
         }
     }
@@ -46,12 +46,12 @@ const OrderPageNav = () => {
                 deliveryPersonId: user?._id
             });
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     }
 
     const getOrderDetails = async () => {
-        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/${JSON.parse(localStorage.getItem('user'))._id}`);
+        const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/${user?._id}`);
         if (response.data.order) {
             setPlacedOrders(response?.data?.order);
         }
@@ -61,9 +61,14 @@ const OrderPageNav = () => {
         const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/delivery/${JSON.parse(localStorage.getItem('user'))._id}`);
         if (response.data.orders) {
             setDeliveryOrders(response.data.orders);
-            console.log(response.data.orders)
         }
     }
+
+    const sortOrders = (orders) => {
+        return [...orders].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+    };
 
     useEffect(() => {
         getOrderDetails();
@@ -104,7 +109,7 @@ const OrderPageNav = () => {
                         {/* Active Placed Orders */}
 
                         {activeTab === 'placed' && (
-                            placedOrders?.map((activeOrder) => {
+                            sortOrders(placedOrders)?.map((activeOrder) => {
                                 return activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered" && (
                                     <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-blue-500">
                                         <h2 className="bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
@@ -148,7 +153,41 @@ const OrderPageNav = () => {
                                 )
                             })
                         )}
-                        {activeTab === 'placed' && !placedOrders.length && <p className='text-center'>No Active Placed Orders</p>}
+                        {activeTab === 'placed' && (
+                            sortOrders(placedOrders)?.map((activeOrder) => {
+                                return activeOrder?.pdfLink && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered" && (
+                                    <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-blue-500">
+                                        <h2 className="bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
+                                            Order Status : {activeOrder?.orderStatus}
+                                        </h2>
+                                        <p className="italic mt-2">
+                                            The printing order placed at {activeOrder?.shopId?.shopName} needs to be picked up. Contact owner for more details.
+                                        </p>
+                                        <p><b>Added comments:</b> {activeOrder?.comments || "None"}</p>
+                                        <div className="flex items-center justify-between px-3 w-full mt-3 h-fit py-2 rounded-xl bg-blue-100">
+                                            <div className="flex items-center gap-3">
+                                                <span className="bg-red-400 text-white p-1 text-lg rounded-full h-10 w-10 flex items-center justify-center">{activeOrder?.shopId?.owner?.name[0]}</span>
+                                                <span>
+                                                    <p className="text-lg font-semibold">{activeOrder?.shopId?.owner?.name}</p>
+                                                </span>
+                                            </div>
+                                            <span>
+                                                <MdCall onClick={() => {
+                                                    alert(`Call : ${activeOrder?.shopId?.owner?.phone}`)
+                                                }} size={22} className="mr-2" />
+                                            </span>
+                                        </div>
+                                        {activeOrder?.orderStatus === "Out for Delivery" && (
+                                            <span className='w-full text-sm mt-3 text-center'>
+                                                Your order is Out For Delivery. Kindly share the below OTP with {activeOrder?.deliveryPersonId?.name} to accept the order.
+                                                <div className='text-lg bg-blue-600 text-white mt-2 rounded-lg'>OTP : {activeOrder?.otp}</div>
+                                            </span>
+                                        )}
+                                    </section>
+                                )
+                            })
+                        )}
+                        {activeTab === 'placed' && placedOrders.length === 0 && <p className='text-center'>No Active Placed Orders</p>}
 
                         {/* Active Delivery Orders */}
 

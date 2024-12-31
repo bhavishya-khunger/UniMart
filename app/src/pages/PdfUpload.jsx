@@ -3,6 +3,8 @@ import BottomNav from '../components/General/BottomNav';
 import { UserDataContext } from '../context/UserContext';
 import axios from 'axios';
 import ErrorPop from '../components/General/ErrorPop';
+import Loading from '../components/General/Loading';
+import { useNavigate } from "react-router-dom";
 
 const PdfUpload = () => {
   const [file, setFile] = useState(null); // Selected file
@@ -12,6 +14,8 @@ const PdfUpload = () => {
   const [vendors, setVendors] = useState([]); // List of vendors
   const [selectedVendor, setSelectedVendor] = useState(""); // Selected vendor
   const [error, setError] = useState(""); // Error message
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const navigate = useNavigate(); // Navigation hook
 
   const { user } = useContext(UserDataContext); // User data context
 
@@ -48,6 +52,7 @@ const PdfUpload = () => {
     }
 
     try {
+      setIsLoading(true); // Set loading state to true
       setUploadStatus("Uploading...");
       const response = await fetch(
         `https://www.filestackapi.com/api/store/S3?key=${import.meta.env.VITE_FILESTACK_API_KEY}`,
@@ -69,24 +74,27 @@ const PdfUpload = () => {
       setUploadStatus("File uploaded successfully!");
 
       // Send the print request after successful upload
-      sendPrintRequest(fileUrl);
+      await sendPrintRequest(data.url);
     } catch (error) {
       console.error("Error during file upload:", error);
       setUploadStatus("Error uploading file. Please try again.");
+    } finally {
+      setIsLoading(false); // Set loading state to false
     }
   };
 
-  const sendPrintRequest = async (fileLink) => {
+  const sendPrintRequest = async (file) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/print/request`, {
-        fileLink: fileLink,
+        fileLink: file,
         vendorId: selectedVendor,
-        comments,
+        comments: comments,
         userId: user?._id,
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         setUploadStatus("Print request sent successfully!");
+        navigate("/order");
       } else {
         throw new Error("Failed to send print request.");
       }
@@ -100,15 +108,13 @@ const PdfUpload = () => {
     setSelectedVendor(vendorId === selectedVendor ? "" : vendorId); // Toggle vendor selection
   };
 
-
   return (
     <>
       <img
         src="https://img.freepik.com/free-vector/printing-invoices-concept-illustration_114360-4693.jpg"
         alt="Printing Invoices Illustration"
-        className="h-48 w-full object-contain self-center"
+        className="h-32 w-full object-contain self-center"
       />
-      {uploadStatus}
       {vendors.length === 0 ? (
         <div className="flex items-center justify-center">
           <ErrorPop text="This service is not available in your area." />
@@ -169,9 +175,10 @@ const PdfUpload = () => {
                 />
               </div>
               {error && <ErrorPop text={error} />}
+              {isLoading && <Loading />}
+              {uploadStatus && <p className="mt-3 italic font-semibold">{uploadStatus}</p>}
               <button
-                type="button"
-                onClick={handleUpload}
+                type="submit"
                 className="text-lg px-6 py-3 bg-orange-500 text-white font-bold rounded-full transition-all duration-300 ease-in-out transform hover:bg-orange-600 hover:scale-105 active:scale-95"
               >
                 Upload PDF

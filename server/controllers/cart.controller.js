@@ -230,11 +230,18 @@ export const findAOrder = async (req, res) => {
             .populate('productDetails.item')
             .populate('deliveryPersonId')
             .populate({
-                path: 'productDetails.item', // Populate the `item` field in `productDetails`
-                populate: {
-                    path: 'shopkeeperId', // Populate the `shopkeeperId` field within `Product`
-                    model: 'User', // Reference the Shopkeeper model
-                },
+            path: 'shopId',
+            populate: {
+                path: 'owner',
+                model: 'User',
+            },
+            })
+            .populate({
+            path: 'productDetails.item', // Populate the `item` field in `productDetails`
+            populate: {
+                path: 'shopkeeperId', // Populate the `shopkeeperId` field within `Product`
+                model: 'User', // Reference the Shopkeeper model
+            },
             });
 
         if (!order) {
