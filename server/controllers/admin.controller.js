@@ -14,6 +14,8 @@ export const verifyShop = async (req, res) => {
             shop
         })
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 }

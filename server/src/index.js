@@ -37,5 +37,7 @@ app.use('/api/v1/shops', shopRoutes);
 app.use('/api/v1/cart', cartRoutes);
 
 server.listen(process.env.PORT, () => {
-    log('Server has started.');
+    // log('Server has started.');
+
+
 })

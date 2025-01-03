@@ -21,7 +21,9 @@ export const postPrintOrder = async (req, res) => {
 
         res.status(201).json({ message: 'Print order posted successfully', order: { fileLink, userId, vendorId, comments } });
     } catch (error) {
-        console.error("Error sending print request:", error);
+        // console.error("Error sending print request:", error);
+
+
         res.status(500).json({ message: "Error sending print request. Please try again." });
     }
 };
