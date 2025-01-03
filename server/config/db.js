@@ -9,7 +9,5 @@ export const connectDB = async (req, res) => {
 
     } catch (error) {
         // log(error);
-
-
     }
 }

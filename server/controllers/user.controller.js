@@ -9,7 +9,7 @@ export const registerUser = async (req, res) => {
     try {
         const { name, email, password, sid, role, referalCode } = req.body;
 
-        // // console.log(req.body);
+        // console.log(req.body);
 
 
         // console.log(req.body);

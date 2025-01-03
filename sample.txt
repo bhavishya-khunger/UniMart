@@ -40,10 +40,14 @@ const PdfUpload = () => {
       setUploadStatus('File uploaded successfully!');
       setFileUrl(data.url); // Save the file URL in state
       useEffect(() => {
-        if (fileUrl) console.log(fileUrl);
+        if (fileUrl) // console.log(fileUrl);
+
+
       }, [fileUrl]);
     } catch (error) {
-      console.error('Error uploading file:', error);
+      // console.error('Error uploading file:', error);
+
+
       setUploadStatus('Error uploading file. Please try again.');
     }
   };
