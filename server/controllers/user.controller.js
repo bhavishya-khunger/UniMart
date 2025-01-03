@@ -207,17 +207,24 @@ export const getOrdersForShop = async (req, res) => {
             return res.status(400).json({ message: "Shop not registered." });
         }
 
-        const allOrders = await Order.find({
+        let allOrders = await Order.find({
             orderStatus: { $in: ['Completed', 'Accepted'] }
         })
             .populate("productDetails.item")
             .populate("deliveryPersonId");
 
-        const shopOrders = allOrders.filter((order) =>
-            Array.isArray(order.productDetails) &&
-            order.productDetails.some((productDetail) =>
-                productDetail?.item?.shopkeeperId?.toString() === shop.owner.toString()
-            )
+        if (shop.shopType === "print") {
+            allOrders = await Order.find({
+                orderStatus: { $in: ['Completed', 'Pending'] }
+            })
+                .populate("productDetails.item")
+                .populate("deliveryPersonId");
+        }
+
+        const shopOrders = allOrders.filter(order => 
+            shop.shopType === "food" 
+            ? order.productDetails.item.shopId.toString() === shop._id.toString() 
+            : order.shopId.toString() === shop._id.toString()
         );
 
         return res.status(200).json({
@@ -319,7 +326,7 @@ export const addFriend = async (req, res) => {
                 }
                 sendMessageToSocketId(friend.socketId, {
                     event: "friendRequestApproved",
-                    data: await User.findOne({socketId : friend?.socketId}).populate('friendList.id'),
+                    data: await User.findOne({ socketId: friend?.socketId }).populate('friendList.id'),
                 });
                 return res.status(200).json({
                     message: "Friend request approved.",
@@ -368,7 +375,7 @@ export const sendFriendRequest = async (req, res) => {
 
         sendMessageToSocketId(receiver.socketId, {
             event: "friendRequestReceived",
-            data: await User.findOne({socketId : receiver?.socketId}).populate('friendList.id'),
+            data: await User.findOne({ socketId: receiver?.socketId }).populate('friendList.id'),
         });
 
         return res.status(200).json({
@@ -404,7 +411,7 @@ export const deleteFriend = async (req, res) => {
 
         sendMessageToSocketId(friend.socketId, {
             event: "friendDeleted",
-            data: await User.findOne({socketId : friend?.socketId}).populate('friendList.id'),
+            data: await User.findOne({ socketId: friend?.socketId }).populate('friendList.id'),
         });
 
         return res.status(200).json({

@@ -154,7 +154,7 @@ const OrderPageNav = () => {
                             })
                         )}
                         {activeTab === 'placed' && (
-                            sortOrders(placedOrders)?.map((activeOrder) => {
+                            sortOrders(placedOrders) ?.map((activeOrder) => {
                                 return activeOrder?.pdfLink && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered" && (
                                     <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-blue-500">
                                         <h2 className="bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
