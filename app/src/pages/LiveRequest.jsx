@@ -17,7 +17,9 @@ const LiveRequest = () => {
     useEffect(() => {
         // Listen to the socket event and update state
         socket.on("order-request", (info) => {
-            console.log("Received Order Data: ", info.order);
+            // console.log("Received Order Data: ", info.order);
+
+
             setReceivesInfo(true);
             setData(info.order);
             setShops(info.shops);
@@ -52,7 +54,9 @@ const LiveRequest = () => {
             socket.emit("order-confirmed");
             navigate('/');
         } catch (error) {
-            console.error('Error accepting order:', error?.response?.data || error.message);
+            // console.error('Error accepting order:', error?.response?.data || error.message);
+
+
             alert('An error occurred while accepting the order.');
         }
     };
@@ -82,7 +86,9 @@ const LiveRequest = () => {
                 <ol className="list-decimal">
                     {Array.isArray(data?.productDetails) && data.productDetails.map((product, index) => {
                         const shop = shops[index];
-                        console.log(data);
+                        // console.log(data);
+
+
                         return (
                             <li key={index}>
                                 {product?.totalPrice/product?.item?.price}

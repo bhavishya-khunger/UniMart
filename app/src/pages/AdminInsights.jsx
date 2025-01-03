@@ -10,7 +10,9 @@ const AdminInsights = () => {
     useEffect(() => {
         const getShops = async () => {
             const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
-            // console.log(response.data.users);
+            // // console.log(response.data.users);
+
+
             setRestaurants(response.data.shops);
         }
         getShops();
@@ -18,9 +20,13 @@ const AdminInsights = () => {
             try {
                 const res = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-unverified`);
                 setRequests(res.data.shops);
-                console.log(res);
+                // console.log(res);
+
+
             } catch (error) {
-                console.log(error);
+                // console.log(error);
+
+
             }
         }
         getUnverifiedShops();
@@ -30,9 +36,13 @@ const AdminInsights = () => {
             const res = await axios.post(`${import.meta.env.VITE_USER_BASE_URL}/verify-shop`, {
                 shopId: shopId
             })
-            console.log("res : ", res);
+            // console.log("res : ", res);
+
+
         } catch (error) {
-            console.log(error);
+            // console.log(error);
+
+
         }
     }
     return (

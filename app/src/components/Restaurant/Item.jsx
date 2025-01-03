@@ -13,9 +13,13 @@ const Item = ({ itemId, onAddToCart, onRemoveFromCart, cartQty, itemPrice, itemN
         try {
             alert("Are you sure you want to remove this product from the menu?");
             const res = await axios.get(`${import.meta.env.VITE_PRODUCT_BASE_URL}/delete/${itemId}`);
-            console.log(res);
+            // console.log(res);
+
+
         } catch (error) {
-            console.log(error);
+            // console.log(error);
+
+
         }
     }
 

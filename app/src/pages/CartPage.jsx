@@ -39,7 +39,9 @@ const CartPage = () => {
         userId: user._id,
         comments: comments
       });
-      console.log("Order placed:", response1.data);
+      // console.log("Order placed:", response1.data);
+
+
 
       // Step 2: Request the order (make sure this only happens once)
       const response2 = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/request`, {
@@ -51,12 +53,16 @@ const CartPage = () => {
       await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/request`, {
         orderId: response1?.data?.order?._id,
       });
-      console.log("Request Sent:", response2.data);
+      // console.log("Request Sent:", response2.data);
+
+
 
       // Now that the order has been successfully placed and requested, navigate to the next page
       navigate('/cart/order');
     } catch (error) {
-      console.error("Error placing order:", error);
+      // console.error("Error placing order:", error);
+
+
       setErrorText(error.response?.data?.message || "An error occurred while processing your order.");
     }
   };
@@ -70,7 +76,9 @@ const CartPage = () => {
         setCartItems(response.data.items);
         setTotalPrice(response.data.totalPrice);
       } catch (error) {
-        console.error("Error getting cart:", error.message);
+        // console.error("Error getting cart:", error.message);
+
+
       }
     };
     fetchCart();

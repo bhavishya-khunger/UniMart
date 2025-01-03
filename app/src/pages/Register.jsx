@@ -68,11 +68,15 @@ const Register = () => {
         ? { email, password, name, role: "Shopkeeper", referalCode }
         : { email, password, sid, name, role: "Student", referalCode };
 
-      console.log("User Payload:", userPayload);
+      // console.log("User Payload:", userPayload);
+
+
 
       const endpoint = `${import.meta.env.VITE_USER_BASE_URL}/register`;
       const res = await axios.post(endpoint, userPayload);
-      console.log("Response:", res);
+      // console.log("Response:", res);
+
+
 
       localStorage.setItem("token", res.data.token);
       setUser(res.data.user);
@@ -82,7 +86,9 @@ const Register = () => {
       // Redirect on success
       navigate("/");
     } catch (error) {
-      console.log("Error Response:", error?.response);
+      // console.log("Error Response:", error?.response);
+
+
       setError(error?.response?.data?.message || "Something went wrong.");
     } finally {
       setLoading(false);

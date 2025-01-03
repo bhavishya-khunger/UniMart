@@ -26,7 +26,9 @@ const PdfUpload = () => {
       setVendors(res?.data?.printers || []);
     } catch (error) {
       setError(error?.response?.data?.message || "Failed to fetch printers.");
-      console.error(error);
+      // console.error(error);
+
+
     }
   };
 
@@ -76,7 +78,9 @@ const PdfUpload = () => {
       // Send the print request after successful upload
       await sendPrintRequest(data.url);
     } catch (error) {
-      console.error("Error during file upload:", error);
+      // console.error("Error during file upload:", error);
+
+
       setUploadStatus("Error uploading file. Please try again.");
     } finally {
       setIsLoading(false); // Set loading state to false
@@ -99,7 +103,9 @@ const PdfUpload = () => {
         throw new Error("Failed to send print request.");
       }
     } catch (error) {
-      console.error("Error sending print request:", error);
+      // console.error("Error sending print request:", error);
+
+
       setError("Error sending print request. Please try again.");
     }
   };

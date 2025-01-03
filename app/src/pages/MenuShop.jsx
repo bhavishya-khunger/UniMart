@@ -18,7 +18,9 @@ const MenuShop = () => {
                 const res = await axios.get(`${import.meta.env.VITE_PRODUCT_BASE_URL}/menu/${user?._id}`);
                 setMenu(res.data.products);
             } catch (error) {
-                console.log(error);
+                // console.log(error);
+
+
             }
         }
 
