@@ -14,7 +14,9 @@ export const postPrintOrder = async (req, res) => {
             shopId: vendorId,
             orderStatus: "Pending",
             comments: comments,
-            orderTotal: 5
+            orderTotal: 5,
+            prePayment: false,
+            deliveryPersonId: userId,
         });
 
         await newOrder.save();

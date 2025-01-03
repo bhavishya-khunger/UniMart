@@ -240,7 +240,7 @@ function UserPage() {
         <div className="w-full px-5 mt-2">
           {incomingRequests?.map((req) => {
             return (
-              <FriendCard accept={() => acceptFriendRequest(req?.id?.sid)} reject={() => removeFriend(req?.id?.sid)} controls={true} name={req?.id?.name} sid={23104097} />
+              <FriendCard accept={() => acceptFriendRequest(req?.id?.sid)} reject={() => removeFriend(req?.id?.sid)} controls={true} name={req?.id?.name} sid={req?.id?.sid} />
             )
           })}
           {!incomingRequests?.length && (

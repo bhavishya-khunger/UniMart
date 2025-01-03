@@ -1,5 +1,5 @@
 import React from 'react'
-import { FcCurrencyExchange } from "react-icons/fc";
+import { FcAdvance, FcCalculator, FcCurrencyExchange, FcDataConfiguration, FcDebt } from "react-icons/fc";
 
 const Transaction = ({value, date, title}) => {
     const currUser = JSON.parse(localStorage.getItem('user'));
@@ -36,15 +36,15 @@ const Transaction = ({value, date, title}) => {
     return (
         <div className={value > 0 ? 'bg-green-600 border shadow-lg mt-3 py-3 px-4 rounded-xl w-full h-fit flex justify-between' : 'bg-red-600 border shadow-lg mt-3 py-3 px-4 rounded-xl w-full h-fit flex justify-between'}>
             <div className='flex gap-4 items-center'>
-                <span className='border-white border rounded-full p-1'>
-                    <FcCurrencyExchange size={35} />
+                <span className='rounded-full p-1'>
+                    {value > 0 ? <FcCurrencyExchange size={30} /> : <FcDebt size={30} />}
                 </span>
                 <div className='text-white flex flex-col justify-center'>
-                    <span>{title}</span>
-                    <span className='text-xs'>{formatDate(date)}</span>
+                    <span className='text-sbase'>{title}</span>
+                    <span className={`${value > 0 ? "text-green-200" : "text-red-200"} text-xs`}>{formatDate(date)}</span>
                 </div>
             </div>
-            <div className='flex text-white items-center text-lg'>
+            <div className='flex text-white text-right text-nowrap items-center text-lg'>
                 {value} pts
             </div>
         </div>

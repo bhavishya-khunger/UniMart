@@ -207,24 +207,17 @@ export const getOrdersForShop = async (req, res) => {
             return res.status(400).json({ message: "Shop not registered." });
         }
 
-        let allOrders = await Order.find({
+        const allOrders = await Order.find({
             orderStatus: { $in: ['Completed', 'Accepted'] }
         })
             .populate("productDetails.item")
             .populate("deliveryPersonId");
 
-        if (shop.shopType === "print") {
-            allOrders = await Order.find({
-                orderStatus: { $in: ['Completed', 'Pending'] }
-            })
-                .populate("productDetails.item")
-                .populate("deliveryPersonId");
-        }
-
-        const shopOrders = allOrders.filter(order => 
-            shop.shopType === "food" 
-            ? order.productDetails.item.shopId.toString() === shop._id.toString() 
-            : order.shopId.toString() === shop._id.toString()
+        const shopOrders = allOrders.filter((order) =>
+            Array.isArray(order.productDetails) &&
+            order.productDetails.some((productDetail) =>
+                productDetail?.item?.shopkeeperId?.toString() === shop.owner.toString()
+            )
         );
 
         return res.status(200).json({

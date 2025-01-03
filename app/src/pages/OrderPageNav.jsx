@@ -53,7 +53,7 @@ const OrderPageNav = () => {
     const getOrderDetails = async () => {
         const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/${user?._id}`);
         if (response.data.order) {
-            setPlacedOrders(response?.data?.order);
+            setPlacedOrders(sortOrders(response.data.order));
         }
     }
 
@@ -61,6 +61,17 @@ const OrderPageNav = () => {
         const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/delivery/${JSON.parse(localStorage.getItem('user'))._id}`);
         if (response.data.orders) {
             setDeliveryOrders(response.data.orders);
+        }
+    }
+
+    const markPrintAsPickedup = async (orderId) => {
+        try {
+            await axios.post(`${import.meta.env.VITE_SHOP_BASE_URL}/mark-as-picked`, {
+                orderId: orderId,
+                userId: user?._id
+            });
+        } catch (error) {
+            // console.log(error);
         }
     }
 
@@ -108,57 +119,18 @@ const OrderPageNav = () => {
 
                         {/* Active Placed Orders */}
 
-                        {activeTab === 'placed' && (
-                            sortOrders(placedOrders)?.map((activeOrder) => {
-                                return activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered" && (
+                        {activeTab === 'placed' && sortOrders(placedOrders)?.map((activeOrder) => {
+                            return activeOrder?.pdfLink ? (
+                                activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered" && (
                                     <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-blue-500">
                                         <h2 className="bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
                                             Order Status : {activeOrder?.orderStatus}
                                         </h2>
-                                        <p className="italic mt-2">
-                                            Your order of
-                                        </p>
-                                        <ol className="list-disc ml-6">
-                                            {activeOrder?.productDetails?.map((item) => {
-                                                return <li className="font-semibold italic">{item?.totalPrice / item?.item?.price} x {item?.item?.productName}</li>
-                                            })}
-                                        </ol>
-                                        <p className="italic mt-2">
-                                            is placed successfully.
-                                        </p>
-                                        <p className="italic mt-2">
-                                            Please contact {activeOrder?.deliveryPersonId?.name} for more details.
-                                        </p>
-                                        <div className="flex items-center justify-between px-3 w-full mt-3 h-fit py-2 rounded-xl bg-blue-100">
-                                            <div className="flex items-center gap-3">
-                                                <span className="bg-red-400 text-white p-1 text-lg rounded-full h-10 w-10 flex items-center justify-center">{activeOrder?.deliveryPersonId?.name[0]}</span>
-                                                <span>
-                                                    <p className="text-lg font-semibold">{activeOrder?.deliveryPersonId?.name}</p>
-                                                    <p className="text-sm">SID: {activeOrder?.deliveryPersonId?.sid}</p>
-                                                </span>
-                                            </div>
-                                            <span>
-                                                <MdCall onClick={() => {
-                                                    alert(`Call : ${activeOrder?.deliveryPersonId?.phone}`)
-                                                }} size={22} className="mr-2" />
-                                            </span>
-                                        </div>
-                                        {activeOrder?.orderStatus === "Out for Delivery" && (
-                                            <span className='w-full text-sm mt-3 text-center'>
-                                                Your order is Out For Delivery. Kindly share the below OTP with {activeOrder?.deliveryPersonId?.name} to accept the order.
-                                                <div className='text-lg bg-blue-600 text-white mt-2 rounded-lg'>OTP : {activeOrder?.otp}</div>
-                                            </span>
-                                        )}
-                                    </section>
-                                )
-                            })
-                        )}
-                        {activeTab === 'placed' && (
-                            sortOrders(placedOrders) ?.map((activeOrder) => {
-                                return activeOrder?.pdfLink && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered" && (
-                                    <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-blue-500">
-                                        <h2 className="bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
-                                            Order Status : {activeOrder?.orderStatus}
+                                        <h2 className="bg-blue-800 text-white italic text-center text-base mt-2 rounded-lg py-1 font-semibold">
+                                            Order ID : {activeOrder?._id}
+                                        </h2>
+                                        <h2 className="bg-blue-800 text-white italic text-center text-base mt-2 rounded-lg py-1 font-semibold">
+                                            {activeOrder?.shopId?.shopName || "Not Found"}
                                         </h2>
                                         <p className="italic mt-2">
                                             The printing order placed at {activeOrder?.shopId?.shopName} needs to be picked up. Contact owner for more details.
@@ -183,10 +155,65 @@ const OrderPageNav = () => {
                                                 <div className='text-lg bg-blue-600 text-white mt-2 rounded-lg'>OTP : {activeOrder?.otp}</div>
                                             </span>
                                         )}
+                                        {activeOrder?.orderStatus === "Completed" && (
+                                            <button
+                                                onClick={() => markPrintAsPickedup(activeOrder?._id)}
+                                                className='flex my-4 w-full items-center flex-center gap-1 bg-green-600 text-white text- py-2 text-base rounded-full justify-center active:scale-95'>
+                                                <MdDone size={20} /> Mark Order as Picked Up
+                                            </button>
+                                        )}
+                                    </section>)
+                            ) : (
+                                activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Cancelled" && activeOrder?.orderStatus !== "Delivered" && (
+                                    <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-blue-500">
+                                        <h2 className="bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold">
+                                            Order Status : {activeOrder?.orderStatus}
+                                        </h2>
+                                        <h2 className="bg-blue-800 text-white italic text-center text-base mt-2 rounded-lg py-1 font-semibold">
+                                            Order ID : {activeOrder?._id}
+                                        </h2>
+                                        <h2 className="bg-blue-800 text-white italic text-center text-base mt-2 rounded-lg py-1 font-semibold">
+                                            {activeOrder?.shopId?.shopName || "Not Found"}
+                                        </h2>
+                                        <p className="italic mt-2">
+                                            Your order of
+                                        </p>
+                                        <ol className="list-disc ml-6">
+                                            {activeOrder?.productDetails?.map((item) => {
+                                                return <li className="font-semibold italic">{item?.totalPrice / item?.item?.price} x {item?.item?.productName}</li>
+                                            })}
+                                        </ol>
+                                        <p className="italic mt-2">
+                                            is placed successfully.
+                                        </p>
+                                        <p className="italic mt-2">
+                                            Please contact {activeOrder?.deliveryPersonId?.name} for more details.
+                                        </p>
+                                        <p><b>Added comments:</b> {activeOrder?.comments || "None"}</p>
+                                        <div className="flex items-center justify-between px-3 w-full mt-3 h-fit py-2 rounded-xl bg-blue-100">
+                                            <div className="flex items-center gap-3">
+                                                <span className="bg-red-400 text-white p-1 text-lg rounded-full h-10 w-10 flex items-center justify-center">{activeOrder?.deliveryPersonId?.name[0]}</span>
+                                                <span>
+                                                    <p className="text-lg font-semibold">{activeOrder?.deliveryPersonId?.name}</p>
+                                                    <p className="text-sm">SID: {activeOrder?.deliveryPersonId?.sid}</p>
+                                                </span>
+                                            </div>
+                                            <span>
+                                                <MdCall onClick={() => {
+                                                    alert(`Call : ${activeOrder?.deliveryPersonId?.phone}`)
+                                                }} size={22} className="mr-2" />
+                                            </span>
+                                        </div>
+                                        {activeOrder?.orderStatus === "Out for Delivery" && (
+                                            <span className='w-full text-sm mt-3 text-center'>
+                                                Your order is Out For Delivery. Kindly share the below OTP with {activeOrder?.deliveryPersonId?.name} to accept the order.
+                                                <div className='text-lg bg-blue-600 text-white mt-2 rounded-lg'>OTP : {activeOrder?.otp}</div>
+                                            </span>
+                                        )}
                                     </section>
                                 )
-                            })
-                        )}
+                            )
+                        })}
                         {activeTab === 'placed' && placedOrders.length === 0 && <p className='text-center'>No Active Placed Orders</p>}
 
                         {/* Active Delivery Orders */}
@@ -272,27 +299,55 @@ const OrderPageNav = () => {
                         {/* Past Orders */}
                         {activeTab === 'past' && (
                             placedOrders?.map((activeOrder) => {
-                                return activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Accepted" && activeOrder?.orderStatus !== "Completed" && activeOrder?.orderStatus !== "Out for Delivery" && (
-                                    <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-black">
-                                        <h2 className={activeOrder?.orderStatus === "Cancelled" ? "bg-red-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold" : activeOrder?.orderStatus === "Delivered" ? "bg-green-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold" : "bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold"}>
-                                            Order Status : {activeOrder?.orderStatus}
-                                        </h2>
-                                        <p className="italic mt-2">
-                                            Order Details:
-                                        </p>
-                                        <ol className="list-disc ml-6">
-                                            {activeOrder?.productDetails?.map((item) => {
-                                                return <li className="font-semibold italic">{item?.totalPrice / item?.item?.price} x {item?.item?.productName}</li>
-                                            })}
-                                        </ol>
-                                        <p className="italic mt-2">
-                                            Date:&nbsp;
-                                            {new Date(activeOrder?.updatedAt).toLocaleString("en-US", {
-                                                dateStyle: "medium",
-                                                timeStyle: "short"
-                                            })}
-                                        </p>
-                                    </section>
+                                return activeOrder?.pdfLink ? (
+                                    activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Accepted" && activeOrder?.orderStatus !== "Completed" && activeOrder?.orderStatus !== "Out for Delivery" && (
+                                        <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-black">
+                                            <h2 className={activeOrder?.orderStatus === "Cancelled" ? "bg-red-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold" : activeOrder?.orderStatus === "Delivered" ? "bg-green-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold" : "bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold"}>
+                                                Order Status : {activeOrder?.orderStatus}
+                                            </h2>
+                                            <p className="italic mt-2">
+                                                Order Details:
+                                            </p>
+                                            <p>
+                                                <b>Print Link:</b>
+                                                <a href={activeOrder.pdfLink} target="_blank" rel="noreferrer" className="text-blue-600 flex w-full text-wrap underline break-all">
+                                                    {activeOrder.pdfLink}
+                                                </a>
+                                                <b>Vendor: </b>
+                                                <i>{activeOrder?.shopId?.shopName}</i>
+                                            </p>
+                                            <p className="italic mt-2">
+                                                Date:&nbsp;
+                                                {new Date(activeOrder?.updatedAt).toLocaleString("en-US", {
+                                                    dateStyle: "medium",
+                                                    timeStyle: "short"
+                                                })}
+                                            </p>
+                                        </section>
+                                    )
+                                ) : (
+                                    activeOrder?.orderStatus !== "Pending" && activeOrder?.orderStatus !== "Accepted" && activeOrder?.orderStatus !== "Completed" && activeOrder?.orderStatus !== "Out for Delivery" && (
+                                        <section className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-black">
+                                            <h2 className={activeOrder?.orderStatus === "Cancelled" ? "bg-red-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold" : activeOrder?.orderStatus === "Delivered" ? "bg-green-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold" : "bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold"}>
+                                                Order Status : {activeOrder?.orderStatus}
+                                            </h2>
+                                            <p className="italic mt-2">
+                                                Order Details:
+                                            </p>
+                                            <ol className="list-disc ml-6">
+                                                {activeOrder?.productDetails?.map((item) => {
+                                                    return <li className="font-semibold italic">{item?.totalPrice / item?.item?.price} x {item?.item?.productName}</li>
+                                                })}
+                                            </ol>
+                                            <p className="italic mt-2">
+                                                Date:&nbsp;
+                                                {new Date(activeOrder?.updatedAt).toLocaleString("en-US", {
+                                                    dateStyle: "medium",
+                                                    timeStyle: "short"
+                                                })}
+                                            </p>
+                                        </section>
+                                    )
                                 )
                             })
                         )}

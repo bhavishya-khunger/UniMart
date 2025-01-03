@@ -4,9 +4,17 @@ import { BsCopy, BsShare, BsWallet2 } from 'react-icons/bs';
 import Transaction from '../components/Wallet/Transaction';
 import axios from 'axios';
 import { UserDataContext } from '../context/UserContext';
+import ErrorPop from '../components/General/ErrorPop';
 
 const Wallet = () => {
+    const { user, setUser } = useContext(UserDataContext);
     const [transactions, setTransactions] = useState([]);
+    const [error, setError] = useState(null);
+    const [amount, setAmount] = useState(null);
+    const [transactionType, setTransactionType] = useState("Test Points");
+    const [txnUserId, setTxnUserId] = useState("");
+    const [password, setPassword] = useState("");
+
     const copyToClipboard = () => {
         navigator.clipboard.writeText(referalCode).then(() => {
             alert(`Referral code (${referalCode}) copied to clipboard!`);
@@ -29,12 +37,35 @@ Join now ➡️ https://w416mzq9-5173.inc1.devtunnels.ms/register?referal=${refe
         // Open WhatsApp with the pre-filled message
         window.open(whatsappUrl, "_blank");
     };
-    const { user, setUser } = useContext(UserDataContext);
     const referalCode = user?.referalCode; // This should be fetched from the backend 
 
     const sortedTransactions = [...transactions].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
+
+    const handleTransfer = async (e) => {
+        e.preventDefault();
+        setError("");
+
+        console.log("txnUserId : ", txnUserId);
+        console.log("amount : ", amount);
+        console.log("transactionType : ", transactionType);
+        console.log("password : ", password);
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_USER_BASE_URL}/transfer-points`, {
+                userSID: txnUserId,
+                adminId: user?._id,
+                amount: amount,
+                title: transactionType,
+                password: password,
+            });
+            console.log(response);
+        } catch (error) {
+            setError(error?.response?.data?.message || "Something went Wrong.");
+            console.error("Error transferring coins:", error);
+        }
+    }
 
     useEffect(() => {
         try {
@@ -67,6 +98,24 @@ Join now ➡️ https://w416mzq9-5173.inc1.devtunnels.ms/register?referal=${refe
                         <span className="text-xs">{user?.email}</span>
                     </div>
                 </div>
+                {user?.role === 'Admin' && (
+                    <div className="mt-5 border border-gray-200 shadow-lg rounded-xl bg-white h-fit w-full px-3 py-4 flex flex-col items-center">
+                        <h1 className='text-xl font-semibold'>Transfer Coins</h1>
+                        <input value={txnUserId} onChange={(e) => setTxnUserId(e.target.value)} type="text" placeholder="Enter User SID" className="border outline-none border-gray-200 rounded-xl w-full px-2 py-1 mt-2" />
+                        <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="Enter Amount" className="border outline-none border-gray-200 rounded-xl w-full px-2 py-1 mt-2" />
+                        <select value={transactionType} onChange={(e) => setTransactionType(e.target.value)} className="border outline-none border-gray-200 rounded-xl w-full px-2 py-1 mt-2" name="txntype" id="txntype">
+                            <option className='text-sm' value="Admin Transfer">Admin Transfer</option>
+                            <option className='text-sm' value="Test Points">Test Points</option>
+                            <option className='text-sm' value="Refund">Refund</option>
+                        </select>
+                        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Confirm Password" className="border outline-none border-gray-200 rounded-xl w-full px-2 py-1 mt-2" />
+                        <button onClick={handleTransfer} className="mt-2 flex justify-center gap-3 self-center py-2 w-full rounded-xl items-center text-white bg-[#FF4539] active:scale-95">
+                            {/* #FF4539 - use this when u change */}
+                            <BsWallet2 />Transfer Coins
+                        </button>
+                        {error && <ErrorPop text={error} />}
+                    </div>
+                )}
                 {user?.role === 'Student' && (
                     <div className="mt-5 border border-gray-200 shadow-lg rounded-xl bg-white h-fit w-full px-3 py-4 flex flex-col items-center">
                         <p>Your Unique referal code is</p>

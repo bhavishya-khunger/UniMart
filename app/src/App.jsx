@@ -26,10 +26,11 @@ const App = () => {
   const { user, setUser } = useContext(UserDataContext);
   const navigate = useNavigate();
   const { socket } = useContext(SocketContext);
+
   useEffect(() => {
     socket.emit("join", { userId: user?._id });
     socket.on("order-request", () => {
-      navigate('/liverequest');
+      navigate("/liverequest");
     })
     socket.on("friendRequestReceived", (data) => {
       setUser(data);

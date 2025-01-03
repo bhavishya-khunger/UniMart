@@ -16,7 +16,7 @@ const transactionSchema = new mongoose.Schema({
     },
     title: {
       type: String,
-      enum: ["Order Debit", "Refund", "Delivery Credit", "Referal Bonus", "Order Credit", "Order Commission"]
+      // enum: ["Order Debit", "Admin Transfer", "Refund", "Delivery Credit", "Referal Bonus", "Order Credit", "Order Commission"]
     },
     orderId: {
       type: mongoose.Schema.Types.ObjectId,

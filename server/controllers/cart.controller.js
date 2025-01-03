@@ -198,6 +198,7 @@ export const orderCart = async (req, res) => {
             comments: comments,
             userId,
             productDetails: cartItems,
+            shopId: cart?.items[0]?.productId?.shopkeeperId?.shopId,
         });
 
         await order.save();
@@ -230,18 +231,18 @@ export const findAOrder = async (req, res) => {
             .populate('productDetails.item')
             .populate('deliveryPersonId')
             .populate({
-            path: 'shopId',
-            populate: {
-                path: 'owner',
-                model: 'User',
-            },
+                path: 'shopId',
+                populate: {
+                    path: 'owner',
+                    model: 'User',
+                },
             })
             .populate({
-            path: 'productDetails.item', // Populate the `item` field in `productDetails`
-            populate: {
-                path: 'shopkeeperId', // Populate the `shopkeeperId` field within `Product`
-                model: 'User', // Reference the Shopkeeper model
-            },
+                path: 'productDetails.item', // Populate the `item` field in `productDetails`
+                populate: {
+                    path: 'shopkeeperId', // Populate the `shopkeeperId` field within `Product`
+                    model: 'User', // Reference the Shopkeeper model
+                },
             });
 
         if (!order) {
@@ -377,7 +378,7 @@ export const sendRequest = async (req, res) => {
                 },
             });
 
-        const placedByFriends = order?.userId?.friendList;
+        const placedByFriends = order.userId.friendList.filter(friend => friend.status === 'Approved');
 
         if (!order) {
             return res.status(400).json({ message: "No order exists with this ID." });
@@ -645,9 +646,11 @@ export const getActiveOrdersByDeliveryPerson = async (req, res) => {
             return res.status(404).json({ message: "No active orders found for this delivery person." });
         }
 
+        const sentOrders = orders.filter(order => order?.pdfLink ? null : order);
+
         res.status(200).json({
             message: "Active orders found successfully.",
-            orders,
+            orders: sentOrders,
         });
     } catch (error) {
         console.error(error);

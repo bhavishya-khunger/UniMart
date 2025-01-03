@@ -1,7 +1,7 @@
 import express from 'express';
 import { addFriend, deleteFriend, editProfile, getAllUsers, getOrdersForShop, getProfile, getTransactionHistory, loginUser, logoutUser, registerUser, sendFriendRequest, startAcceptingOrders } from '../controllers/user.controller.js';
 import { protectRoute } from '../middlewares/auth.user.js';
-import { verifyShop } from '../controllers/admin.controller.js';
+import { transferCoins, verifyShop } from '../controllers/admin.controller.js';
 
 const router = express.Router();
 
@@ -23,5 +23,7 @@ router.post('/remove-friend', deleteFriend)
 
 // ADMIN
 router.post('/verify-shop', verifyShop);
+// router.post('/reject-shop', verifyShop);
+router.post('/transfer-points', transferCoins);
 
 export default router;
