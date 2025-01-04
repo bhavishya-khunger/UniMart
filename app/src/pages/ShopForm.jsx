@@ -31,7 +31,9 @@ const ShopForm = () => {
                 { shopName, shopType, shopImage, owner: user._id }
             );
             setUser(res.data.user);
-            console.log("submitted");
+            // console.log("submitted");
+
+
             setSubmitted(true);
         } catch (error) {
             setError(error?.response?.data?.message || 'Something went wrong.');

@@ -10,7 +10,11 @@ export const registerUser = async (req, res) => {
         const { name, email, password, sid, role, referalCode } = req.body;
 
         // console.log(req.body);
-        console.log(req.body);
+
+
+        // console.log(req.body);
+
+
 
         // Validate input
         if (!name || !email || !password || !role) {
@@ -32,7 +36,9 @@ export const registerUser = async (req, res) => {
             $or: [{ email }, { sid: sid || '99999999' }]
         }).populate("friendList.id");
 
-        console.log(existingUser);
+        // console.log(existingUser);
+
+
         if (existingUser) {
             return res.status(400).json({ message: 'Email or SID already in use.' });
         }
@@ -41,7 +47,9 @@ export const registerUser = async (req, res) => {
         const hashedPass = await bcrypt.hash(password, 10);
 
         // Referral
-        console.log(referalCode);
+        // console.log(referalCode);
+
+
         if (referalCode.length > 0) {
             const referredByUsers = await User.find({ referalCode: referalCode });
 
@@ -87,7 +95,9 @@ export const registerUser = async (req, res) => {
             user,
         });
     } catch (err) {
-        console.error(err);
+        // console.error(err);
+
+
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -96,7 +106,9 @@ export const loginUser = async (req, res) => {
     try {
         const { credential, password } = req.body;
 
-        console.log(req.body);
+        // console.log(req.body);
+
+
 
         if (!credential || !password) {
             return res.status(400).json({ message: "All fields are required." });
@@ -122,7 +134,9 @@ export const loginUser = async (req, res) => {
 
         const isActive = user?.account;
 
-        console.log(isActive);
+        // console.log(isActive);
+
+
 
         if (isActive === 'Suspended') {
             return res.status(400).json({ message: "User's Account is Suspended." });
@@ -143,7 +157,9 @@ export const loginUser = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -153,7 +169,9 @@ export const logoutUser = async (req, res) => {
         res.cookie("token", "", { maxAge: 0 });
         res.status(200).json({ message: "User logged out." })
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+
+
     }
 }
 
@@ -171,7 +189,9 @@ export const getProfile = async (req, res) => {
             user
         })
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 }
 
@@ -189,7 +209,9 @@ export const getTransactionHistory = async (req, res) => {
             transactions: transactions?.transactionHistory
         })
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 }
 
@@ -224,7 +246,9 @@ export const getOrdersForShop = async (req, res) => {
             orders: shopOrders,
         });
     } catch (error) {
-        console.error("Error in getOrdersForShop:", error.message, error.stack);
+        // console.error("Error in getOrdersForShop:", error.message, error.stack);
+
+
         return res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -240,7 +264,9 @@ export const startAcceptingOrders = async (req, res) => {
             user: await User.findById(userId).select('-password')
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -253,7 +279,9 @@ export const editProfile = async (req, res) => {
             message: "User ID is required.",
         });
 
-        console.log(phone);
+        // console.log(phone);
+
+
         if (phone && phone <= 999999999 && phone >= 10000000000) {
             return res.status(400).json("Phone Number Invalid");
         }
@@ -267,7 +295,9 @@ export const editProfile = async (req, res) => {
             user: await User.findById(userId).select('-password'),
         })
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 };
 
@@ -282,7 +312,9 @@ export const getAllUsers = async (req, res) => {
             students: students
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -333,7 +365,9 @@ export const addFriend = async (req, res) => {
             user: await User.findById(userId).populate('friendList.id', '-password').select('-password')
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -376,7 +410,9 @@ export const sendFriendRequest = async (req, res) => {
             user: await User.findById(userId).populate('friendList.id', '-password').select('-password')
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -412,7 +448,9 @@ export const deleteFriend = async (req, res) => {
             user: await User.findById(userId).populate('friendList.id', '-password').select('-password')
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal Server Error" });
     }
 };

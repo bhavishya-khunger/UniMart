@@ -58,7 +58,9 @@ export const addToCart = async (req, res) => {
             cart,
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -105,7 +107,9 @@ export const removeItemFromCart = async (req, res) => {
             cart,
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -126,7 +130,9 @@ export const getCart = async (req, res) => {
 
         res.status(200).json(cart);
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -152,7 +158,9 @@ export const applyCoupon = async (req, res) => {
 
 
     } catch (error) {
-        log(error);
+        // log(error);
+
+
     }
 };
 
@@ -213,7 +221,9 @@ export const orderCart = async (req, res) => {
             order: order,
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -254,7 +264,9 @@ export const findAOrder = async (req, res) => {
             order,
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -289,7 +301,9 @@ export const processOrder = async (req, res) => {
         }
 
         totalAdminEarnings = totalOrderValue - totalDeliveryPersonEarnings - totalShopKeeperEarnings;
-        console.log("ADMIN EARNINGS ARE ", totalAdminEarnings);
+        // console.log("ADMIN EARNINGS ARE ", totalAdminEarnings);
+
+
         const user = await User.findById(order.userId._id);
         const deliveryPerson = await User.findById(order.deliveryPersonId._id);
         const admin = await User.findOne({ role: 'Admin' });
@@ -353,7 +367,9 @@ export const processOrder = async (req, res) => {
             user: order?.userId?._id
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -433,7 +449,9 @@ export const sendRequest = async (req, res) => {
             shops,
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
@@ -497,7 +515,9 @@ export const confirmOrder = async (req, res) => {
 
         return res.status(200).json({ message: "Order confirmed and notifications sent.", updatedOrder });
     } catch (err) {
-        console.log(err);
+        // console.log(err);
+
+
         return res.status(500).json({ message: err.message });
     }
 };
@@ -536,7 +556,9 @@ export const cancelOrder = async (req, res) => {
 
         res.status(200).json({ message: "Order cancelled successfully.", order });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -575,7 +597,9 @@ export const markOrderForPickup = async (req, res) => {
 
         res.status(200).json({ message: "Order marked as prepared for pickup.", order });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 }
@@ -615,7 +639,9 @@ export const markOrderOutForDelivery = async (req, res) => {
 
         res.status(200).json({ message: "Order status updated to Out for Delivery.", order });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -653,7 +679,9 @@ export const getActiveOrdersByDeliveryPerson = async (req, res) => {
             orders: sentOrders,
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -691,7 +719,9 @@ export const markOrderAsDelivered = async (req, res) => {
 
         res.status(200).json({ message: "Order marked as delivered.", order });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };

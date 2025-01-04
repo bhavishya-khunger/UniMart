@@ -5,14 +5,18 @@ import Order from "../models/order.model.js";
 export const getAllShops = async (req, res) => {
     try {
         const shops = await Shop.find({ verified: true });
-        console.log(shops);
+        // console.log(shops);
+
+
         if (!shops) return res.status(400).json({
             message: "No Shops Found Near You."
         });
 
         return res.status(200).json({ shops });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 }
 
@@ -20,7 +24,9 @@ export const createShop = async (req, res) => {
     try {
         const { shopName, shopType, shopImage, owner } = req.body;
 
-        console.log("SHOP: ", shopType);
+        // console.log("SHOP: ", shopType);
+
+
 
         // Validate input
         if (!shopName || !shopImage || !owner || !shopType) {
@@ -57,6 +63,8 @@ export const createShop = async (req, res) => {
         });
     } catch (error) {
         // console.error("Error creating shop:", error.message);
+
+
         return res.status(500).json({ error: error.message });
     }
 };
@@ -72,7 +80,9 @@ export const getUnverifiedShops = async (req, res) => {
             shops
         })
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 }
 
@@ -88,7 +98,9 @@ export const getPrinters = async (req, res) => {
 
         return res.status(200).json({ printers });
     } catch (error) {
-        console.error("Error fetching printers:", error.message);
+        // console.error("Error fetching printers:", error.message);
+
+
         return res.status(500).json({ error: error.message });
     }
 }

@@ -11,7 +11,9 @@ const Restaurant = () => {
   const [cartItems, setCartItems] = useState([]);
   const [shopName, setShopName] = useState("");
   const shopId = useParams().shopId;
-  // console.log("Shop ID:", shopId);
+  // // console.log("Shop ID:", shopId);
+
+
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserDataContext);
 
@@ -21,10 +23,14 @@ const Restaurant = () => {
         userId: user._id,
         productId,
       });
-      console.log("Item added to cart:", response.data);
+      // console.log("Item added to cart:", response.data);
+
+
       setCartItems(response.data.items);
     } catch (error) {
-      console.error("Error adding item to cart:", error.message);
+      // console.error("Error adding item to cart:", error.message);
+
+
     }
   }
 
@@ -34,10 +40,14 @@ const Restaurant = () => {
         userId: user._id,
         productId,
       });
-      console.log("Item removed from cart:", response.data);
+      // console.log("Item removed from cart:", response.data);
+
+
       setCartItems(response.data.items);
     } catch (error) {
-      console.error("Error adding item to cart:", error.message);
+      // console.error("Error adding item to cart:", error.message);
+
+
     }
   }
 
@@ -45,20 +55,28 @@ const Restaurant = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_PRODUCT_BASE_URL}/${shopId}`);
-        console.log("Products fetched:", response);
+        // console.log("Products fetched:", response);
+
+
         setItems(response.data.products);
         setShopName(response.data.shopName);
       } catch (error) {
-        console.error("Error getting products:", error.message);
+        // console.error("Error getting products:", error.message);
+
+
       }
     };
     const fetchCart = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/getcart/${user._id}`);
-        console.log("Cart fetched:", response.data);
+        // console.log("Cart fetched:", response.data);
+
+
         setCartItems(response.data.items);
       } catch (error) {
-        console.error("Error getting cart:", error.message);
+        // console.error("Error getting cart:", error.message);
+
+
       }
     }
     fetchCart();

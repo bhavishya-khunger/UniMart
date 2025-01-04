@@ -30,11 +30,15 @@ const OrderPageNav = () => {
                     })
                     navigate('/wallet');
                 } catch (error) {
-                    // console.log(error);
+                    // // console.log(error);
+
+
                 }
             }
         } catch (error) {
-            // console.log(error);
+            // // console.log(error);
+
+
             setError(error?.response?.data?.message);
         }
     }
@@ -46,7 +50,9 @@ const OrderPageNav = () => {
                 deliveryPersonId: user?._id
             });
         } catch (error) {
-            // console.log(error);
+            // // console.log(error);
+
+
         }
     }
 

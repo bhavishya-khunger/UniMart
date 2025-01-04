@@ -33,7 +33,7 @@ const LiveRequest = () => {
 
     useEffect(() => {
         const handleOrderRequest = (info) => {
-            console.log("Received Order Data: ", info.order);
+            // console.log("Received Order Data: ", info.order);
             setReceivesInfo(true);
             setData(info.order);
             setShops(info.shops);
@@ -69,7 +69,9 @@ const LiveRequest = () => {
             socket.emit("order-confirmed");
             navigate('/');
         } catch (error) {
-            console.error('Error accepting order:', error?.response?.data || error.message);
+            // console.error('Error accepting order:', error?.response?.data || error.message);
+
+
             alert('An error occurred while accepting the order.');
         }
     };

@@ -31,10 +31,14 @@ function AddItemsForm() {
         productImg: formData?.itemImageLink,
         desc: formData?.itemDescription
       });
-      console.log("Item added to the menu: ", res);
+      // console.log("Item added to the menu: ", res);
+
+
       return navigate('/editmenu');
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+
+
       setErrorText(error?.response?.data?.message)
     }
   };

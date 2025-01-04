@@ -28,7 +28,9 @@ export const getMenuByShopkeeperId = async (req, res) => {
         // Return products
         res.status(200).json({ products: shop.menu, shopName: shop.shopName });
     } catch (error) {
-        console.error("Error fetching products for shopkeeper:", error);
+        // console.error("Error fetching products for shopkeeper:", error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -36,7 +38,9 @@ export const getMenuByShopkeeperId = async (req, res) => {
 export const getProductsForShopkeeper = async (req, res) => {
     try {
         const { shopId } = req.params;
-        log(shopId);
+        // log(shopId);
+
+
 
         // Check if shopId is provided
         if (!shopId) {
@@ -61,7 +65,9 @@ export const getProductsForShopkeeper = async (req, res) => {
         // Return products
         res.status(200).json({ products, shopName: shop?.shopName });
     } catch (error) {
-        console.error("Error fetching products for shopkeeper:", error);
+        // console.error("Error fetching products for shopkeeper:", error);
+
+
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -94,7 +100,9 @@ export const addProduct = async (req, res) => {
             newProduct
         })
     } catch (error) {
-        log(error);
+        // log(error);
+
+
     }
 }
 
@@ -110,6 +118,8 @@ export const deleteProduct = async (req, res) => {
             message: "Product Deleted!",
         })
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 }

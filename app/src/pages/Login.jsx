@@ -31,7 +31,9 @@ const Login = () => {
       const res = await axios.post(endpoint, { credential, password });
       // Handle success (e.g., save token, redirect)
       if (res.status === 200) {
-        console.log(res);
+        // console.log(res);
+
+
         localStorage.setItem('token', res.data.token);
         setUser(res.data.user);
         localStorage.setItem('user', JSON.stringify(res.data.user)); // change this with context

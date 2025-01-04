@@ -19,7 +19,9 @@ function UserPage() {
   const incomingRequests = user?.friendList?.filter((friend) => friend.status === "Received") || [];
   const sentRequests = user?.friendList?.filter((friend) => friend.status === "Sent") || [];
   const friends = user?.friendList?.filter((friend) => friend.status === "Approved") || [];
-  console.log(user);
+  // console.log(user);
+
+
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -35,9 +37,13 @@ function UserPage() {
 
         // Update state
         setAllUsers(filtered);
-        console.log("Filtered students: ", filtered);
+        // console.log("Filtered students: ", filtered);
+
+
       } catch (error) {
-        console.error("Error fetching students: ", error.message || error);
+        // console.error("Error fetching students: ", error.message || error);
+
+
       }
     };
     fetchStudents();
@@ -69,14 +75,18 @@ function UserPage() {
         friendSID: inputValue,
       });
       if (res.status === 200) {
-        console.log("Friend request sent successfully");
+        // console.log("Friend request sent successfully");
+
+
         setInputValue('');
         setSuggestions([]);
         setErrorText('');
         setUser(res.data.user);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+
+
       setErrorText(error?.response?.data?.message);
     }
   }
@@ -95,23 +105,31 @@ function UserPage() {
         // Update localStorage and state with the new user data
         localStorage.setItem("user", JSON.stringify(updatedUser));
         setAccepting(updatedUser.agreesToDeliver);
-        console.log("User's delivery status updated successfully");
+        // console.log("User's delivery status updated successfully");
+
+
       }
     } catch (error) {
-      console.error("Error updating delivery status:", error);
+      // console.error("Error updating delivery status:", error);
+
+
     }
   };
 
   const logoutUser = async () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_USER_BASE_URL}/logout`);
-      console.log(res);
+      // console.log(res);
+
+
       localStorage.removeItem("user");
       localStorage.removeItem("token");
       localStorage.removeItem("expiryTime");
       return navigate("/login");
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+
+
     }
   }
 
@@ -122,11 +140,15 @@ function UserPage() {
         friendSID: sid,
       });
       if (res.status === 200) {
-        console.log("Friend request accepted successfully");
+        // console.log("Friend request accepted successfully");
+
+
         setUser(res.data.user);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+
+
       setErrorText(error?.response?.data?.message);
     }
   };
@@ -138,11 +160,15 @@ function UserPage() {
         friendSID: sid,
       });
       if (res.status === 200) {
-        console.log("Friend deleted successfully");
+        // console.log("Friend deleted successfully");
+
+
         setUser(res.data.user);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
+
+
       setErrorText(error?.response?.data?.message);
     }
   };

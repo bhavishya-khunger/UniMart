@@ -19,7 +19,9 @@ const Wallet = () => {
         navigator.clipboard.writeText(referalCode).then(() => {
             alert(`Referral code (${referalCode}) copied to clipboard!`);
         }).catch(err => {
-            console.error('Failed to copy: ', err);
+            // console.error('Failed to copy: ', err);
+
+
         });
     };
     const handleShare = () => {
@@ -73,7 +75,9 @@ Join now ➡️ https://w416mzq9-5173.inc1.devtunnels.ms/register?referal=${refe
                 setTransactions(res.data.transactions);
             });
         } catch (error) {
-            console.error(error);
+            // console.error(error);
+
+
         }
     }, []);
 

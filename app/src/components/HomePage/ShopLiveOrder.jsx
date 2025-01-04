@@ -17,7 +17,9 @@ const ShopLiveOrder = ({ sortedOrders, user }) => {
             });
             setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
         } catch (error) {
-            console.error("Error canceling the order:", error);
+            // console.error("Error canceling the order:", error);
+
+
         }
     }
     
@@ -33,7 +35,9 @@ const ShopLiveOrder = ({ sortedOrders, user }) => {
                 )
             );
         } catch (error) {
-            console.error("Error marking the order for pickup:", error);
+            // console.error("Error marking the order for pickup:", error);
+
+
         }
     }
     

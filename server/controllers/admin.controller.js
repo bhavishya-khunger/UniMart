@@ -17,7 +17,9 @@ export const verifyShop = async (req, res) => {
             shop, user
         })
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 }
 

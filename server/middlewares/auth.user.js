@@ -4,12 +4,16 @@ import jwt from 'jsonwebtoken';
 export const protectRoute = async (req, res, next) => {
     try {
         const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];
-        // console.log(token);
+        // // console.log(token);
+
+
         if (!token) {
             return res.status(400).json({ message: "Access Denied - UNAUTHORIZED" });
         }
         const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-        // console.log("decoded:", decoded);
+        // // console.log("decoded:", decoded);
+
+
         if (!decoded) {
             return res.status(400).json({ message: "Access Denied - UNAUTHORIZED" });
         }
@@ -22,6 +26,8 @@ export const protectRoute = async (req, res, next) => {
         req.user = user;
         return next();
     } catch (error) {
-        console.log(error);
+        // console.log(error);
+
+
     }
 }
