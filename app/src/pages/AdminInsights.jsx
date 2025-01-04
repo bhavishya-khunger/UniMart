@@ -7,24 +7,28 @@ import Request from "../components/Admin/Request";
 const AdminInsights = () => {
     const [requests, setRequests] = useState([]);
     const [restaurants, setRestaurants] = useState([]);
+
+    const getShops = async () => {
+        const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
+        // console.log(response.data.users);
+        setRestaurants(response.data.shops);
+    }
+
+    const getUnverifiedShops = async () => {
+        try {
+            const res = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-unverified`);
+            setRequests(res.data.shops);
+            console.log(res);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
-        const getShops = async () => {
-            const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
-            // console.log(response.data.users);
-            setRestaurants(response.data.shops);
-        }
         getShops();
-        const getUnverifiedShops = async () => {
-            try {
-                const res = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-unverified`);
-                setRequests(res.data.shops);
-                console.log(res);
-            } catch (error) {
-                console.log(error);
-            }
-        }
         getUnverifiedShops();
-    }, [])
+    }, [requests, restaurants])
+    
     const verifyShop = async (shopId) => {
         try {
             const res = await axios.post(`${import.meta.env.VITE_USER_BASE_URL}/verify-shop`, {

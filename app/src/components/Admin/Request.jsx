@@ -12,12 +12,8 @@ const Request = ({ name, image, shopName, email, onClick }) => {
             <div className="flex mt-4 w-full">
                 <button
                     onClick={() => onClick()}
-                    className="w-1/2 h-12 bg-green-200 text-lg font-bold text-black rounded-lg border-2 border-green-300 mr-4 active:scale-95">
+                    className="w-full h-12 bg-green-200 text-lg font-bold text-black rounded-lg border-2 border-green-300 active:scale-95">
                     Accept
-                </button>
-                <button
-                    className="w-1/2 h-12 bg-red-200 text-lg font-bold text-black rounded-lg border-2 border-red-300 active:scale-95">
-                    Deny
                 </button>
             </div>
         </div>

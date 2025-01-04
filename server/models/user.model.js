@@ -86,7 +86,9 @@ const userSchema = new mongoose.Schema({
   },
   referalCode: {
     type: String,
-    unique: true,
+    unique: function () {
+      return this.role === 'Student';
+    },
     default: function () {
       return this.name.substring(0, 3).toUpperCase() + this.sid;
     },

@@ -20,7 +20,7 @@ export const createShop = async (req, res) => {
     try {
         const { shopName, shopType, shopImage, owner } = req.body;
 
-        // console.log("SHOP: ", shopType);
+        console.log("SHOP: ", shopType);
 
         // Validate input
         if (!shopName || !shopImage || !owner || !shopType) {
@@ -42,7 +42,7 @@ export const createShop = async (req, res) => {
         // Update user
         const user = await User.findByIdAndUpdate(
             owner,
-            { shopId: newShop?._id, shopType: shopType },
+            { shopId: newShop?._id, shopType: shopType, isShopVerified: true },
             { new: true }
         );
         if (!user) {
