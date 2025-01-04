@@ -210,7 +210,7 @@ function UserPage() {
             :
             user?.role === "Admin" ? <p className="mt-4 flex bg-black w-fit px-3 py-2 rounded-full items-center gap-2">Admin</p> :
               <div className="bg-black px-4 h-fit mt-4 py-2 rounded-full">
-                Status: {user?.isShopVerified ? "Verified" : "Approval Pending"}
+                Status: {user?.shopId?.verified ? "Verified" : "Approval Pending"}
               </div>}
           <div onClick={() => setShowLogout(!showLogout)} className="mt-4 pl-6 flex items-center">
             {!showLogout ? <FaAngleDown /> : <FaAngleUp />}

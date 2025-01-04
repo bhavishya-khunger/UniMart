@@ -83,7 +83,7 @@ export const registerUser = async (req, res) => {
 
 
         // Save the user to the database
-        await user.save();
+        await user.save().populate("shopId");
 
         // Generate auth token
         const token = user.generateToken();
@@ -95,9 +95,7 @@ export const registerUser = async (req, res) => {
             user,
         });
     } catch (err) {
-        console.error(err);
-
-
+        // console.error(err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -117,9 +115,9 @@ export const loginUser = async (req, res) => {
         // Determine if the credential is an email or sid
         let user;
         if (credential.includes("@")) {
-            user = await User.findOne({ email: credential }).populate("friendList.id");
+            user = await User.findOne({ email: credential }).populate("friendList.id").populate("shopId");
         } else {
-            user = await User.findOne({ sid: credential }).populate("friendList.id");
+            user = await User.findOne({ sid: credential }).populate("friendList.id").populate("shopId");
         }
 
         if (!user) {
@@ -177,7 +175,7 @@ export const logoutUser = async (req, res) => {
 
 export const getProfile = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
 
         if (!userId) return res.status(400).json({ message: "User Not Found" });
 
@@ -190,8 +188,6 @@ export const getProfile = async (req, res) => {
         })
     } catch (error) {
         // console.log(error);
-
-
     }
 }
 

@@ -176,7 +176,13 @@ export const orderCart = async (req, res) => {
 
         if (!user) return res.status(404).json({ message: "User not found." });
 
-        const cart = await Cart.findOne({ userId }).populate('items.productId');
+        const cart = await Cart.findOne({ userId }).populate({
+            path: 'items.productId',
+            populate: {
+                path: 'shopkeeperId',
+                model: 'User'
+            }
+        });
         if (!cart) {
             return res.status(404).json({ message: "Cart not found." });
         }
@@ -200,14 +206,16 @@ export const orderCart = async (req, res) => {
         });
 
         if (cart.items.length === 0) return res.status(400).json({ message: "Cart is empty." });
-
+        const shopId = cart.items[0].productId.shopkeeperId.shopId;
         // Create order from cart
         const order = new Order({
             comments: comments,
             userId,
             productDetails: cartItems,
-            shopId: cart?.items[0]?.productId?.shopkeeperId?.shopId,
+            shopId,
         });
+
+        // console.log("ORDER IS ", order);
 
         await order.save();
 
@@ -240,6 +248,7 @@ export const findAOrder = async (req, res) => {
             .populate('userId', '-password')
             .populate('productDetails.item')
             .populate('deliveryPersonId')
+            .populate('shopId')
             .populate({
                 path: 'shopId',
                 populate: {
@@ -660,6 +669,7 @@ export const getActiveOrdersByDeliveryPerson = async (req, res) => {
         })
             .populate('userId', '-password')
             .populate('productDetails.item')
+            .populate('shopId')
             .populate({
                 path: 'productDetails.item',
                 populate: {

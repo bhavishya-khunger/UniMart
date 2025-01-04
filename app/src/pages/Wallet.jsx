@@ -4,7 +4,9 @@ import { BsCopy, BsShare, BsWallet2 } from 'react-icons/bs';
 import Transaction from '../components/Wallet/Transaction';
 import axios from 'axios';
 import { UserDataContext } from '../context/UserContext';
+import { loadUserFromServer } from '../utils/UpdateUser.js';
 import ErrorPop from '../components/General/ErrorPop';
+import { MdDone, MdDownloadDone, MdOutlineDone } from 'react-icons/md';
 
 const Wallet = () => {
     const { user, setUser } = useContext(UserDataContext);
@@ -14,16 +16,8 @@ const Wallet = () => {
     const [transactionType, setTransactionType] = useState("Test Points");
     const [txnUserId, setTxnUserId] = useState("");
     const [password, setPassword] = useState("");
+    const [success, setSuccess] = useState(false);
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(referalCode).then(() => {
-            alert(`Referral code (${referalCode}) copied to clipboard!`);
-        }).catch(err => {
-            // console.error('Failed to copy: ', err);
-
-
-        });
-    };
     const handleShare = () => {
         const message = `🌟 Welcome to UniMart! 🎉
         
@@ -31,7 +25,7 @@ UniMart is your ultimate platform to get your orders delivered at your hostel do
 
 Use my referral code *${referalCode}* to get exclusive discounts! 🎁 Don't miss out on this opportunity to save while shopping at UniMart!
 
-Join now ➡️ https://w416mzq9-5173.inc1.devtunnels.ms/register?referal=${referalCode} 🌍
+Join now ➡️ ${import.meta.env.FRONTEND_URL}/register?referal=${referalCode} 🌍
 
 #UniMart #CampusShopping #ReferralCode`;
         const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
@@ -48,38 +42,52 @@ Join now ➡️ https://w416mzq9-5173.inc1.devtunnels.ms/register?referal=${refe
     const handleTransfer = async (e) => {
         e.preventDefault();
         setError("");
-
-        console.log("txnUserId : ", txnUserId);
-        console.log("amount : ", amount);
-        console.log("transactionType : ", transactionType);
-        console.log("password : ", password);
-
+    
         try {
+            // Perform the transfer request
             const response = await axios.post(`${import.meta.env.VITE_USER_BASE_URL}/transfer-points`, {
                 userSID: txnUserId,
-                adminId: user?._id,
+                adminId: user?._id, // Confirm if this is the correct field
                 amount: amount,
                 title: transactionType,
                 password: password,
             });
-            console.log(response);
+    
+            // Show success feedback
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 3000);
+    
+            // Reset form fields
+            setAmount("");
+            setTxnUserId("");
+            setPassword("");
+            setTransactionType("Test Points");
+    
+            // Reload user profile
+            await loadUserFromServer(user?._id, setUser);
+    
+            // console.log("Transfer successful:", response);
         } catch (error) {
-            setError(error?.response?.data?.message || "Something went Wrong.");
-            console.error("Error transferring coins:", error);
+            // Handle error feedback
+            setError(error?.response?.data?.message || "Something went wrong. Please try again.");
+            console.error("Error transferring points:", error);
         }
-    }
+    };
 
-    useEffect(() => {
+    const getTransactions = async () => {
         try {
             axios.get(`${import.meta.env.VITE_USER_BASE_URL}/transactions/${user?._id}`).then((res) => {
                 setTransactions(res.data.transactions);
             });
         } catch (error) {
-            // console.error(error);
-
+            // console.error(error)
 
         }
-    }, []);
+    }
+
+    useEffect(() => {
+        getTransactions();
+    }, [transactions]);
 
     return (
         <>
@@ -113,11 +121,17 @@ Join now ➡️ https://w416mzq9-5173.inc1.devtunnels.ms/register?referal=${refe
                             <option className='text-sm' value="Refund">Refund</option>
                         </select>
                         <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Confirm Password" className="border outline-none border-gray-200 rounded-xl w-full px-2 py-1 mt-2" />
+                        {error && <ErrorPop text={error} />}
+                        {success && (
+                            <div className='flex items-center gap-2 bg-green-300 mt-4 mb-3 py-2 px-3 rounded-xl'>
+                                <MdDownloadDone size={20} />
+                                Coins Transfered Successfully!
+                            </div>
+                        )}
                         <button onClick={handleTransfer} className="mt-2 flex justify-center gap-3 self-center py-2 w-full rounded-xl items-center text-white bg-[#FF4539] active:scale-95">
                             {/* #FF4539 - use this when u change */}
                             <BsWallet2 />Transfer Coins
                         </button>
-                        {error && <ErrorPop text={error} />}
                     </div>
                 )}
                 {user?.role === 'Student' && (

@@ -18,21 +18,22 @@ const OrderPageNav = () => {
 
     const submitOTP = async (orderId) => {
         try {
+            console.log("submitting otp");
             const res = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/markDelivered`, {
                 orderId: orderId,
                 deliveryPersonId: user?._id,
                 otp: otpCode
             });
+            console.log(res);
             if (res.status === 200) {
                 try {
-                    const response = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/process`, {
+                    await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/process`, {
                         orderId: orderId
-                    })
+                    });
+                    await loadUserFromServer(user?._id, setUser);
                     navigate('/wallet');
                 } catch (error) {
-                    // // console.log(error);
-
-
+                    console.log(error);
                 }
             }
         } catch (error) {
@@ -45,6 +46,7 @@ const OrderPageNav = () => {
 
     async function markAsPickedup(orderId) {
         try {
+            console.log("marking as picked up");
             await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/markForDelivery`, {
                 orderId: orderId,
                 deliveryPersonId: user?._id
@@ -60,17 +62,19 @@ const OrderPageNav = () => {
         const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/${user?._id}`);
         if (response.data.order) {
             setPlacedOrders(sortOrders(response.data.order));
+            // console.log(response.data.order);
         }
     }
 
     const getDeliveryOrders = async () => {
         const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/delivery/${JSON.parse(localStorage.getItem('user'))._id}`);
         if (response.data.orders) {
-            setDeliveryOrders(response.data.orders);
+            setDeliveryOrders(sortOrders(response.data.orders));
         }
     }
 
     const markPrintAsPickedup = async (orderId) => {
+        console.log("marking as picked up");
         try {
             await axios.post(`${import.meta.env.VITE_SHOP_BASE_URL}/mark-as-picked`, {
                 orderId: orderId,
@@ -230,6 +234,15 @@ const OrderPageNav = () => {
                                     <h2 className="bg-black text-white text-center mt-2 rounded-lg text-lg py-1 font-semibold">
                                         Active Order for {orderForDelivery?.userId?.name?.split(" ", 2)[0]}
                                     </h2>
+                                    <h2 className="bg-black italic text-base text-white text-center mt-2 rounded-lg py-1 font-semibold">
+                                        from {orderForDelivery?.shopId?.shopName}
+                                    </h2>
+                                    {/* <h2 className=" text-black text-center mt-2 rounded-lg text-lg py-1 font-semibold">
+                                        {new Date(orderForDelivery?.updatedAt).toLocaleString("en-US", {
+                                            dateStyle: "medium",
+                                            timeStyle: "short"
+                                        })}
+                                    </h2> */}
                                     <p className="mt-2"><b>Name:</b> {orderForDelivery?.userId?.name}</p>
                                     <p><b>Order ID:</b> {orderForDelivery?._id}</p>
                                     <p><b>Details:</b></p>

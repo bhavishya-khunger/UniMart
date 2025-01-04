@@ -7,6 +7,7 @@ import Request from "../components/Admin/Request";
 const AdminInsights = () => {
     const [requests, setRequests] = useState([]);
     const [restaurants, setRestaurants] = useState([]);
+    const [totalUsers, setTotalUsers] = useState(0);
 
     const getShops = async () => {
         const response = await axios.get(`${import.meta.env.VITE_SHOP_BASE_URL}/get-shops`);
@@ -23,6 +24,20 @@ const AdminInsights = () => {
             console.log(error);
         }
     }
+
+    const getAllUsers = async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_USER_BASE_URL}/all`);
+            console.log(response);
+            setTotalUsers(response.data.students.length);
+        } catch (error) {
+            console.error("Error fetching all users:", error);
+        }
+    }
+
+    useEffect(() => {
+        getAllUsers();
+    }, [totalUsers])
 
     useEffect(() => {
         getShops();
@@ -53,28 +68,28 @@ const AdminInsights = () => {
 
             {/* Stats Boxes */}
             <div className="flex justify-around">
-                <div className="h-32 w-36 bg-[#2F4DA7] rounded-3xl p-5 text-center text-lg font-semibold text-gray-50 flex flex-col justify-center items-center">
+                <div className="h-32 w-36 bg-[#a75b2f] rounded-3xl p-5 text-center text-lg font-semibold text-gray-50 flex flex-col justify-center items-center">
                     <p className="text-6xl">{restaurants?.length}</p>
                     <p className="text-lg">Shopkeepers Registered</p>
                 </div>
-                <div className="h-32 w-36 bg-white rounded-3xl p-6 text-lg border-4 border-[#2F4DA7] font-semibold text-[#2F4DA7] flex flex-col justify-center text-center items-center">
-                    <p className="text-6xl">1</p>
+                <div className="h-32 w-36 bg-white rounded-3xl p-6 text-lg border-4 border-[#a75b2f] font-semibold text-[#a75b2f] flex flex-col justify-center text-center items-center">
+                    <p className="text-6xl">{totalUsers}</p>
                     <p className="text-lg">Students Registered</p>
                 </div>
             </div>
 
             {/* Cover Image Section */}
-            <section className="mt-4 coverImageContainer flex justify-center items-center relative mb-4">
+            {/* <section className="mt-4 coverImageContainer flex justify-center items-center relative mb-4">
                 <img
                     src="https://img.pikbest.com/templates/20240602/food-burger-restaurant-offer-web-banner-design_10587345.jpg!sw800"
                     alt="burger"
                     className="h-56 w-full max-w-xl rounded-3xl"
                 />
             </section>
-            <p>Days Left : 5</p>
+            <p>Days Left : 5</p> */}
 
             {/* Request Section */}
-            <div className="mt-5">
+            {/* <div className="mt-5">
                 <p className="ml-3 text-center text-xl font-semibold text-gray-900 mb-4">Advertisement Requests</p>
                 <div className="w-full mb-2 flex border border-gray-700 shadow-lg h-20 rounded-xl overflow-hidden">
                     <img src="https://www.literacyideas.com/wp-content/uploads/2021/08/1_img_6107cb72d2d9b.jpg" alt="" />
@@ -100,7 +115,7 @@ const AdminInsights = () => {
                         <span className="block">Bid: 30pts</span>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Request Section */}
             <div className="mt-5">

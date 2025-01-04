@@ -4,30 +4,27 @@ import jwt from 'jsonwebtoken';
 export const protectRoute = async (req, res, next) => {
     try {
         const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];
-        // // console.log(token);
-
 
         if (!token) {
-            return res.status(400).json({ message: "Access Denied - UNAUTHORIZED" });
+            return res.status(401).json({ message: "Access Denied - UNAUTHORIZED" });
         }
-        const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-        // // console.log("decoded:", decoded);
 
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         if (!decoded) {
-            return res.status(400).json({ message: "Access Denied - UNAUTHORIZED" });
+            return res.status(401).json({ message: "Access Denied - UNAUTHORIZED" });
         }
 
         const user = await User.findById(decoded.id);
-        
+
         if (!user) {
-            return res.status(400).json({ message: "User not found." });
+            return res.status(404).json({ message: "User not found." });
         }
+
         req.user = user;
-        return next();
+        next();
     } catch (error) {
-        // console.log(error);
-
-
+        console.error("Error in protectRoute middleware:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 }

@@ -6,16 +6,17 @@ import { UserDataContext } from '../context/UserContext';
 
 const OrderDetails = ({ data, shops }) => (
     <div className='max-w-80 w-fit px-8 border border-black bg-gray-100 mt-4 flex flex-col items-center justify-center py-3 rounded-xl'>
-        <p className='text-lg font-semibold'>Order Details</p>
+        <p className='text-lg font-semibold'>Order Details from {shops[0]?.shopName || "Unknown Shop"}</p>
         <ol className="list-decimal">
             {Array.isArray(data?.productDetails) && data.productDetails.map((product, index) => {
-                const shop = shops[index];
                 return (
-                    <li key={index}>
-                        {product?.totalPrice / product?.item?.price}
-                        &nbsp;x&nbsp;
-                        {product?.item?.productName} from {shop?.shopName || 'Unknown Shop'}
-                    </li>
+                    <>
+                        <li key={index}>
+                            {product?.totalPrice / product?.item?.price}
+                            &nbsp;x&nbsp;
+                            {product?.item?.productName}
+                        </li>
+                    </>
                 );
             })}
         </ol>

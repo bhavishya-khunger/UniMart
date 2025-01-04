@@ -36,8 +36,8 @@ const Transaction = ({value, date, title}) => {
     return (
         <div className={value > 0 ? 'bg-green-600 border shadow-lg mt-3 py-3 px-4 rounded-xl w-full h-fit flex justify-between' : 'bg-red-600 border shadow-lg mt-3 py-3 px-4 rounded-xl w-full h-fit flex justify-between'}>
             <div className='flex gap-4 items-center'>
-                <span className='rounded-full p-1'>
-                    {value > 0 ? <FcCurrencyExchange size={30} /> : <FcDebt size={30} />}
+                <span className='rounded-full p-2 bg-white'>
+                    {value > 0 ? <FcCurrencyExchange size={33} /> : <FcDebt size={30} />}
                 </span>
                 <div className='text-white flex flex-col justify-center'>
                     <span className='text-sbase'>{title}</span>
