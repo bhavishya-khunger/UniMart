@@ -36,7 +36,7 @@ export const registerUser = async (req, res) => {
             $or: [{ email }, { sid: sid || '99999999' }]
         }).populate("friendList.id");
 
-        // console.log(existingUser);
+        console.log("EU: ", existingUser);
 
 
         if (existingUser) {
@@ -95,7 +95,7 @@ export const registerUser = async (req, res) => {
             user,
         });
     } catch (err) {
-        // console.error(err);
+        console.error(err);
 
 
         res.status(500).json({ message: "Internal Server Error" });

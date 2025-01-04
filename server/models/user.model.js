@@ -25,7 +25,9 @@ const userSchema = new mongoose.Schema({
     required: function () {
       return this.role === 'Student';
     },
-    unique: true,
+    unique: function () {
+      return this.role === 'Student';
+    },
     sparse: true,
   },
   email: {
@@ -86,11 +88,13 @@ const userSchema = new mongoose.Schema({
   },
   referalCode: {
     type: String,
-    unique: function () {
-      return this.role === 'Student';
-    },
+    unique: true,
     default: function () {
-      return this.name.substring(0, 3).toUpperCase() + this.sid;
+      if (this.role === 'Student') {
+        return this.name.substring(0, 3).toUpperCase() + this.sid;
+      } else {
+        return this.name.substring(0, 3).toUpperCase() + this._id;
+      }
     },
   },
   agreesToDeliver: {
