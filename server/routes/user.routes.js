@@ -2,6 +2,7 @@ import express from 'express';
 import { addFriend, deleteFriend, editProfile, getAllUsers, getOrdersForShop, getProfile, getTransactionHistory, loginUser, logoutUser, registerUser, sendFriendRequest, startAcceptingOrders } from '../controllers/user.controller.js';
 import { protectRoute } from '../middlewares/auth.user.js';
 import { transferCoins, verifyShop } from '../controllers/admin.controller.js';
+import { sendOtp, verifyOtp } from '../controllers/otp.controller.js';
 
 const router = express.Router();
 
@@ -14,6 +15,8 @@ router.get('/transactions/:userId', getTransactionHistory)
 router.get('/orders/:userId', getOrdersForShop)
 router.post('/accept-orders', startAcceptingOrders)
 router.get('/all', getAllUsers)
+router.post('/send-otp', sendOtp);
+router.post('/verify-otp', verifyOtp);
 
 // FRIENDS
 

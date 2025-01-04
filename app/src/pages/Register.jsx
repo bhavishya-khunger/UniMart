@@ -83,6 +83,24 @@ const Register = () => {
       const time = new Date().getTime() + 1000 * 20 * 60; // 20min
       localStorage.setItem("expiryTime", time);
 
+      // Send OTP to the user
+      try {
+        const otpRes = await axios.post(
+          `${import.meta.env.VITE_USER_BASE_URL}/send-otp`,
+          { email }
+        );
+
+        if (otpRes.status === 200) {
+          // OTP sent successfully
+          navigate(`/verifymail`);
+        } else {
+          setAlertMsg("Failed to send OTP.");
+        }
+      } catch (error) {
+        console.error("OTP sending failed:", error.response?.data || error);
+        setAlertMsg(error.response?.data.message || "Error sending OTP.");
+      }
+
       // Redirect on success
       navigate("/");
     } catch (error) {

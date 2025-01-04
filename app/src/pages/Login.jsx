@@ -7,7 +7,7 @@ import Loading from "../components/General/Loading";
 import { UserDataContext } from "../context/UserContext";
 
 const Login = () => {
-  const {user, setUser} = useContext(UserDataContext);
+  const { user, setUser } = useContext(UserDataContext);
   const [credential, setCredential] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -39,6 +39,27 @@ const Login = () => {
         localStorage.setItem('user', JSON.stringify(res.data.user)); // change this with context
         const time = new Date().getTime() + 1000 * 20 * 60; //20min
         localStorage.setItem('expiryTime', time);
+
+        if (user?.isEmailVerified === false) {
+          // Send OTP to the user
+          try {
+            const otpRes = await axios.post(
+              `${import.meta.env.VITE_USER_BASE_URL}/send-otp`,
+              { email: user.email }
+            );
+
+            if (otpRes.status === 200) {
+              // OTP sent successfully
+              navigate(`/verifymail`);
+            } else {
+              setAlertMsg("Failed to send OTP.");
+            }
+          } catch (error) {
+            console.error("OTP sending failed:", error.response?.data || error);
+            setAlertMsg(error.response?.data.message || "Error sending OTP.");
+          }
+        }
+
         return navigate("/")
       };
     } catch (error) {

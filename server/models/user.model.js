@@ -114,7 +114,17 @@ const userSchema = new mongoose.Schema({
   shopId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Shop",
-  }
+  },
+  otp: { 
+    type: String, 
+    required: false, 
+    select: false 
+  },
+  otpExpires: { 
+    type: Date, 
+    required: false, 
+    select: false 
+  },
 });
 
 // to compare hashed passwords

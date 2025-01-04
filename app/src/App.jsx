@@ -20,7 +20,8 @@ import UserProfile from './pages/UserProfile.jsx';
 import OrderPageNav from './pages/OrderPageNav.jsx';
 import PdfUpload from './pages/PdfUpload.jsx';
 import { UserDataContext } from './context/UserContext.jsx'
-
+import OTPPage from './pages/OtpVerification.jsx';
+import OtpProtect from './pages/OtpProtect.jsx';
 
 const App = () => {
   const { user, setUser } = useContext(UserDataContext);
@@ -47,9 +48,11 @@ const App = () => {
       <Routes>
         <Route path="/" element={
           <UserProtectRoute>
-            <ShopKeeperWrapper>
-              <HomePage />
-            </ShopKeeperWrapper>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <HomePage />
+              </ShopKeeperWrapper>
+            </OtpProtect>
           </UserProtectRoute>
         } />
         <Route path="/login" element={<Login />} />
@@ -80,7 +83,7 @@ const App = () => {
             </ShopKeeperWrapper>
           </UserProtectRoute>
         } />
-        <Route path = "/pdfpage" element = {<PdfUpload/>} />
+        <Route path="/pdfpage" element={<PdfUpload />} />
         <Route path="/:shopId" element={
           <UserProtectRoute>
             <ShopKeeperWrapper>
@@ -108,7 +111,8 @@ const App = () => {
         <Route path="/userpage/profile" element={<UserProfile />} />
         <Route path="/cart/order" element={<OrderConfirmScreen />} />
         <Route path="/liverequest" element={<LiveRequest />} />
-        <Route path='/pdf' element={<PdfUpload/>}/>
+        <Route path='/pdf' element={<PdfUpload />} />
+        <Route path='/verifymail' element={<OTPPage />} />
       </Routes>
     </div>
   )
