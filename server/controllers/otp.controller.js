@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
-import User from '../models/user.model.js'; 
+import User from '../models/user.model.js';
 
 // Generate OTP function
 const generateOtp = () => {
@@ -21,11 +21,13 @@ export const sendOtp = async (req, res) => {
     await User.findOneAndUpdate({ email }, { otp, otpExpires });
 
     // Create a transporter for sending email
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com', // Replace with your SMTP server address
+        port: 587,                // Replace with the desired port (e.g., 465 for SMTPS)
+        secure: false,             // Set to true for port 465, false for other ports
         auth: {
-            user: process.env.EMAIL_USER, // email address
-            pass: process.env.EMAIL_PASS, // email password
+            user: process.env.EMAIL_USER, // Replace with your email address
+            pass: process.env.EMAIL_PASS     // Replace with your email password or app-specific password
         }
     });
 
@@ -49,13 +51,15 @@ export const sendOtp = async (req, res) => {
     };
 
     // Send the email
-    try {
-        await transporter.sendMail(mailOptions);
-        return res.status(200).json({ message: 'OTP sent to your email.' });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Error sending OTP email.' });
-    }
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(400).json({error: error});
+        }
+        console.log('Email sent: ' + info.response);
+        return res.status(200).json({
+            message: "Email sent."
+        });
+    });
 };
 
 // Verify OTP entered by the user

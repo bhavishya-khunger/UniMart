@@ -68,7 +68,7 @@ const LiveRequest = () => {
                 }
             );
             socket.emit("order-confirmed");
-            navigate('/');
+            navigate('/order');
         } catch (error) {
             // console.error('Error accepting order:', error?.response?.data || error.message);
 

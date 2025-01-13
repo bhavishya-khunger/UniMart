@@ -1,6 +1,7 @@
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
 import Order from "../models/order.model.js";
+import Transaction  from "../models/transaction.model.js";
 
 export const getAllShops = async (req, res) => {
     try {
@@ -178,8 +179,45 @@ export const markPrintAsPickedUp = async (req, res) => {
         order.orderStatus = "Delivered";
 
         await order.save();
+        
+        const placedBy = await User.findById(order?.userId);
 
-        res.status(200).json({ message: "Order marked as picked up.", order });
+        const adminAcc = await User.findOne({ role: "Admin" });
+
+        const admin_txn = new Transaction({
+            userId: adminAcc?._id,
+            coinsSpent: 0,
+            coinsEarned: 5,
+            title: "Print Commission",
+            orderId: order?._id,
+        });
+        
+        const user_txn = new Transaction({
+            userId: userId,
+            coinsSpent: 5,
+            coinsEarned: 0,
+            title: "Print Debit",
+            orderId: order?._id,
+        });
+
+        await admin_txn.save();
+
+        await user_txn.save();
+
+
+        placedBy.coins -= 5;
+        await placedBy.save();
+
+        adminAcc.coins += 5;
+        await adminAcc.save();
+
+        placedBy?.transactionHistory?.push(user_txn);
+        adminAcc?.transactionHistory?.push(admin_txn);
+
+        await placedBy.save();
+        await adminAcc.save();
+
+        return res.status(200).json({ message: "Order marked as picked up.", order });
     } catch (error) {
         console.log(error);
     }

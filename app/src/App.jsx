@@ -59,60 +59,133 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/shopdetails" element={
           <UserProtectRoute>
-            <ShopForm />
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <ShopForm />
+              </ShopKeeperWrapper>
+            </OtpProtect>
           </UserProtectRoute>
         } />
         <Route path="/wallet" element={
           <UserProtectRoute>
-            <ShopKeeperWrapper>
-              <Wallet />
-            </ShopKeeperWrapper>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <Wallet />
+              </ShopKeeperWrapper>
+            </OtpProtect>
           </UserProtectRoute>
         } />
         <Route path="/cart" element={
           <UserProtectRoute>
             <ShopKeeperWrapper>
-              <CartPage />
+              <OtpProtect>
+                <CartPage />
+              </OtpProtect>
             </ShopKeeperWrapper>
           </UserProtectRoute>
         } />
         <Route path="/admininsights" element={
           <UserProtectRoute>
             <ShopKeeperWrapper>
-              <AdminInsights />
+              <OtpProtect>
+                <AdminInsights />
+              </OtpProtect>
             </ShopKeeperWrapper>
           </UserProtectRoute>
         } />
-        <Route path="/pdfpage" element={<PdfUpload />} />
+        <Route path="/pdfpage" element={
+          <UserProtectRoute>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <PdfUpload />
+              </ShopKeeperWrapper>
+            </OtpProtect>
+          </UserProtectRoute>
+        } />
         <Route path="/:shopId" element={
           <UserProtectRoute>
             <ShopKeeperWrapper>
-              <Restaurant />
+              <OtpProtect>
+                <Restaurant />
+              </OtpProtect>
             </ShopKeeperWrapper>
           </UserProtectRoute>
         } />
         <Route path="/editmenu" element={
           <UserProtectRoute>
-            <ShopKeeperWrapper>
-              <MenuShop />
-            </ShopKeeperWrapper>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <MenuShop />
+              </ShopKeeperWrapper>
+            </OtpProtect>
           </UserProtectRoute>
         } />
         <Route path="/editmenu/add" element={
           <UserProtectRoute>
-            <ShopKeeperWrapper>
-              <AddItemsForm />
-            </ShopKeeperWrapper>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <AddItemsForm />
+              </ShopKeeperWrapper>
+            </OtpProtect>
           </UserProtectRoute>
         } />
-        <Route path="/addItems" element={<AddItemsForm />} />
-        <Route path="/order" element={<OrderPageNav />} />
-        <Route path="/userpage" element={<UserPage />} />
-        <Route path="/userpage/profile" element={<UserProfile />} />
-        <Route path="/cart/order" element={<OrderConfirmScreen />} />
-        <Route path="/liverequest" element={<LiveRequest />} />
-        <Route path='/pdf' element={<PdfUpload />} />
-        <Route path='/verifymail' element={<OTPPage />} />
+        <Route path="/order" element={
+          <UserProtectRoute>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <OrderPageNav />
+              </ShopKeeperWrapper>
+            </OtpProtect>
+          </UserProtectRoute>
+        } />
+        <Route path="/userpage" element={
+          <UserProtectRoute>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <UserPage />
+              </ShopKeeperWrapper>
+            </OtpProtect>
+          </UserProtectRoute>
+        } />
+        <Route path="/userpage/profile" element={
+          <UserProtectRoute>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <UserProfile />
+              </ShopKeeperWrapper>
+            </OtpProtect>
+          </UserProtectRoute>
+        } />
+        <Route path="/cart/order" element={
+          <UserProtectRoute>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <OrderConfirmScreen />
+              </ShopKeeperWrapper>
+            </OtpProtect>
+          </UserProtectRoute>
+        } />
+        <Route path="/liverequest" element={
+          <UserProtectRoute>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <LiveRequest />
+              </ShopKeeperWrapper>
+            </OtpProtect>
+          </UserProtectRoute>
+        } />
+        <Route path='/pdf' element={
+          <UserProtectRoute>
+            <OtpProtect>
+              <ShopKeeperWrapper>
+                <PdfUpload />
+              </ShopKeeperWrapper>
+            </OtpProtect>
+          </UserProtectRoute>
+        } />
+        <Route path='/verifymail' element={
+          <OTPPage />
+        } />
       </Routes>
     </div>
   )

@@ -4,6 +4,7 @@ import Order from '../models/order.model.js';
 import bcrypt from 'bcrypt';
 import Transaction from '../models/transaction.model.js';
 import { sendMessageToSocketId } from '../src/socket.js';
+import { log } from 'console';
 
 export const registerUser = async (req, res) => {
     try {
@@ -33,10 +34,10 @@ export const registerUser = async (req, res) => {
 
         // Check if email or SID already exists
         const existingUser = await User.findOne({
-            $or: [{ email }, { sid: sid || '99999999' }]
+            $or: [{ email }, { sid: sid || "99999999" }]
         }).populate("friendList.id");
 
-        console.log("EU: ", existingUser);
+        existingUser ? console.log("EU: ", existingUser) : "";
 
 
         if (existingUser) {
@@ -81,9 +82,11 @@ export const registerUser = async (req, res) => {
             role
         });
 
+        log(user);
+
 
         // Save the user to the database
-        await user.save().populate("shopId");
+        await user.save();
 
         // Generate auth token
         const token = user.generateToken();
@@ -95,7 +98,7 @@ export const registerUser = async (req, res) => {
             user,
         });
     } catch (err) {
-        // console.error(err);
+        console.error(err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
