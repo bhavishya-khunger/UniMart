@@ -22,10 +22,10 @@ const CartPage = () => {
   const location = useLocation();
   const restaurantId = location.state?.restaurantId;
 
-  const handleSelfPickUpChange = (isChecked) => {
-    setSelfPickUp(isChecked);
-    if (isChecked) setSendToFriends(false); // Ensure Friends Only is disabled when Self PickUp is selected
-  };
+  // const handleSelfPickUpChange = (isChecked) => {
+  //   setSelfPickUp(isChecked);
+  //   if (isChecked) setSendToFriends(false); // Ensure Friends Only is disabled when Self PickUp is selected
+  // };
 
   const handleFriendsOnlyChange = (isChecked) => {
     setSendToFriends(isChecked);
@@ -41,19 +41,16 @@ const CartPage = () => {
       });
       // console.log("Order placed:", response1.data);
 
-
-
       // Step 2: Request the order (make sure this only happens once)
       const response2 = await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/request`, {
         orderId: response1?.data?.order?._id,
-        selfPickUp: selfPickUp,
-        sendToFriends: sendToFriends,
-        pickupTime: pickupTime
+        sendToFriends: sendToFriends
       });
       await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/request`, {
         orderId: response1?.data?.order?._id,
+        sendToFriends: sendToFriends
       });
-      // console.log("Request Sent:", response2.data);
+      console.log("Request Sent:", response2.data);
 
 
 

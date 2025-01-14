@@ -284,80 +284,103 @@ export const sendRequest = async (req, res) => {
     try {
         const { orderId, sendToFriends } = req.body;
 
+        // Validate orderId
         if (!orderId) {
             return res.status(400).json({ message: "No order ID provided." });
         }
 
+        // Fetch the order details and populate related fields
         const order = await Order.findById(orderId)
             .populate('userId', '-password')
             .populate('userId.friendList')
             .populate('productDetails.item')
             .populate({
-                path: 'productDetails.item', // Populate the `item` field in `productDetails`
+                path: 'productDetails.item',
                 populate: {
-                    path: 'shopkeeperId', // Populate the `shopkeeperId` field within `Product`
-                    model: 'User', // Reference the Shopkeeper model
+                    path: 'shopkeeperId',
+                    model: 'User',
                 },
             });
 
+        // Validate the existence of the order
         if (!order) {
             return res.status(400).json({ message: "No order exists with this ID." });
         }
 
-        const placedByFriends = order.userId.friendList.filter(friend => friend.status === 'Approved');
+        // Ensure the order status is "Pending"
+        if (order?.orderStatus !== "Pending") {
+            return res.status(400).json({ message: "Delivery Partner already assigned." });
+        }
 
-        if (order?.orderStatus !== "Pending") return res.status(400).json({ message: "Delivery Partner already assigned." });
+        // Filter approved friends
+        const placedByFriends = order.userId.friendList.filter(
+            (friend) => friend.status === 'Approved' && friend.id.toString() !== order.userId._id.toString()
+        );
 
-        // Use Promise.all to fetch all shops concurrently
+        const populatedFriends = await Promise.all(
+            placedByFriends.map(async (friend) => {
+                const populatedFriend = await User.findById(friend.id).select('-password');
+                return {
+                    populatedFriend,
+                };
+            })
+        );
+
+        // Log debugging information
+        // console.log("sendToFriends:", sendToFriends);
+        // console.log("Friend List:", order.userId.friendList);
+        console.log("Placed By Friends:", populatedFriends);
+
+        // Fetch shop details concurrently
         const shops = await Promise.all(
             order.productDetails.map(async (product) => {
                 if (product.item.shopkeeperId) {
                     return await Shop.findOne({ owner: product.item.shopkeeperId }).select('shopName');
                 }
-                return null; // Handle cases where `shopkeeperId` is missing
+                return null;
             })
         );
 
+        // Calculate delivery fee
         let totalFee = 0;
-        order.productDetails.map((product) => {
-            totalFee += product?.totalPrice;
+        order.productDetails.forEach((product) => {
+            totalFee += product?.totalPrice || 0;
         });
-
         const deliveryFee = Math.ceil(0.08 * totalFee);
 
+        // Find all users who agree to deliver and exclude the order's owner
         const users = await User.find({ agreesToDeliver: true, role: 'Student' }).select('-password');
-
         const filteredUsers = users.filter(
             (user) => user._id.toString() !== order.userId._id.toString()
         );
 
-        // Send order and shops to the users via socket
+        // Send order requests
         if (!sendToFriends) {
-            filteredUsers.map((user) => {
+            filteredUsers.forEach((user) => {
                 sendMessageToSocketId(user.socketId, {
                     event: "order-request",
                     data: { order, shops, deliveryFee },
                 });
             });
         } else {
-            placedByFriends.map((user) => {
-                sendMessageToSocketId(user.socketId, {
+            populatedFriends.forEach((friend) => {
+                sendMessageToSocketId(friend.populatedFriend.socketId, {
                     event: "order-request",
                     data: { order, shops, deliveryFee },
                 });
             });
         }
 
+        // Respond with success
         return res.status(200).json({
-            message: "Requests Sent to the users.",
+            message: "Requests sent to the users.",
             allUsers: sendToFriends ? placedByFriends : filteredUsers,
             order,
             shops,
         });
     } catch (error) {
-        // console.error(error);
-
-
+        // Log and respond with error
+        console.error("Error in sendRequest:", error);
         return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
@@ -608,9 +631,9 @@ export const processOrderDelivery = async (req, res) => {
 
         if (!order) return res.status(404).json({ message: "Order not found." });
 
-        if (order.deliveryPersonId.toString() !== deliveryPersonId) {
-            return res.status(403).json({ message: "You are not authorized to update this order." });
-        }
+        // if (order.deliveryPersonId.toString() !== deliveryPersonId) {
+        //     return res.status(403).json({ message: "You are not authorized to update this order." });
+        // }
 
         if (order.otp !== otp) {
             return res.status(400).json({ message: "Invalid OTP." });
@@ -672,6 +695,26 @@ export const processOrderDelivery = async (req, res) => {
         admin.transactionHistory.push(transactions[3]);
 
         await Promise.all([user.save(), deliveryPerson.save(), shopkeeper.save(), admin.save(), order.save()]);
+
+        sendMessageToSocketId(user.socketId, {
+            event: "transaction-event-trigger",
+            data: await User.findById(user._id).populate("friendList.id")
+        })
+
+        sendMessageToSocketId(deliveryPerson.socketId, {
+            event: "transaction-event-trigger",
+            data: await User.findById(deliveryPerson._id).populate("friendList.id")
+        })
+
+        sendMessageToSocketId(shopkeeper.socketId, {
+            event: "transaction-event-trigger",
+            data: await User.findById(shopkeeper._id)
+        })
+
+        sendMessageToSocketId(admin.socketId, {
+            event: "transaction-event-trigger",
+            data: await User.findById(admin._id)
+        })
 
         return res.status(200).json({
             message: "Order processed and marked as delivered successfully.",

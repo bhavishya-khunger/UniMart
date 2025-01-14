@@ -95,7 +95,7 @@ export const registerUser = async (req, res) => {
 
             sendMessageToSocketId(referredBy?.socketId, {
                 event: "transaction-event-trigger",
-                message: await User.findById(referredBy?._id).populate("friendList.id")
+                data: await User.findById(referredBy?._id).populate("friendList.id")
             })
 
             await referal.save();
