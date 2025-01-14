@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import InputVal from "../components/General/InputVal";
 import { Link, useNavigate } from "react-router-dom";
 import ErrorPop from "../components/General/ErrorPop";
@@ -69,6 +69,19 @@ const Login = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      loginHandler(e);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
+
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       <header className="flex flex-col items-center justify-center">
@@ -104,7 +117,7 @@ const Login = () => {
       <footer className="flex flex-col mt-6">
         <button
           onClick={loginHandler}
-          className="bg-[#FF4539] text-white text-xl px-6 py-3 font-bold rounded-full w-[80vw] mb-4 active:scale-95">
+          className="bg-[#FF4539] text-white text-xl px-6 py-3 font-bold rounded-full w-80 mb-4 active:scale-95">
           Sign in
         </button>
         <p className="text-center">

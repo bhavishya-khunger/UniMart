@@ -16,6 +16,8 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [referalCode, setReferalCode] = useState("");
   const [referDisable, setReferDisable] = useState(false);
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState(null);
 
   const { user, setUser } = useContext(UserDataContext);
   const navigate = useNavigate();
@@ -37,7 +39,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
 
-    if (!password || !email || !name) {
+    if (!password || !email || !name || !phone || !address) {
       setError("All fields are required.");
       return;
     }
@@ -57,6 +59,16 @@ const Register = () => {
       return;
     }
 
+    function isValidPhoneNumber(phone) {
+      const phoneRegex = /^[0-9]{10}$/;
+      return phoneRegex.test(phone);
+    }
+
+    if (!isValidPhoneNumber(phone)) {
+      setError("Phone number entered is invalid.");
+      return;
+    }
+
     if (!isShopkeeper && (!sid || sid.length !== 8)) {
       setError("SID entered is invalid.");
       return;
@@ -65,8 +77,8 @@ const Register = () => {
     try {
       setLoading(true);
       const userPayload = isShopkeeper
-        ? { email, password, name, role: "Shopkeeper", referalCode }
-        : { email, password, sid, name, role: "Student", referalCode };
+        ? { email, phone, address, password, name, role: "Shopkeeper", referalCode }
+        : { email, phone, address, password, sid, name, role: "Student", referalCode };
 
       // console.log("User Payload:", userPayload);
 
@@ -128,6 +140,8 @@ const Register = () => {
           <InputVal value={sid} onChange={(e) => setSID(e.target.value)} fieldVal="SID" type="text" />
         )}
         <InputVal value={email} onChange={(e) => setEmail(e.target.value)} fieldVal="Email ID" type="email" />
+        <InputVal value={phone} onChange={(e) => setPhone(e.target.value)} fieldVal="Phone Number" type="number" />
+        <InputVal value={address} onChange={(e) => setAddress(e.target.value)} fieldVal="Address" type="text" />
         <InputVal value={password} onChange={(e) => setPassword(e.target.value)} fieldVal="Password" type="password" />
         <InputVal disabled={referDisable} value={referalCode} onChange={(e) => setReferalCode(e.target.value)} fieldVal="Referral Code (optional)" type="text" />
         <div className="flex flex-col items-center justify-center w-[80vw]">

@@ -8,7 +8,7 @@ import { log } from 'console';
 
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password, sid, role, referalCode } = req.body;
+        const { name, email, phone, address, password, sid, role, referalCode } = req.body;
 
         // console.log(req.body);
 
@@ -18,12 +18,17 @@ export const registerUser = async (req, res) => {
 
 
         // Validate input
-        if (!name || !email || !password || !role) {
+        if (!name || !email || !phone || !address || !password || !role) {
             return res.status(400).json({ message: 'All fields are required.' });
         }
 
         if (password.length < 6) {
             return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+        }
+
+        // Validate phone number
+        if (!/^\d{10}$/.test(phone)) {
+            return res.status(400).json({ message: 'Phone number must be a 10-digit number.' });
         }
 
         if (sid) {
@@ -34,11 +39,10 @@ export const registerUser = async (req, res) => {
 
         // Check if email or SID already exists
         const existingUser = await User.findOne({
-            $or: [{ email }, { sid: sid || "99999999" }]
+            $or: [{ email }, { sid: sid || "99999999" }, { phone }]
         }).populate("friendList.id");
 
-        existingUser ? console.log("EU: ", existingUser) : "";
-
+        // existingUser ? console.log("EU: ", existingUser) : "";
 
         if (existingUser) {
             return res.status(400).json({ message: 'Email or SID already in use.' });
@@ -50,7 +54,19 @@ export const registerUser = async (req, res) => {
         // Referral
         // console.log(referalCode);
 
+        // Create a new user
+        const user = new User({
+            name,
+            sid,
+            referredBy: referalCode ? referalCode : "",
+            password: hashedPass,
+            email,
+            role,
+            phone, 
+            address
+        });
 
+        
         if (referalCode.length > 0) {
             const referredByUsers = await User.find({ referalCode: referalCode });
 
@@ -60,27 +76,32 @@ export const registerUser = async (req, res) => {
 
             const referal = new Transaction({
                 userId: referredBy._id,
-                coinsEarned: 30,
+                coinsEarned: 20,
                 coinsSpent: 0,
                 title: "Referal Bonus"
             });
 
-            referredBy.coins += 30;
+            const referal_registered = new Transaction({
+                userId: user._id,
+                coinsEarned: 20,
+                coinsSpent: 0,
+                title: "Referal Bonus"
+            });
+
+            referredBy.coins += 20;
+            user.coins += 20;
+            user.transactionHistory.push(referal_registered);
             referredBy.transactionHistory.push(referal);
 
+            sendMessageToSocketId(referredBy?.socketId, {
+                event: "transaction-event-trigger",
+                message: await User.findById(referredBy?._id).populate("friendList.id")
+            })
+
             await referal.save();
+            await user.save();
             await referredBy.save();
         }
-
-        // Create a new user
-        const user = new User({
-            name,
-            sid,
-            referredBy: referalCode ? referalCode : "",
-            password: hashedPass,
-            email,
-            role
-        });
 
         log(user);
 
@@ -278,11 +299,19 @@ export const editProfile = async (req, res) => {
             message: "User ID is required.",
         });
 
+        if (!address || !phone) {
+            return res.status(400).json({ message: "All fields are required." });
+        }
+
         // console.log(phone);
+        const existingPhoneUser = await User.findOne({ phone });
 
+        if (existingPhoneUser && existingPhoneUser._id.toString() !== userId) {
+            return res.status(400).json({ message: "Phone number already in use." });
+        }
 
-        if (phone && phone <= 999999999 && phone >= 10000000000) {
-            return res.status(400).json("Phone Number Invalid");
+        if (!/^\d{10}$/.test(phone)) {
+            return res.status(400).json({ message: "Phone number invalid." });
         }
 
         const user = await User.findByIdAndUpdate(userId, { address: address, phone: phone });
@@ -291,7 +320,7 @@ export const editProfile = async (req, res) => {
 
         return res.status(200).json({
             message: "User saved!",
-            user: await User.findById(userId).select('-password'),
+            user: await User.findById(userId).populate("friendList.id").select('-password'),
         })
     } catch (error) {
         // console.log(error);
@@ -370,8 +399,6 @@ export const addFriend = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-
-
 
 export const sendFriendRequest = async (req, res) => {
     try {

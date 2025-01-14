@@ -49,13 +49,10 @@ const AdminInsights = () => {
             const res = await axios.post(`${import.meta.env.VITE_USER_BASE_URL}/verify-shop`, {
                 shopId: shopId
             })
+            getShops();
             // console.log("res : ", res);
-
-
         } catch (error) {
             // console.log(error);
-
-
         }
     }
     return (

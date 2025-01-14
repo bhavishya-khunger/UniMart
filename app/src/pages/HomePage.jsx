@@ -102,7 +102,7 @@ function App() {
         {/* Print on Demand */}
         <Link to={'/pdf'} className="overflow-hidden flex px-3 pr-2 justify-between items-center relative mb-6 transition-colors bg-[#292420] text-white h-28 border-2 border-gray-100 rounded-xl py-2 shadow-md shadow-gray-400 active:scale-95">
           <span className="flex flex-col text-left">
-            <h1 className="text-sm text-yellow-500 font-semibold italic ">Introducing</h1>
+            <h1 className="text-sm text-yellow-500 font-semibold italic ">Introducing UniMart's</h1>
             <h1 className="text-2xl text-yellow-400 italic font-bold">Print on Demand</h1>
             <h1 className="text-sm text-yellow-500 font-semibold italic">Choose, Upload, Submit, Collect!</h1>
           </span>

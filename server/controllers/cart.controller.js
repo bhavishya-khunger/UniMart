@@ -280,112 +280,9 @@ export const findAOrder = async (req, res) => {
     }
 }
 
-export const processOrder = async (req, res) => {
-    try {
-        const { orderId } = req.body;
-
-        if (!orderId) {
-            return res.status(400).json({ message: "Order ID is required." });
-        }
-
-        const order = await Order.findById(orderId)
-            .populate('userId', '-password -address')
-            .populate('productDetails.item')
-            .populate('deliveryPersonId', '-password');
-
-        if (!order) {
-            return res.status(404).json({ message: "Order not found." });
-        }
-
-        let totalOrderValue = 0;
-        let totalDeliveryPersonEarnings = 0;
-        let totalShopKeeperEarnings = 0;
-        let totalAdminEarnings = 0;
-
-        for (let i = 0; i < order.productDetails.length; i++) {
-            const orderValue = order.productDetails[i].totalPrice;
-            totalOrderValue += orderValue;
-            totalDeliveryPersonEarnings += Math.ceil(orderValue * 0.08);
-            totalShopKeeperEarnings += Math.ceil(orderValue * 0.87);
-        }
-
-        totalAdminEarnings = totalOrderValue - totalDeliveryPersonEarnings - totalShopKeeperEarnings;
-        // console.log("ADMIN EARNINGS ARE ", totalAdminEarnings);
-
-
-        const user = await User.findById(order.userId._id);
-        const deliveryPerson = await User.findById(order.deliveryPersonId._id);
-        const admin = await User.findOne({ role: 'Admin' });
-
-        user.coins -= totalOrderValue;
-        deliveryPerson.coins += totalDeliveryPersonEarnings;
-        admin.coins += totalAdminEarnings;
-
-        const userTransaction = await new Transaction({
-            userId: user._id,
-            coinsEarned: 0,
-            coinsSpent: totalOrderValue,
-            orderId: order._id,
-            title: "Order Debit"
-        }).save();
-
-        const deliveryPersonTransaction = await new Transaction({
-            userId: deliveryPerson._id,
-            coinsEarned: totalDeliveryPersonEarnings,
-            coinsSpent: 0,
-            orderId: order._id,
-            title: "Delivery Credit"
-        }).save();
-
-        for (let i = 0; i < order.productDetails.length; i++) {
-            const shopKeeper = await User.findById(order.productDetails[i].item.shopkeeperId);
-            const shopKeeperEarnings = Math.ceil(order.productDetails[i].totalPrice * 0.87);
-            shopKeeper.coins += shopKeeperEarnings;
-
-            const shopKeeperTransaction = await new Transaction({
-                userId: shopKeeper._id,
-                coinsEarned: shopKeeperEarnings,
-                coinsSpent: 0,
-                orderId: order._id,
-                title: "Order Credit"
-            }).save();
-
-            shopKeeper.transactionHistory.push(shopKeeperTransaction);
-            await shopKeeper.save();
-        }
-
-        const adminTransaction = await new Transaction({
-            userId: admin._id,
-            coinsEarned: totalAdminEarnings,
-            coinsSpent: 0,
-            orderId: order._id,
-            title: "Order Commission"
-        }).save();
-
-        user.transactionHistory.push(userTransaction);
-        deliveryPerson.transactionHistory.push(deliveryPersonTransaction);
-        admin.transactionHistory.push(adminTransaction);
-
-        await user.save();
-        await deliveryPerson.save();
-        await admin.save();
-
-        return res.status(200).json({
-            message: "Order processed successfully.",
-            order: await Order.findById(orderId),
-            user: order?.userId?._id
-        });
-    } catch (error) {
-        // console.log(error);
-
-
-        res.status(500).json({ message: "Internal server error." });
-    }
-};
-
 export const sendRequest = async (req, res) => {
     try {
-        const { orderId, selfPickUp, sendToFriends, pickupTime } = req.body;
+        const { orderId, sendToFriends } = req.body;
 
         if (!orderId) {
             return res.status(400).json({ message: "No order ID provided." });
@@ -403,11 +300,11 @@ export const sendRequest = async (req, res) => {
                 },
             });
 
-        const placedByFriends = order.userId.friendList.filter(friend => friend.status === 'Approved');
-
         if (!order) {
             return res.status(400).json({ message: "No order exists with this ID." });
         }
+
+        const placedByFriends = order.userId.friendList.filter(friend => friend.status === 'Approved');
 
         if (order?.orderStatus !== "Pending") return res.status(400).json({ message: "Delivery Partner already assigned." });
 
@@ -604,6 +501,9 @@ export const markOrderForPickup = async (req, res) => {
             });
         }
 
+        shopKeeper?.orderHistory?.push(order);
+        await shopKeeper.save();
+
         res.status(200).json({ message: "Order marked as prepared for pickup.", order });
     } catch (error) {
         // console.log(error);
@@ -612,48 +512,6 @@ export const markOrderForPickup = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 }
-
-export const markOrderOutForDelivery = async (req, res) => {
-    try {
-        const { orderId, deliveryPersonId } = req.body;
-
-        if (!orderId) return res.status(400).json({ message: "Order ID is required." });
-        if (!deliveryPersonId) return res.status(400).json({ message: "Delivery Person ID is required." });
-
-        const order = await Order.findById(orderId).populate('productDetails.item');
-
-        if (!order) return res.status(404).json({ message: "Order not found." });
-
-        if (order.deliveryPersonId.toString() !== deliveryPersonId) {
-            return res.status(403).json({ message: "You are not authorized to update this order." });
-        }
-
-        if (order.orderStatus !== "Completed") {
-            return res.status(400).json({ message: "Order is not in a state that can be marked as out for delivery." });
-        }
-
-        order.orderStatus = "Out for Delivery";
-
-        // Generate a 4-digit OTP
-        const otp = Math.floor(1000 + Math.random() * 9000).toString();
-        order.otp = otp;
-
-        await order.save();
-
-        // Notify the user who placed the order
-        sendMessageToSocketId(order.userId.socketId, {
-            event: 'order-out-for-delivery',
-            data: { order },
-        });
-
-        res.status(200).json({ message: "Order status updated to Out for Delivery.", order });
-    } catch (error) {
-        // console.log(error);
-
-
-        res.status(500).json({ message: "Internal server error." });
-    }
-};
 
 export const getActiveOrdersByDeliveryPerson = async (req, res) => {
     try {
@@ -696,7 +554,46 @@ export const getActiveOrdersByDeliveryPerson = async (req, res) => {
     }
 };
 
-export const markOrderAsDelivered = async (req, res) => {
+export const markOrderOutForDelivery = async (req, res) => {
+    try {
+        const { orderId, deliveryPersonId } = req.body;
+
+        if (!orderId) return res.status(400).json({ message: "Order ID is required." });
+        if (!deliveryPersonId) return res.status(400).json({ message: "Delivery Person ID is required." });
+
+        const order = await Order.findById(orderId).populate('productDetails.item');
+
+        if (!order) return res.status(404).json({ message: "Order not found." });
+
+        if (order.deliveryPersonId.toString() !== deliveryPersonId) {
+            return res.status(403).json({ message: "You are not authorized to update this order." });
+        }
+
+        if (order.orderStatus !== "Completed") {
+            return res.status(400).json({ message: "Order is not in a state that can be marked as out for delivery." });
+        }
+
+        order.orderStatus = "Out for Delivery";
+
+        // Generate a 4-digit OTP
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        order.otp = otp;
+
+        await order.save();
+
+        // Notify the user who placed the order
+        sendMessageToSocketId(order.userId.socketId, {
+            event: 'order-out-for-delivery',
+            data: { order },
+        });
+
+        res.status(200).json({ message: "Order status updated to Out for Delivery.", order });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const processOrderDelivery = async (req, res) => {
     try {
         const { orderId, deliveryPersonId, otp } = req.body;
 
@@ -704,7 +601,10 @@ export const markOrderAsDelivered = async (req, res) => {
         if (!deliveryPersonId) return res.status(400).json({ message: "Delivery Person ID is required." });
         if (!otp) return res.status(400).json({ message: "OTP is required." });
 
-        const order = await Order.findById(orderId).populate('productDetails.item');
+        const order = await Order.findById(orderId)
+            .populate('userId', '-password -address')
+            .populate('productDetails.item')
+            .populate('deliveryPersonId', '-password');
 
         if (!order) return res.status(404).json({ message: "Order not found." });
 
@@ -719,19 +619,102 @@ export const markOrderAsDelivered = async (req, res) => {
         order.orderStatus = "Delivered";
         order.otp = null; // Clear the OTP as it is no longer needed
 
-        await order.save();
+        const totalOrderValue = order.productDetails.reduce((acc, item) => acc + item.totalPrice, 0);
+        const totalDeliveryPersonEarnings = Math.ceil(totalOrderValue * 0.08);
+        const totalShopKeeperEarnings = Math.ceil(totalOrderValue * 0.87);
+        const totalAdminEarnings = totalOrderValue - totalDeliveryPersonEarnings - totalShopKeeperEarnings;
 
-        // Notify the user who placed the order
-        sendMessageToSocketId(order.userId.socketId, {
-            event: 'order-delivered',
-            data: { order },
+        const [user, deliveryPerson, admin, shopkeeper] = await Promise.all([
+            User.findById(order.userId._id),
+            User.findById(order.deliveryPersonId._id),
+            User.findOne({ role: 'Admin' }),
+            User.findOne({ shopId: order.shopId })
+        ]);
+
+        user.coins -= totalOrderValue;
+        deliveryPerson.coins += totalDeliveryPersonEarnings;
+        admin.coins += totalAdminEarnings;
+
+        const transactions = await Promise.all([
+            new Transaction({
+                userId: user._id,
+                coinsEarned: 0,
+                coinsSpent: totalOrderValue,
+                orderId: order._id,
+                title: "Order Debit"
+            }).save(),
+            new Transaction({
+                userId: deliveryPerson._id,
+                coinsEarned: totalDeliveryPersonEarnings,
+                coinsSpent: 0,
+                orderId: order._id,
+                title: "Delivery Credit"
+            }).save(),
+            new Transaction({
+                userId: shopkeeper._id,
+                coinsEarned: totalShopKeeperEarnings,
+                coinsSpent: 0,
+                orderId: order._id,
+                title: "Order Credit"
+            }).save(),
+            new Transaction({
+                userId: admin._id,
+                coinsEarned: totalAdminEarnings,
+                coinsSpent: 0,
+                orderId: order._id,
+                title: "Order Commission"
+            }).save()
+        ]);
+
+        user.transactionHistory.push(transactions[0]);
+        deliveryPerson.transactionHistory.push(transactions[1]);
+        shopkeeper.transactionHistory.push(transactions[2]);
+        admin.transactionHistory.push(transactions[3]);
+
+        await Promise.all([user.save(), deliveryPerson.save(), shopkeeper.save(), admin.save(), order.save()]);
+
+        return res.status(200).json({
+            message: "Order processed and marked as delivered successfully.",
+            order: await Order.findById(orderId),
+            user: order.userId._id
         });
-
-        res.status(200).json({ message: "Order marked as delivered.", order });
     } catch (error) {
-        // console.log(error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
 
+export const getOrderHistory = async (req, res) => {
+    try {
+        const { userId } = req.params;
 
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required." });
+        }
+
+        const shop = await Shop.findOne({ owner: userId });
+
+        const orders = await Order.find({ shopId: shop?._id })
+            .populate('userId', '-password')
+            .populate('productDetails.item')
+            .populate('deliveryPersonId')
+            .populate('shopId')
+            .populate({
+                path: 'productDetails.item',
+                populate: {
+                    path: 'shopkeeperId',
+                    model: 'User',
+                },
+            });
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ message: "No orders found for this user." });
+        }
+
+        res.status(200).json({
+            message: "Order history retrieved successfully.",
+            orders,
+        });
+    } catch (error) {
         res.status(500).json({ message: "Internal server error." });
     }
 };

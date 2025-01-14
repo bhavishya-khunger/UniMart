@@ -18,21 +18,29 @@ const Wallet = () => {
     const [password, setPassword] = useState("");
     const [success, setSuccess] = useState(false);
 
-    const handleShare = () => {
-        const message = `🌟 Welcome to UniMart! 🎉
-        
-UniMart is your ultimate platform to get your orders delivered at your hostel door! Whether you're looking for print-on-demand, food pre-order to avoid queues are delivery in exchange of some coins, it is for you. It’s a one-stop shop for everything you need on campus. Join today and explore great deals! 🚀
-
-Use my referral code *${referalCode}* to get exclusive discounts! 🎁 Don't miss out on this opportunity to save while shopping at UniMart!
-
-Join now ➡️ ${import.meta.env.FRONTEND_URL}/register?referal=${referalCode} 🌍
-
-#UniMart #CampusShopping #ReferralCode`;
-        const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
-
-        // Open WhatsApp with the pre-filled message
-        window.open(whatsappUrl, "_blank");
+    const handleCopy = () => {
+        navigator.clipboard.writeText(referalCode).then(() => {
+            alert('Referral code copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy referral code: ', err);
+        });
     };
+
+//     const handleShare = () => {
+//         const message = `🌟 Welcome to UniMart! 🎉
+        
+// UniMart is your ultimate platform to get your orders delivered at your hostel door! Whether you're looking for print-on-demand, food pre-order to avoid queues are delivery in exchange of some coins, it is for you. It’s a one-stop shop for everything you need on campus. Join today and explore great deals! 🚀
+
+// Use my referral code *${referalCode}* to get exclusive discounts! 🎁 Don't miss out on this opportunity to save while shopping at UniMart!
+
+// Join now ➡️ ${import.meta.env.FRONTEND_URL}/register?referal=${referalCode} 🌍
+
+// #UniMart #CampusShopping #ReferralCode`;
+//         const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(message)}`;
+
+//         // Open WhatsApp with the pre-filled message
+//         window.open(whatsappUrl, "_blank");
+//     };
     const referalCode = user?.referalCode; // This should be fetched from the backend 
 
     const sortedTransactions = [...transactions].sort(
@@ -42,7 +50,7 @@ Join now ➡️ ${import.meta.env.FRONTEND_URL}/register?referal=${referalCode} 
     const handleTransfer = async (e) => {
         e.preventDefault();
         setError("");
-    
+
         try {
             // Perform the transfer request
             const response = await axios.post(`${import.meta.env.VITE_USER_BASE_URL}/transfer-points`, {
@@ -52,20 +60,20 @@ Join now ➡️ ${import.meta.env.FRONTEND_URL}/register?referal=${referalCode} 
                 title: transactionType,
                 password: password,
             });
-    
+
             // Show success feedback
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
-    
+
             // Reset form fields
             setAmount("");
             setTxnUserId("");
             setPassword("");
             setTransactionType("Test Points");
-    
+
             // Reload user profile
             await loadUserFromServer(user?._id, setUser);
-    
+
             // console.log("Transfer successful:", response);
         } catch (error) {
             // Handle error feedback
@@ -138,10 +146,10 @@ Join now ➡️ ${import.meta.env.FRONTEND_URL}/register?referal=${referalCode} 
                     <div className="mt-5 border border-gray-200 shadow-lg rounded-xl bg-white h-fit w-full px-3 py-4 flex flex-col items-center">
                         <p>Your Unique referal code is</p>
                         <p className='text-xl font-mono'>{referalCode}</p>
-                        <p className='text-center text-sm italic'>Share the code with your friends and earn 30 points!</p>
-                        <button onClick={handleShare} className="mt-2 flex justify-center gap-3 self-center py-2 w-full rounded-xl items-center text-white bg-[#FF4539] active:scale-95">
+                        <p className='text-center text-sm italic'>Share the invite code with your friends to earn 20 points each!</p>
+                        <button onClick={handleCopy} className="mt-2 flex justify-center gap-3 self-center py-2 w-full rounded-xl items-center text-white bg-[#FF4539] active:scale-95">
                             {/* #FF4539 - use this when u change */}
-                            <BsShare />Share Invite Link
+                            <BsCopy />Copy Invite Code
                         </button>
                     </div>
                 )}

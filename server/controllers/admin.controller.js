@@ -1,6 +1,7 @@
 import Shop from "../models/shop.model.js";
 import Transaction from "../models/transaction.model.js";
 import User from "../models/user.model.js";
+import { sendMessageToSocketId } from '../src/socket.js'
 
 export const verifyShop = async (req, res) => {
     try {
@@ -80,6 +81,13 @@ export const transferCoins = async (req, res) => {
 
         admin.transactionHistory.push(adminTransaction._id);
         await admin.save();
+
+        if (user?.socketId) {
+            sendMessageToSocketId(user.socketId, {
+            event: "transaction-event-trigger",
+            data: await User.findById(user._id).populate("friendList.id")
+            });
+        }
 
         return res.status(200).json({
             message: "Coins transferred successfully.",

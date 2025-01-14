@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { loadUserFromServer } from '../utils/UpdateUser.js'
 
 // Create the context
 export const UserDataContext = createContext();

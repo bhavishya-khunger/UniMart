@@ -7,7 +7,7 @@ const ShopPrintOrders = ({ sortedOrders, user }) => {
 
     useEffect(() => {
         setOrders(sortedOrders);
-    }, [sortedOrders])
+    }, [orders])
 
     async function cancelOrder(orderId) {
         try {

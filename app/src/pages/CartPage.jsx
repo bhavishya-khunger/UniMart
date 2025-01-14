@@ -148,7 +148,7 @@ const CartPage = () => {
 
         <div className="mt-4 flex flex-col w-full justify-center">
           <div className="flex gap-6 justify-center items-center py-2">
-            <div className="flex self-center items-center mb-4">
+            {/* <div className="flex self-center items-center mb-4">
               <input
                 type="checkbox"
                 id="selfPickUp"
@@ -157,7 +157,7 @@ const CartPage = () => {
                 onChange={(e) => handleSelfPickUpChange(e.target.checked)}
               />
               <label htmlFor="selfPickUp" className="self-center text-gray-700">Self PickUp</label>
-            </div>
+            </div> */}
             {!selfPickUp && (
               <div className="flex self-center items-center mb-4">
                 <input

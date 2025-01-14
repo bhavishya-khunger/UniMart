@@ -42,9 +42,12 @@ const App = () => {
     socket.on("friendRequestApproved", (data) => {
       setUser(data);
     })
+    socket.on("transaction-event-trigger", (data) => {
+      setUser(data);
+    })
   }, [user])
   return (
-    <div className='h-full w-full flex flex-col'>
+    <div className='rounded-xl w-[390px] flex flex-col '>
       <Routes>
         <Route path="/" element={
           <UserProtectRoute>

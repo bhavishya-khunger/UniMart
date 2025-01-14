@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const OrderPageNav = () => {
     const [placedOrders, setPlacedOrders] = useState([]);
     const [deliveryOrders, setDeliveryOrders] = useState([]);
+    const [shopPastOrders, setShopPastOrders] = useState([]);
     const { user, setUser } = useContext(UserDataContext);
     const [activeTab, setActiveTab] = useState(user?.role === "Student" ? "placed" : "past");
     const [otpCode, setOtpCode] = useState('');
@@ -26,21 +27,22 @@ const OrderPageNav = () => {
             });
             console.log(res);
             if (res.status === 200) {
-                try {
-                    await axios.post(`${import.meta.env.VITE_CART_BASE_URL}/order/process`, {
-                        orderId: orderId
-                    });
-                    await loadUserFromServer(user?._id, setUser);
-                    navigate('/wallet');
-                } catch (error) {
-                    console.log(error);
-                }
+                navigate('/wallet');
             }
         } catch (error) {
             // // console.log(error);
-
-
             setError(error?.response?.data?.message);
+        }
+    }
+
+    const getOrderHistory = async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_CART_BASE_URL}/order/history/${user?._id}`);
+            if (response.data.orders) {
+                setShopPastOrders(sortOrders(response.data.orders));
+            }
+        } catch (error) {
+            // console.log(error);
         }
     }
 
@@ -52,9 +54,7 @@ const OrderPageNav = () => {
                 deliveryPersonId: user?._id
             });
         } catch (error) {
-            // // console.log(error);
-
-
+            // console.log(error);
         }
     }
 
@@ -94,7 +94,8 @@ const OrderPageNav = () => {
     useEffect(() => {
         getOrderDetails();
         getDeliveryOrders();
-    }, [placedOrders, deliveryOrders]);
+        getOrderHistory();
+    }, [placedOrders, deliveryOrders, getOrderHistory]);
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
@@ -369,6 +370,32 @@ const OrderPageNav = () => {
                                     )
                                 )
                             })
+                        )}
+
+                        {/* Shopkeeper past orders */}
+                        {activeTab === 'past' && user?.role === "Shopkeeper" && (
+                            shopPastOrders?.map((pastOrder) => (
+                                <section key={pastOrder?._id} className="flex flex-col justify-between mb-6 py-2 px-4 rounded-lg bg-white shadow-lg border border-black">
+                                    <h2 className={pastOrder?.orderStatus === "Cancelled" ? "bg-red-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold" : pastOrder?.orderStatus === "Delivered" ? "bg-green-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold" : "bg-blue-600 text-gray-100 text-center mt-2 rounded-lg text-lg py-1 font-semibold"}>
+                                        Order Status : {pastOrder?.orderStatus}
+                                    </h2>
+                                    <p className="italic mt-2">
+                                        Order Details:
+                                    </p>
+                                    <ol className="list-disc ml-6">
+                                        {pastOrder?.productDetails?.map((item) => (
+                                            <li key={item?.item?._id} className="font-semibold italic">{item?.totalPrice / item?.item?.price} x {item?.item?.productName}</li>
+                                        ))}
+                                    </ol>
+                                    <p className="italic mt-2">
+                                        Date:&nbsp;
+                                        {new Date(pastOrder?.updatedAt).toLocaleString("en-US", {
+                                            dateStyle: "medium",
+                                            timeStyle: "short"
+                                        })}
+                                    </p>
+                                </section>
+                            ))
                         )}
                         <div className='w-full h-10'></div>
                     </div>

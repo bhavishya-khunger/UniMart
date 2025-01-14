@@ -23,10 +23,10 @@ function UserProfile() {
         address,
         phone,
       });
-      setUser(res.data.user);
+      setUser(res?.data?.user);
       navigate('/userpage');
     } catch (error) {
-      setError(error.response.data || "Something went Wrong.");
+      setError(error?.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }
